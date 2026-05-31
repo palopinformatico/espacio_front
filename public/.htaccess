@@ -1,0 +1,18 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  
+  # No redirigir archivos existentes
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+  
+  # Para Angular con hash routing, no necesitamos reglas especiales
+  # El hash (#) es manejado completamente por el cliente
+  # Solo aseguramos que index.html se sirva para rutas que no son archivos
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# Deshabilitar redirecciones automáticas del servidor
+<IfModule mod_dir.c>
+  DirectoryIndex index.html
+</IfModule>

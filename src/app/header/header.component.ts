@@ -96,14 +96,14 @@ export class HeaderComponent implements OnInit {
   logout() {
     // Limpiar todo primero
     this.authService.logout();
-    
+
     // Resetear estado del componente
     this.currentUser = null;
     this.userName = 'Usuario';
     this.userImage = '/logo.png';
-    
+
     // Forzar limpieza completa del navegador y recargar para actualizar UI
-    this.router.navigate(['/user']).then(() => {
+    this.router.navigate(['']).then(() => {
       window.location.reload();
     });
   }

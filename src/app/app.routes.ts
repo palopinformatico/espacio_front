@@ -30,14 +30,14 @@ export const routes: Routes = [
     data: { role: ['garzon'] } 
   },
   { path: 'auth/entrar', component: LoginComponent },
-  { path: '', redirectTo: 'user', pathMatch: 'full' },
+  { path: '', component: UserComponent },
   { path: 'no-autorizado', component: NoAutorizadoComponent }
 ];
 
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, {
-  useHash: false    // o true si usas hash routing
+  useHash: true
 })],
   exports: [RouterModule]
 })

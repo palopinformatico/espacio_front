@@ -1716,7 +1716,7 @@ export class GarzonComponent implements OnInit, AfterViewInit, OnDestroy {
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-    this.router.navigate(['/user']);
+    this.router.navigate(['']);
   }
   // 💰 Propina Bar Logic
   incluirPropinaBar: boolean = false;

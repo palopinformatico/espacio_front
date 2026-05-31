@@ -7,7 +7,6 @@ import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@a
 import localeEsCl from '@angular/common/locales/es-CL';
 import { registerLocaleData } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { provideAnimations } from '@angular/platform-browser/animations';
 registerLocaleData(localeEsCl, 'es-CL');
 import { provideEnvironmentNgxMask } from 'ngx-mask';
 
@@ -25,6 +24,5 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptorsFromDi()),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     importProvidersFrom(FormsModule),
-    provideAnimations(),
   ]
 };
