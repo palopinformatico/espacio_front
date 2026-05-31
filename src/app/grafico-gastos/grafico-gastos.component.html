@@ -1,0 +1,49 @@
+<div class="card shadow-lg border-0 p-3" *ngIf="isAdmin">
+  <div class="container-fluid">
+
+  <div class="row g-3 align-items-center">
+
+    <!-- Tipo -->
+    <div class="col-12 col-sm-6 col-md-3">
+      <select class="form-select" [(ngModel)]="type" (change)="loadChart()">
+        <option value="ingreso">Ingreso</option>
+        <option value="egreso">Egreso</option>
+      </select>
+    </div>
+
+    <!-- Periodo -->
+    <div class="col-12 col-sm-6 col-md-3">
+      <select class="form-select" [(ngModel)]="periodo" (change)="loadChart()">
+        <option value="dia">Día</option>
+        <option value="mes">Mes</option>
+        <option value="anio">Año</option>
+      </select>
+    </div>
+
+    <!-- Selector dinámico -->
+    <div class="col-12 col-sm-6 col-md-3">
+      <input type="date" class="form-control" [(ngModel)]="valor" (change)="loadChart()" *ngIf="periodo === 'dia'">
+
+      <input type="month" class="form-control" [(ngModel)]="valor" (change)="loadChart()" *ngIf="periodo === 'mes'">
+
+      <input type="number" min="2020" class="form-control" [(ngModel)]="valor" (change)="loadChart()" *ngIf="periodo === 'anio'">
+    </div>
+
+  </div>
+
+  <div class="mt-4 glass-card">
+    <apx-chart 
+      [series]="chartSeries"
+      [chart]="chartOpts.chart"
+      [xaxis]="chartOpts.xaxis"
+      [stroke]="chartOpts.stroke"
+      [dataLabels]="chartOpts.dataLabels"
+      [yaxis]="chartOpts.yaxis">
+    </apx-chart>
+  </div>
+
+</div>
+
+</div>
+
+

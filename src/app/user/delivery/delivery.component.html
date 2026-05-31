@@ -1,0 +1,363 @@
+<div class="tab-content">
+  <!-- TAB LOCAL -->
+  <div class="tab-pane fade show active" *ngIf="activeTab === 'local'">
+
+    <!-- Carrusel de Categorías -->
+    <div class="category-carousel-container">
+      <button class="carousel-nav-btn left" (click)="scrollCarousel('left')">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <div #carousel class="category-carousel">
+        <!-- Categoría "Todos" -->
+        <div class="categoria-item" [class.active]="!sid" (click)="buscarxcategoria(0)">
+          <i class="bi bi-grid-3x3-gap-fill category-icon"></i>
+          <span class="category-name">Todos</span>
+        </div>
+
+        <!-- Categorías dinámicas -->
+        <div *ngFor="let category of categorias" class="categoria-item" [class.active]="sid === category.id"
+          (click)="buscarxcategoria(category.id)">
+          <!-- Bootstrap Icon -->
+          <i *ngIf="isBootstrapIcon(category.icono)" [class]="getIconClass(category.icono)" class="category-icon"
+            style="font-size: 2rem;"></i>
+          <!-- Legacy Image -->
+          <img *ngIf="!isBootstrapIcon(category.icono)" [src]="category.icono" [alt]="category.nombre"
+            class="category-icon">
+          <span class="category-name">{{ category.nombre }}</span>
+        </div>
+      </div>
+
+      <button class="carousel-nav-btn right" (click)="scrollCarousel('right')">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+    <!-- Botón Resumen Pedido (Separado) -->
+    <div class="row mb-3 justify-content-end">
+      <div class="col-md-4">
+        <button
+          class="btn btn_o fw-bold text-white position-relative w-100 d-flex flex-row justify-content-center align-items-center btn-resumen py-2 px-3"
+          data-bs-toggle="modal" data-bs-target="#cartModalDelivery">
+
+          <div class="d-flex align-items-center me-2">
+            <h1 class="fuerte_letra"><i class="bi bi-cart fs-1"></i>RESUMEN PEDIDO</h1>
+          </div>
+
+          <span *ngIf="getCantidadTotal() > 0"
+            class="badge rounded-pill bg-danger shadow-sm border border-white px-2 py-1 ms-2"
+            style="font-size: 0.7rem;">
+            {{ getCantidadTotal() }}
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 🔍 BÚSQUEDA Y ORDENAMIENTO PREMIUM -->
+    <!-- ========================================== -->
+    <div class="search-sort-container mb-4">
+      <div class="card border-0 shadow-lg"
+        style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 15px;">
+        <div class="card-body p-4">
+          <div class="row g-3 align-items-center">
+            <!-- Barra de búsqueda -->
+            <div class="col-12 col-md-6">
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-dark border-0 text-white">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control bg-dark border-0 text-white" placeholder="Buscar producto..."
+                  [(ngModel)]="filtro" (input)="filtrarProductos()" style="box-shadow: none;">
+                <button *ngIf="filtro" class="btn btn-outline-light" type="button" (click)="limpiarFiltro()">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Ordenamiento -->
+            <div class="col-12 col-md-6">
+              <div class="d-flex gap-2 justify-content-md-end flex-wrap">
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-outline-light" [class.active]="ordenActual === 'asc'"
+                    (click)="ordenarPorPrecio('asc')">
+                    <i class="bi bi-sort-numeric-down me-1"></i> Menor precio
+                  </button>
+                  <button type="button" class="btn btn-outline-light" [class.active]="ordenActual === 'desc'"
+                    (click)="ordenarPorPrecio('desc')">
+                    <i class="bi bi-sort-numeric-up me-1"></i> Mayor precio
+                  </button>
+                </div>
+                <button type="button" class="btn btn-warning" *ngIf="ordenActual || filtro" (click)="resetearFiltros()">
+                  <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contador de resultados -->
+          <div class="mt-3 text-white-50 small" *ngIf="filtro || ordenActual">
+            <i class="bi bi-info-circle me-1"></i>
+            Mostrando {{ productosFiltrados.length }} producto(s)
+            <span *ngIf="filtro"> que coinciden con "{{ filtro }}"</span>
+            <span *ngIf="ordenActual === 'asc'"> - Ordenado por menor precio</span>
+            <span *ngIf="ordenActual === 'desc'"> - Ordenado por mayor precio</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-3 mb-4" *ngFor="let product of productos">
+        <div class="card shadow-sm h-100 producto-card">
+          <img [src]="product.imageUrl" class="card-img-top" alt="{{ product.name }}" (error)="handleImageError($event)"
+            loading="lazy" decoding="async">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text small flex-grow-1">{{ product.description }}</p>
+            <p class="card-text fw-bold">{{ formatPrice(product.price) }}</p>
+            <button class="btn button-orange mt-auto" (click)="agregarAlCarrito(product)">
+              <i class="bi bi-cart-plus me-1"></i> Agregar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje sin resultados -->
+    <div *ngIf="productos.length === 0 && filtro" class="text-center py-5">
+      <div class="card border-0 shadow-lg mx-auto"
+        style="max-width: 400px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 15px;">
+        <div class="card-body p-5">
+          <i class="bi bi-search text-warning" style="font-size: 4rem;"></i>
+          <h4 class="text-white mt-3">No se encontraron productos</h4>
+          <p class="text-white-50">No hay productos que coincidan con "{{ filtro }}"</p>
+          <button class="btn btn-warning mt-2" (click)="limpiarFiltro()">
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Ver todos los productos
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- MODAL DEL CARRITO DE COMPRAS (Nuevo Diseño) -->
+    <div class="modal fade" id="cartModalDelivery" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content cart-modal-content">
+
+          <!-- Header Modal -->
+          <div class="modal-header cart-modal-header">
+            <h5 class="modal-title fw-bold cart-modal-title">
+              <i class="bi bi-cart3 me-2 text-white"></i> Mi Pedido (Delivery)
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <!-- Body Modal -->
+          <div class="modal-body p-4">
+
+            <div *ngIf="carrito.length === 0" class="text-center py-5">
+              <i class="bi bi-cart-x text-white-50 cart-empty-icon"></i>
+              <h5 class="text-white mt-3">¡Tu carrito está vacío!</h5>
+              <p class="text-white-50">Agrega unos deliciosos platos para comenzar.</p>
+              <button class="btn btn-outline-warning mt-2" data-bs-dismiss="modal">
+                Ir al Menú
+              </button>
+            </div>
+
+            <div *ngIf="carrito.length > 0">
+              <!-- Lista de Productos -->
+              <div class="cart-items-list mb-4">
+                <div *ngFor="let item of carrito"
+                  class="d-flex align-items-center justify-content-between py-3 border-bottom border-secondary">
+                  <div class="d-flex align-items-center flex-grow-1">
+                    <div class="ms-3">
+                      <h6 class="text-white mb-0 fw-bold">{{ item.name }}</h6>
+                      <small class="text-success fw-bold">{{ formatPrice(item.price) }}</small>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center">
+                    <span class="badge bg-dark border border-secondary text-white me-3 px-3 py-2">
+                      x{{ item.cantidad }}
+                    </span>
+                    <button class="btn btn-sm btn-danger rounded-circle shadow-sm" (click)="eliminarDelCarrito(item.id)"
+                      title="Eliminar">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Resumen Financiero -->
+              <div class="cart-summary p-3 rounded-3 mb-4">
+                <div class="d-flex justify-content-between mb-2 text-white-50 small">
+                  <span>Subtotal</span>
+                  <span>{{ formatPrice(getSubtotal()) }}</span>
+                </div>
+
+                <!-- Costo de Envío Selector en Resumen -->
+                <div class="d-flex justify-content-between align-items-center mb-4 text-white-50 small">
+                  <label for="costoEnvio" class="mb-0 me-2">Costo de Envío</label>
+                  <select id="costoEnvio" class="form-select form-select-sm bg-dark text-white border-secondary w-auto"
+                    [(ngModel)]="costoEnvioSeleccionado" style="max-width: 250px;">
+                    <option *ngFor="let costo of costosEnvio" [ngValue]="costo.precio_envio">
+                    {{costo.descripcion}} ({{ formatPrice(costo.precio_envio) }}) 
+                    </option>
+                  </select>
+                </div>
+
+
+                <hr class="border-secondary">
+                <div class="d-flex justify-content-between mt-2">
+                  <span class="text-white fs-5 fw-bold">Total</span>
+                  <span class="text-warning fs-4 fw-bold">{{ formatPrice(getTotalConEnvio()) }}</span>
+                </div>
+              </div>
+
+              <!-- Detalle / Nota -->
+              <div class="mb-4">
+                <label for="mensaje" class="form-label text-white-50 small">Escribe tu mensaje (opcional)</label>
+                <textarea class="form-control bg-dark text-white border-secondary" id="mensaje" [(ngModel)]="detalle"
+                  rows="2" placeholder="Ej: Sin cebolla, aderezo aparte..." maxlength="100"></textarea>
+                <div class="text-end text-white-50 small mt-1">
+                  {{ detalle.length || 0 }}/100
+                </div>
+              </div>
+
+              <!-- FORMULARIO DELIVERY INTEGRADO -->
+              <div class="container text-white p-0">
+                <h5 class="mb-3 text-warning border-bottom border-warning pb-2"><i
+                    class="bi bi-person-lines-fill me-2"></i>Datos de Envío</h5>
+                <form [formGroup]="deliveryForm" novalidate>
+                  <!-- Nombre -->
+                  <div class="mb-3">
+                    <label for="nombre" class="form-label small text-white-50">Nombre <span
+                        class="text-danger">*</span></label>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" id="nombre"
+                      placeholder="Ingrese su nombre" formControlName="nombre"
+                      [class.is-invalid]="deliveryForm.get('nombre')?.invalid && deliveryForm.get('nombre')?.touched">
+                    <div class="invalid-feedback">El nombre es obligatorio (min 3 chars).</div>
+                  </div>
+
+                  <!-- Apellido -->
+                  <div class="mb-3">
+                    <label for="apellido" class="form-label small text-white-50">Apellido <span
+                        class="text-danger">*</span></label>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" id="apellido"
+                      placeholder="Ingrese su apellido" formControlName="apellido"
+                      [class.is-invalid]="deliveryForm.get('apellido')?.invalid && deliveryForm.get('apellido')?.touched">
+                    <div class="invalid-feedback">El apellido es obligatorio (min 3 chars).</div>
+                  </div>
+
+                  <!-- Dirección -->
+                  <div class="mb-3">
+                    <label for="direccion" class="form-label small text-white-50">Dirección <span
+                        class="text-danger">*</span></label>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" id="direccion"
+                      placeholder="Ingrese su dirección" formControlName="direccion"
+                      [class.is-invalid]="deliveryForm.get('direccion')?.invalid && deliveryForm.get('direccion')?.touched">
+                    <div class="invalid-feedback">La dirección es obligatoria.</div>
+                  </div>
+
+                  <!-- Teléfono -->
+                  <div class="mb-3">
+                    <label for="telefono" class="form-label small text-white-50">Teléfono <span
+                        class="text-danger">*</span></label>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" id="telefono"
+                      placeholder="Ingrese su teléfono" formControlName="telefono"
+                      [class.is-invalid]="deliveryForm.get('telefono')?.invalid && deliveryForm.get('telefono')?.touched">
+                    <div class="invalid-feedback">Teléfono inválido (8-12 dígitos).</div>
+                  </div>
+
+                  <!-- Correo electrónico -->
+                  <div class="mb-3">
+                    <label for="correo" class="form-label small text-white-50">Correo Electrónico <span
+                        class="text-danger">*</span></label>
+                    <input type="email" class="form-control bg-dark text-white border-secondary" id="correo"
+                      placeholder="ejemplo@correo.com" formControlName="email"
+                      [class.is-invalid]="deliveryForm.get('email')?.invalid && deliveryForm.get('email')?.touched">
+                    <div class="invalid-feedback">Correo inválido.</div>
+                  </div>
+
+
+                  <div class="mb-4">
+                    <label class="form-label small text-white-50">Forma de Pago <span
+                        class="text-danger">*</span></label>
+                    <div class="d-flex gap-3">
+                      <div class="form-check">
+                        <input type="radio" id="efectivo" name="pago" value="efectivo" formControlName="pago">
+                        <label class="form-check-label text-white" for="efectivo">Efectivo</label>
+                      </div>
+
+                      <div class="form-check">
+                        <input type="radio" id="transferencia" name="pago" value="transferencia" formControlName="pago">
+                        <label class="form-check-label text-white" for="transferencia">Transferencia</label>
+                      </div>
+
+                      <div class="form-check">
+                        <input type="radio" id="tarjeta" name="pago" value="tarjeta" formControlName="pago">
+                        <label class="form-check-label text-white" for="tarjeta">Tarjeta</label>
+                      </div>
+                    </div>
+
+                    <div class="form-check mt-3">
+                      <input type="checkbox" id="aceptoTerminos" class="form-check-input me-2" formControlName="aceptoTerminos">
+                      <label class="form-check-label text-white" for="aceptoTerminos">
+                        He leído y acepto los <a href="javascript:void(0)" (click)="mostrarTerminosCondiciones()" style="color: #ffc107; text-decoration: underline;">términos y condiciones</a> y el tratamiento de mis datos personales
+                      </label>
+                    </div>
+
+                    <div class="text-danger small mt-1"
+                      *ngIf="deliveryForm.get('aceptoTerminos')?.invalid && deliveryForm.get('aceptoTerminos')?.touched">
+                      Debes aceptar los términos y condiciones para continuar
+                    </div>
+
+                    <div class="text-danger small mt-1"
+                      *ngIf="deliveryForm.get('pago')?.invalid && deliveryForm.get('pago')?.touched">
+                      ⚠️ Seleccione forma de pago
+                    </div>
+
+                    <div *ngIf="deliveryForm.get('pago')?.value === 'transferencia'"
+                      class="alert alert-info mt-3 small bg-dark border-info text-info">
+                      <strong>Datos Transferencia:</strong><br>
+                      Banco de Chile / Cuenta Corriente / 2170909606 / Carlos Norambuena Zepeda / 15.948.086-0 / espacioboulevardlinares&#64;gmail.com<br>
+                      <strong>Enviar comprobante al numero de whatsapp +56 9 7253 1521 para aceptar pedido</strong>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Footer Modal -->
+          <div class="modal-footer border-top border-dark justify-content-between">
+            <button type="button" class="btn btn-lg fw-bold text-white flex-grow-1 me-2 btn-confirm-order"
+              (click)="aceptarPedidos()" [disabled]="enviandoPedido || carrito.length === 0">
+              <span *ngIf="!enviandoPedido">Confirmar Pedido</span>
+              <span *ngIf="enviandoPedido">
+                <span class="spinner-border spinner-border-sm me-2"></span> Enviando...
+              </span>
+            </button>
+
+            <button type="button" class="btn btn-lg fw-bold text-white flex-grow-1 ms-2 btn-add-more"
+              data-bs-dismiss="modal">
+              Agrega algo más
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <br>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 🚀 BOTÓN SCROLL TO TOP PREMIUM -->
+<!-- ========================================== -->
+<button *ngIf="showScrollButton" class="scroll-to-top-btn" (click)="scrollToTop()" title="Volver arriba">
+  <i class="bi bi-arrow-up-circle-fill"></i>
+</button>

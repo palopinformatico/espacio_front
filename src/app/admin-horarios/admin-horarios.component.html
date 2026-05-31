@@ -1,0 +1,86 @@
+<div class="container mt-5">
+
+  <h2 class="mb-4 text-white fw-bold">
+    <i class="bi bi-clock-history me-2"></i> Administración de Horarios
+  </h2>
+
+  <!-- Mensaje de info -->
+  <div *ngIf="mensaje" class="alert alert-info text-center fw-semibold shadow-sm">
+    {{ mensaje }}
+  </div>
+
+  <!-- Lista de horarios -->
+  <div class="row g-3">
+
+    <!-- Mensaje si no hay horarios -->
+    <div *ngIf="horarios.length === 0" class="col-12">
+      <div class="alert alert-warning text-center fw-semibold shadow-sm">
+        No hay horarios disponibles.
+      </div>
+    </div>
+
+    <!-- Tarjetas de horarios -->
+    <div *ngFor="let h of horarios" class="col-12">
+      <div class="card bg-dark text-white shadow-lg rounded-3 p-3 premium-card position-relative">
+        <div class="row align-items-center">
+
+          <!-- Sección -->
+          <div class="col-md-2 mb-2 mb-md-0">
+            <span class="fw-bold text-uppercase small text-primary">{{ h.seccion }}</span>
+          </div>
+
+          <!-- Hora Inicio -->
+          <div class="col-md-2 mb-2 mb-md-0">
+            <label class="form-label small text-secondary">Inicio</label>
+            <input type="time" class="form-control form-control-sm shadow-sm"
+                   [(ngModel)]="h.hora_inicio">
+          </div>
+
+          <!-- Hora Fin -->
+          <div class="col-md-2 mb-2 mb-md-0">
+            <label class="form-label small text-secondary">Fin</label>
+            <input type="time" class="form-control form-control-sm shadow-sm"
+                   [(ngModel)]="h.hora_fin">
+          </div>
+
+          <!-- Switch + Guardar -->
+          <div class="col-md-6 d-flex justify-content-end align-items-center gap-3 flex-wrap">
+            <div class="form-check form-switch me-2">
+              <input class="form-check-input shadow-sm" type="checkbox"
+                     [(ngModel)]="h.enabled" id="switch-{{h.id}}">
+            </div>
+            <div class="form-check form-switch me-2">
+              <input class="form-check-input shadow-sm" type="checkbox" 
+                     [(ngModel)]="h.trabaja_domingo" id="domingo-{{h.id}}">
+              <label class="form-check-label small text-info" for="domingo-{{h.id}}">
+                <i class="bi bi-calendar-check me-1"></i>
+                Trabaja domingo
+              </label>
+            </div>
+            <label class="form-check-label small text-white" for="switch-{{h.id}}">
+              {{ h.enabled ? 'Activo' : 'Inactivo' }}
+            </label>
+            <button class="btn btn-outline-success btn-sm shadow-sm"
+                    (click)="guardar(h)">
+              <i class="bi bi-save me-1"></i> Guardar
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
+  <div *ngIf="mensaje" class="toast show align-items-center text-bg-info border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+        {{ mensaje }}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" 
+              (click)="mensaje=''" aria-label="Close"></button>
+    </div>
+  </div>
+</div>

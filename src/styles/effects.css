@@ -1,0 +1,61 @@
+/* ============================================================
+   GLASS / GLASS-SOFT / NEO EFFECTS
+   ============================================================ */
+
+/* Glass */
+.glass {
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(var(--blur));
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  transition: background .3s ease;
+}
+
+:root[data-theme-mode="dark"] .glass {
+  background: rgba(30, 30, 30, 0.25);
+}
+
+/* Soft Glass */
+.glass-soft {
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(18px);
+  border-radius: calc(var(--radius) - 4px);
+  border: 1px solid rgba(255,255,255,0.22);
+}
+
+:root[data-theme-mode="dark"] .glass-soft {
+  background: rgba(20,20,20,0.20);
+}
+
+/* Neo */
+.neo {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow:
+    6px 6px 12px rgba(0,0,0,0.15),
+    -6px -6px 12px rgba(255,255,255,0.2);
+  transition: box-shadow .3s ease, background .3s ease;
+}
+
+:root[data-theme-mode="dark"] .neo {
+  box-shadow:
+    4px 4px 10px rgba(0,0,0,0.6),
+    -4px -4px 10px rgba(255,255,255,0.05);
+}
+
+.neo:active {
+  box-shadow:
+    inset 6px 6px 12px rgba(0,0,0,0.2),
+    inset -6px -6px 12px rgba(255,255,255,0.15);
+}
+
+/* Pulse */
+@keyframes glassPulse {
+  0%   { background: rgba(255,255,255,0.15); }
+  50%  { background: rgba(255,255,255,0.25); }
+  100% { background: rgba(255,255,255,0.15); }
+}
+
+.glass-pulse {
+  animation: glassPulse 3s infinite ease-in-out;
+}

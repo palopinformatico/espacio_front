@@ -1,0 +1,258 @@
+/* =========================================
+   NAV PILLS CUSTOM
+   ========================================= */
+.nav-pills-custom {
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.nav-link-custom {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.nav-link-custom:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.nav-link-custom.active {
+    background-color: #fd7e14;
+    /* Orange */
+    color: white;
+    border-color: #fd7e14;
+    box-shadow: 0 4px 12px rgba(253, 126, 20, 0.3);
+}
+
+.nav-link-custom .badge {
+    background-color: white !important;
+    color: #fd7e14 !important;
+    margin-left: 0.5rem;
+}
+
+
+/* =========================================
+   ORDER CARDS
+   ========================================= */
+.card-order {
+    background-color: #1e1e2d;
+    /* Dark card bg */
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-header-orange {
+    background-color: #fd7e14;
+    color: white;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    display: flex;
+    justify-content: uncover;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header-orange .order-id {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.card-header-orange .order-title {
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-body-order {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    color: #e0e0e0;
+}
+
+/* List Items */
+.order-items-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+    flex-grow: 1;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.95rem;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.item-name {
+    font-weight: 500;
+    color: white;
+}
+
+.item-price {
+    font-weight: 600;
+    color: #e0e0e0;
+}
+
+/* Totals Section */
+.order-totals {
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.final-total {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    margin-top: 0.5rem;
+}
+
+/* Delivery Info */
+.delivery-info {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+}
+
+.info-row {
+    margin-bottom: 0.25rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.info-label {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    display: block;
+    margin-bottom: 0.1rem;
+}
+
+/* Description Input */
+.description-input {
+    background-color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    color: #333;
+    width: 100%;
+    resize: none;
+    margin-bottom: 1rem;
+}
+
+.description-input::placeholder {
+    color: #999;
+}
+
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+.btn-action {
+    width: 100%;
+    border: none;
+    padding: 0.5rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    border-radius: 6px;
+    transition: filter 0.2s;
+    margin-bottom: 0.5rem;
+}
+
+.btn-action:hover {
+    filter: brightness(1.1);
+}
+
+.btn-orange {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.btn-green {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-red {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-blue {
+    background-color: #0dcaf0;
+    /* Cyan/Blue */
+    color: white;
+}
+
+.btn-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.btn-row .btn-action {
+    margin-bottom: 0;
+}
+
+/* Animation for new items */
+.nuevo {
+    animation: pulse-border 2s infinite;
+    border: 1px solid #0dcaf0;
+}
+
+@keyframes pulse-border {
+    0% {
+        box-shadow: 0 0 0 0 rgba(13, 202, 240, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(13, 202, 240, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(13, 202, 240, 0);
+    }
+}
+
+/* Modal styles overrides if needed */
+.modal-content {
+    background-color: #1e1e2d;
+    color: white;
+}
+
+.modal-header,
+.modal-footer {
+    border-color: rgba(255, 255, 255, 0.1);
+}

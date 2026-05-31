@@ -1,0 +1,368 @@
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-white">Gestión de Ingresos</h2>
+        <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#ingresoModal" (click)="openModal()"
+            *ngIf="activeTab === 'ingresos'">
+            <i class="bi bi-plus-lg me-2"></i>Nuevo Ingreso
+        </button>
+        <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#clienteModal"
+            (click)="openClienteModal()" *ngIf="activeTab === 'clientes'">
+            <i class="bi bi-plus-lg me-2"></i>Nuevo Cliente
+        </button>
+        <!--<button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#documentoCRUDModal"
+            (click)="openDocumentoModal()" *ngIf="activeTab === 'documentos'">
+            <i class="bi bi-plus-lg me-2"></i>Nuevo Documento
+        </button>-->
+        <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#categoriaModal"
+            (click)="openCategoriaModal()" *ngIf="activeTab === 'categorias'">
+            <i class="bi bi-plus-lg me-2"></i>Nueva Categoría
+        </button>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <!-- Tabs Navigation -->
+    <div class="pills-row-container mb-3">
+        <div class="pills-row">
+            <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'ingresos' }"
+                (click)="setActiveTab('ingresos')">
+                <i class="bi bi-wallet2 me-2"></i>
+                <span>Ingresos</span>
+            </button>
+            <!--<button class="admin-pill" [ngClass]="{ 'active': activeTab === 'clientes' }"
+                (click)="setActiveTab('clientes')">
+                <i class="bi bi-people me-2"></i>
+                <span>Clientes</span>
+            </button>-->
+            <!--<button class="admin-pill" [ngClass]="{ 'active': activeTab === 'documentos' }"
+                (click)="setActiveTab('documentos')">
+                <i class="bi bi-file-earmark-text me-2"></i>
+                <span>Documentos</span>
+            </button>-->
+            <!--<button class="admin-pill" [ngClass]="{ 'active': activeTab === 'categorias' }"
+                (click)="setActiveTab('categorias')">
+                <i class="bi bi-tags me-2"></i>
+                <span>Categorías</span>
+            </button>-->
+        </div>
+    </div>
+    <hr class="border-white opacity-100" style="height: 2px;">
+
+    <!-- INGRESOS TAB -->
+    <div *ngIf="activeTab === 'ingresos'" class="tab-content">
+        <div class="card bg-dark text-white border-0 shadow">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-light table-hover mb-0">
+                        <thead class="bg-secondary">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Concepto</th>
+                                <th scope="col">Fecha</th>
+                                <th scope="col">Método Pago</th>
+                                <th scope="col">Monto</th>
+                                <th scope="col">Categorías</th>
+                                <th scope="col">Clientes</th>
+                                <th scope="col" class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let ingreso of ingresos; let i = index">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ ingreso.concepto }}</td>
+                                <td>{{ ingreso.fecha | date:'dd/MM/yyyy' }}</td>
+                                <td>{{ ingreso.metodo_pago }}</td>
+                                   <td>
+                                    {{ingreso.monto}}
+                                </td>
+                                <td>
+                                    <span *ngIf="ingreso.categoria" class="badge bg-primary me-1">{{
+                                        ingreso.categoria.nombre_cat
+                                        }}</span>
+                                </td>
+
+                                <td>
+                                    <span *ngIf="ingreso.cliente" class="badge bg-info text-dark me-1">{{
+                                        ingreso.cliente.nombre }}</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal"
+                                        data-bs-target="#ingresoModal" (click)="editIngreso(ingreso)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                               
+                                    <button class="btn btn-sm btn-danger" (click)="deleteIngreso(ingreso.id)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="ingresos.length === 0">
+                                <td colspan="8" class="text-center py-4 text-muted">No hay ingresos registrados</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- CLIENTES TAB -->
+<div *ngIf="activeTab === 'clientes'" class="tab-content">
+    <div class="card bg-dark text-white border-0 shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-light table-hover mb-0">
+                    <thead class="bg-secondary">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">RUT</th>
+                            <th scope="col">Teléfono</th>
+                            <th scope="col">Email</th>
+                            <th scope="col" class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let cliente of clientes; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ cliente.nombre }}</td>
+                            <td>{{ cliente.rut }}</td>
+                            <td>{{ cliente.telefono }}</td>
+                            <td>{{ cliente.email }}</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal"
+                                    data-bs-target="#clienteModal" (click)="editCliente(cliente)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" (click)="deleteCliente(cliente.id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="clientes.length === 0">
+                            <td colspan="3" class="text-center py-4 text-muted">No hay clientes registrados</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CATEGORIAS TAB -->
+<div *ngIf="activeTab === 'categorias'" class="tab-content">
+    <div class="card bg-dark text-white border-0 shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-light table-hover mb-0">
+                    <thead class="bg-secondary">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col" class="text-end">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let cat of categorias; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ cat.nombre_cat }}</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-warning me-2" data-bs-toggle="modal"
+                                    data-bs-target="#categoriaModal" (click)="editCategoria(cat)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" (click)="deleteCategoria(cat.id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="categorias.length === 0">
+                            <td colspan="3" class="text-center py-4 text-muted">No hay categorías registradas</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ingresoModal" tabindex="-1" aria-labelledby="ingresoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="ingresoModalLabel">{{ isEditing ? 'Editar' : 'Nuevo' }} Ingreso</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"
+                    #closeModalBtn></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="ingresoForm" (ngSubmit)="onSubmit()">
+
+                    <div class="mb-3">
+                        <label class="form-label">Concepto</label>
+                        <input type="text" class="form-control" formControlName="concepto"
+                            placeholder="Ej: Venta de servicios">
+                        <div *ngIf="ingresoForm.get('concepto')?.invalid && ingresoForm.get('concepto')?.touched"
+                            class="text-danger small">
+                            El concepto es requerido
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Fecha</label>
+                            <div class="input-group">
+                                <input class="form-control" placeholder="yyyy-mm-dd" name="dp" [(ngModel)]="fechaModel"
+                                    ngbDatepicker #d="ngbDatepicker" [ngModelOptions]="{standalone: true}">
+                                <button class="btn btn-outline-secondary" (click)="d.toggle()" type="button">
+                                    <i class="bi bi-calendar"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Método de Pago</label>
+                            <select class="form-select" formControlName="metodo_pago">
+                                <option value="">Seleccione...</option>
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Transferencia">Transferencia</option>
+                                <option value="Tarjeta">Tarjeta</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Monto</label>
+                        <input type="text" class="form-control" formControlName="monto" placeholder="0" mask="separator.0" thousandSeparator=".">
+                        <div *ngIf="ingresoForm.get('monto')?.invalid && ingresoForm.get('monto')?.touched"
+                            class="text-danger small">
+                            El monto es requerido
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Categorías</label>
+                        <select class="form-select" formControlName="categoriaIds">
+                            <option [ngValue]="null" selected disabled>Seleccione una categoría...</option>
+                            <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre_cat }}</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Clientes</label>
+                        <select class="form-select" formControlName="clienteIds">
+                            <option [ngValue]="null" selected disabled>Seleccione un cliente...</option>
+                            <option *ngFor="let cli of clientes" [value]="cli.id">{{ cli.nombre }}</option>
+                        </select>
+                    </div>
+
+                    <!--<div class="mb-3">
+                        <label class="form-label">Documento</label>
+                        <select class="form-select" formControlName="documentoId">
+                            <option [ngValue]="null">Seleccione un documento (opcional)...</option>
+                            <option *ngFor="let doc of documentosList" [value]="doc.id">
+                                {{ doc.tipo_documento }} #{{ doc.num_documento }}
+                            </option>
+                        </select>
+                    </div>-->
+
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-orange">Guardar</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cliente -->
+<div class="modal fade" id="clienteModal" tabindex="-1" aria-labelledby="clienteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="clienteModalLabel">{{ isEditingCliente ? 'Editar' : 'Nuevo' }} Cliente</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"
+                    #closeClienteModalBtn></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="clienteForm" (ngSubmit)="onSubmitCliente()">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre del Cliente</label>
+                        <input type="text" class="form-control" formControlName="nombre" placeholder="Ej: Juan Pérez">
+                        <div *ngIf="clienteForm.get('nombre')?.invalid && clienteForm.get('nombre')?.touched"
+                            class="text-danger small">
+                            El nombre es requerido
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">RUT</label>
+                        <input type="text" class="form-control" formControlName="rut" placeholder="Ej: 12.345.678-9">
+                        <div *ngIf="clienteForm.get('rut')?.invalid && clienteForm.get('rut')?.touched"
+                            class="text-danger small">
+                            El RUT es requerido
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="number" class="form-control" formControlName="telefono"
+                            placeholder="Ej: 912345678">
+                        <div *ngIf="clienteForm.get('telefono')?.invalid && clienteForm.get('telefono')?.touched"
+                            class="text-danger small">
+                            Ingrese solo números
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" formControlName="email"
+                            placeholder="Ej: juan@example.com">
+                        <div *ngIf="clienteForm.get('email')?.invalid && clienteForm.get('email')?.touched"
+                            class="text-danger small">
+                            Formato de email inválido
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-orange">Guardar</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Categoría -->
+<div class="modal fade" id="categoriaModal" tabindex="-1" aria-labelledby="categoriaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="categoriaModalLabel">{{ isEditingCategoria ? 'Editar' : 'Nueva' }} Categoría
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"
+                    #closeCategoriaModalBtn></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="categoriaForm" (ngSubmit)="onSubmitCategoria()">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de Categoría</label>
+                        <input type="text" class="form-control" formControlName="nombre_cat" placeholder="Ej: Bebidas">
+                        <div *ngIf="categoriaForm.get('nombre_cat')?.invalid && categoriaForm.get('nombre_cat')?.touched"
+                            class="text-danger small">
+                            El nombre es requerido
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-orange">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

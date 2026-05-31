@@ -1,0 +1,45 @@
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6610f2;
+  --background-color: #ffffff;
+  --background-gradient: none;
+  --background-image: none;
+  --border-radius: 12px;
+  --card-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+}
+
+.preview-container {
+  border-radius: var(--border-radius);
+}
+
+.preview {
+  border-radius: var(--border-radius);
+  padding: 20px;
+
+  background:
+    var(--background-gradient),
+    var(--background-image),
+    var(--background-color);
+
+  background-size: cover;
+  background-position: center;
+}
+
+.producto-card,
+.categoria-item,
+.header-preview,
+.card {
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+}
+
+.categoria-item {
+  background: var(--primary-color);
+  color: white;
+  font-weight: 600;
+}
+
+.btn-warning {
+  background: var(--secondary-color);
+  border: none;
+}

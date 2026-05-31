@@ -1,0 +1,1152 @@
+<app-header *ngIf="isAdmin"></app-header>
+<div id="tabs" #tabs *ngIf="isAdmin">
+  <!-- ========================================== -->
+  <!-- 🎯 FIRST ROW - MAIN ACTIONS -->
+  <!-- ========================================== -->
+  <div class="pills-row-container mb-3">
+    <div class="pills-row">
+      <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'pedido' }" (click)="setActiveTab('pedido')">
+        <i class="bi bi-cart me-2"></i>
+        <span>Pedido</span>
+      </button>
+
+      <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'ajustes' }" (click)="setActiveTab('ajustes')">
+        <i class="bi bi-sliders me-2"></i>
+        <span>Ajustes</span>
+      </button>
+
+      <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'contabilidad' }"
+        (click)="setActiveTab('contabilidad')">
+        <i class="bi bi-calculator me-2"></i>
+        <span>Balance</span>
+      </button>
+
+      <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'gastos' }" (click)="setActiveTab('gastos')">
+        <i class="bi bi-graph-up me-2"></i>
+        <span>Egresos</span>
+      </button>
+
+      <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'pendientes' }"
+        (click)="setActiveTab('pendientes')">
+        <i class="bi bi-bell-fill me-2"></i>
+        <span>Pendientes</span>
+      </button>
+
+      <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'mesas' }"
+        (click)="setActiveTab('mesas')">
+        <i class="bi bi-bell-fill me-2"></i>
+        <span>Mesas</span>
+      </button>
+
+      <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'cancelar' }" (click)="setActiveTab('cancelar')">
+        <i class="bi bi-x-octagon me-2"></i>
+        <span>Cancelar Ventas</span>
+      </button>
+
+      <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'ingresos' }" (click)="setActiveTab('ingresos')">
+        <i class="bi bi-wallet2 me-2"></i>
+        <span>Ingresos</span>
+      </button>
+    </div>
+  </div>
+  <hr class="border-white opacity-100" style="height: 2px;">
+
+  <!-- ========================================== -->
+  <!-- 🎯 AJUSTES SUBMENU -->
+  <!-- ========================================== -->
+  <div class="sub-tabs-container mb-4" *ngIf="activeTab === 'ajustes'">
+    <div class="pills-row">
+      <button class="admin-pill-sub" [ngClass]="{ 'active': activeSubTab === 'categorias' }"
+        (click)="setActiveSubTab('categorias')">
+        <i class="bi bi-grid-3x3-gap-fill me-2"></i>
+        <span>Categorias</span>
+      </button>
+
+      <button class="admin-pill-sub" [ngClass]="{ 'active': activeSubTab === 'carta' }"
+        (click)="setActiveSubTab('carta')">
+        <i class="bi bi-book-fill me-2"></i>
+        <span>Carta</span>
+      </button>
+
+      <button class="admin-pill-sub" [ngClass]="{ 'active': activeSubTab === 'usuarios' }"
+        (click)="setActiveSubTab('usuarios')">
+        <i class="bi bi-people-fill me-2"></i>
+        <span>Usuarios</span>
+      </button>
+
+      <button class="admin-pill-sub" [ngClass]="{ 'active': activeSubTab === 'costosEnvio' }"
+        (click)="setActiveSubTab('costosEnvio')">
+        <i class="bi bi-truck me-2"></i>
+        <span>Costos de Envios</span>
+      </button>
+
+      <button class="admin-pill-sub" [ngClass]="{ 'active': activeSubTab === 'mesas' }"
+        (click)="setActiveSubTab('mesas')">
+        <img src="mesa.png" alt="Mesas" class="me-2"
+          style="height: 24px; width: 24px; filter: brightness(0) invert(1);">
+        <span>Mesas</span>
+      </button>
+
+      <button class="admin-pill-sub" [ngClass]="{ 'active': activeSubTab === 'horarios' }"
+        (click)="setActiveSubTab('horarios')">
+        <i class="bi bi-calendar-week me-2"></i>
+        <span>Gestion Horario</span>
+      </button>
+
+      <button class="admin-pill-sub" [ngClass]="{ 'active': activeSubTab === 'seleccionar' }"
+        (click)="setActiveSubTab('seleccionar')">
+        <i class="bi bi-palette-fill me-2"></i>
+        <span>Config Tema</span>
+      </button>
+    </div>
+  </div>
+
+
+  <!-- Contenido dinámico basado en la pestaña activa -->
+  <div class="tab-content">
+
+    <!-- ========================================== -->
+    <!-- 📂 TAB: AJUSTES (with subtabs) -->
+    <!-- ========================================== -->
+    <div class="tab-pane active show" *ngIf="activeTab === 'ajustes'">
+
+      <!-- SUB-TAB: CATEGORÍAS -->
+      <div *ngIf="activeSubTab === 'categorias'">
+
+        <h3 class="linea2 "></h3>
+        <div class="container text-start my-3">
+          <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#exampleModal" aria-hidden="true">
+            <i class="bi bi-plus-lg me-2"></i>Agregar
+          </button>
+        </div>
+
+        &nbsp;
+        <div class="row g-4">
+          <div class="col-6 col-md-4 col-lg-3 col-xl-2" *ngFor="let cat of categorias">
+            <div class="card bg-dark text-white mb-3 h-100 border-0 rounded-4" style="min-height: 320px;">
+              <div class="card-body d-flex flex-column p-4">
+
+                <!-- Spacer to push content to center -->
+                <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
+                  <!-- Icon Wrapper -->
+                  <div class="mb-4 text-center">
+                    <i *ngIf="isBootstrapIcon(cat.icono)" [class]="getIconClass(cat.icono)"
+                      style="font-size: 3.5rem; color: white;"></i>
+                    <img *ngIf="!isBootstrapIcon(cat.icono)" [src]="cat.icono"
+                      style="height: 64px; width: 64px; object-fit: contain; filter: brightness(0) invert(1);"
+                      alt="Icono">
+                  </div>
+
+                  <!-- Title -->
+                  <h5 class="text-center mb-0 fw-normal" style="font-size: 1.1rem;">{{ cat.nombre }}</h5>
+                </div>
+
+                <!-- Buttons Area -->
+                <div class="d-flex justify-content-center gap-2 mt-4 pt-2 w-100">
+                  <button class="btn btn-orange flex-fill rounded-3 py-2" data-bs-toggle="modal"
+                    data-bs-target="#editCategoryModal" (click)="setSelectedCategory(cat)">
+                    Editar
+                  </button>
+                  <button class="btn btn-danger flex-fill rounded-3 py-2" (click)="confirmDelete(cat)">
+                    Eliminar
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End: Categorias sub-tab -->
+
+      <!-- ========================================== -->
+      <!-- 📂 TAB: CARTA -->
+      <!-- ========================================== -->
+      <!-- SUB-TAB: CARTA -->
+      <div *ngIf="activeSubTab === 'carta'">
+
+        <h3 class="lineaCarta"></h3>
+        <div class="container d-flex justify-content-between align-items-center my-3">
+          <!-- Botón Agregar (Izquierda) -->
+          <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#exampleModal2" aria-hidden="true"
+            (click)="resetProductForm()">
+            <i class="bi bi-plus-lg me-2"></i>Agregar
+          </button>
+
+          <!-- Filtro (Derecha) -->
+          <select class="form-select w-auto bg-dark text-light border-orange shadow-sm" [(ngModel)]="selectedCategoryId"
+            (change)="loadProducts()">
+            <option value="all">Todas las categorías</option>
+            <option *ngFor="let categoria of categorias" [value]="categoria.id">
+              {{ categoria.nombre }}
+            </option>
+          </select>
+        </div>
+
+
+        <br>
+        <br>
+        <div class="container my-3">
+          <div class="row g-3">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let product of products; let i = index">
+              <div class="card bg-dark text-white shadow-sm h-100 border-0 rounded-4 overflow-hidden"
+                [class.active]="i === 0">
+                <!-- Image -->
+                <div class="position-relative">
+                  <img *ngIf="product.imageUrl" [src]="product.imageUrl" class="card-img-top" alt="{{ product.name }}"
+                    style="height: 220px; object-fit: cover;">
+                  <div *ngIf="!product.imageUrl"
+                    class="card-img-top d-flex align-items-center justify-content-center bg-secondary"
+                    style="height: 220px;">
+                    <i class="bi bi-image text-white-50" style="font-size: 3rem;"></i>
+                  </div>
+                </div>
+
+                <div class="card-body d-flex flex-column p-3">
+                  <!-- Title -->
+                  <h5 class="card-title fw-bold mb-1">{{ product.name }}</h5>
+
+                  <!-- Description -->
+                  <p class="card-text text-white-50 small mb-3"
+                    style="min-height: 2.4em; line-height: 1.2em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">
+                    {{ product.description }}
+                  </p>
+
+                  <div class="mt-auto">
+                    <!-- Price -->
+                    <h4 class="fw-bold mb-3">{{ formatPrice(product.price) }}</h4>
+
+                    <!-- Buttons -->
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-orange btn-sm px-3 fw-bold" style="font-size: 0.8rem;"
+                        data-bs-toggle="modal" data-bs-target="#editProductModal" [attr.data-id]="product.id"
+                        (click)="setSelectedProduct(product)">
+                        Editar
+                      </button>
+
+                      <!-- Checkbox for bulk delete or single delete button? 
+                            Reference shows 'Eliminar' button. I will convert the checkbox logic to a button for consistency with image 
+                            OR keep checkbox if preserving bulk functionality is critical. 
+                            The user said "match the photo", photo has buttons. 
+                            I'll add the delete button to match the photo. -->
+                      <button class="btn btn-danger btn-sm px-3 fw-bold" style="font-size: 0.8rem;"
+                        (click)="eliminarProducto(product.id)">
+                        Eliminar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <nav *ngIf="totalPages > 0">
+          <ul class="pagination justify-content-center">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <a class="page-link" (click)="goToPage(currentPage - 1)">Anterior</a>
+            </li>
+
+            <li class="page-item" *ngFor="let page of pages" [class.active]="page === currentPage">
+              <a class="page-link" (click)="goToPage(page)">{{ page }}</a>
+            </li>
+
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <a class="page-link" (click)="goToPage(currentPage + 1)">Siguiente</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- 📂 TAB: USUARIOS -->
+      <!-- ========================================== -->
+      <!-- SUB-TAB: USUARIOS -->
+      <div *ngIf="activeSubTab === 'usuarios'">
+
+        <!-- Botón Agregar -->
+        <div class="container text-start my-3">
+          <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#exampleModal3"
+            (click)="resetUserForm()">
+            <i class="bi bi-plus-lg me-2"></i>Agregar
+          </button>
+        </div>
+
+        <!-- Grid de usuarios -->
+        <div class="container my-4">
+          <div class="row g-3">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let user of usuario">
+              <div class="card bg-dark text-white shadow-sm h-100 producto-card">
+
+                <!-- Imagen -->
+                <img *ngIf="user.profileImage" [src]="getProfileImageUrl(user.profileImage)"
+                  class="card-img-top profile-img img-fluid" alt="Imagen de usuario"
+                  style="height: 200px; object-fit: cover;" />
+                <img *ngIf="!user.profileImage" src="icono.jpeg"
+                  class="card-img-top profile-img img-fluid" alt="Imagen de usuario"
+                  style="height: 200px; object-fit: cover;"
+                  onerror="this.src='assets/icono.jpeg'" />
+
+                <!-- Contenido -->
+                <div class="card-body text-center d-flex flex-column">
+                  <h5 class="card-title">{{ user.full_name }}</h5>
+                  <p class="card-text small text-muted">Usuario: {{ user.username }}</p>
+                  <p class="card-text small">Role: {{ user.tipo_usuario }}</p>
+
+                  <!-- Botones acción -->
+                  <div class="mt-auto d-flex gap-2 justify-content-center">
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal3"
+                      (click)="setSelectedUser(user)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-danger btn-sm" (click)="eliminarUsuario(user.id)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ========================================== -->
+      <!-- 📂 TAB: COSTOS DE ENVÍO -->
+      <!-- ========================================== -->
+      <!-- SUB-TAB: COSTOS DE ENVIO -->
+      <div *ngIf="activeSubTab === 'costosEnvio'">
+
+        <div class="container text-start my-3">
+          <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#costoEnvioModal"
+            (click)="abrirModalCostoEnvio()">
+            <i class="bi bi-plus-lg me-2"></i>Agregar Costo de Envío
+          </button>
+        </div>
+
+        <!-- Tabla de Costos de Envío -->
+        <div class="container my-4">
+          <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+              <div class="card shadow-lg border-0 bg-dark text-white">
+                <div class="card-header py-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                  <h5 class="mb-0 fw-bold text-white">
+                    <i class="bi bi-truck me-2"></i>Lista de Costos de Envío
+                  </h5>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-hover table-dark mb-0">
+                      <thead style="background: linear-gradient(135deg, #ff8c42 0%, #f5576c 100%);">
+                        <tr>
+                            <th scope="col" class="text-white py-3" style="font-weight: 700;">
+                       Tipo Entrega
+                          </th>
+                          <th scope="col" class="text-white py-3" style="font-weight: 700;">
+                            <i class="bi bi-currency-dollar me-1"></i>Precio de Envío
+                          </th>
+                       
+                          <th scope="col" class="text-center text-white py-3" style="font-weight: 700;">
+                            <i class="bi bi-star-fill me-1"></i>Por Defecto
+                          </th>
+                          <th scope="col" class="text-center text-white py-3" style="font-weight: 700;">
+                            <i class="bi bi-gear me-1"></i>Acciones
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let costo of costosEnvio; let i = index" class="align-middle">
+                               <td>{{ costo.descripcion || 'Sin descripción' }}</td>
+                          <td class="fw-bold text-success text-center">{{ formatPrice(costo.precio_envio) }}</td>
+                    
+                          <td class="text-center">
+                            <span *ngIf="costo.porDefecto" class="badge bg-warning text-dark">
+                              <i class="bi bi-star-fill me-1"></i>Por Defecto
+                            </span>
+                            <span *ngIf="!costo.porDefecto" class="text-muted">
+                              <i class="bi bi-dash"></i>
+                            </span>
+                          </td>
+                          <td class="text-center">
+                            <div class="btn-group" role="group">
+                              <button class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                data-bs-target="#costoEnvioModal" (click)="abrirModalCostoEnvio(costo)" title="Editar">
+                                <i class="bi bi-pencil-fill"></i>
+                              </button>
+                              <button class="btn btn-sm btn-danger" (click)="eliminarCostoEnvio(costo.id)"
+                                title="Eliminar">
+                                <i class="bi bi-trash-fill"></i>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr *ngIf="costosEnvio.length === 0">
+                          <td colspan="5" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                            No hay costos de envío registrados
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- 📂 TAB: GESTIÓN DE MESAS -->
+      <!-- ========================================== -->
+      <!-- SUB-TAB: MESAS -->
+      <div *ngIf="activeSubTab === 'mesas'">
+        <div class="container text-start my-3">
+          <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#mesaModal" (click)="abrirModalMesa()">
+            <i class="bi bi-plus-lg me-2"></i>Agregar Mesa
+          </button>
+        </div>
+        <!-- Grid de Mesas -->
+        <div class="container my-4">
+          <div class="row g-4">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let mesa of mesas">
+              <div class="card shadow-lg border-0 h-100 text-white">
+                <div class="card-header text-center py-3" [style.background]="mesa.status.toLowerCase() === 'libre' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' :
+                                  mesa.status.toLowerCase() === 'ocupada' ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' :
+                                  'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'">
+                  <img src="mesa.png" alt="" style="font-size: 2.5rem;width:60px;height:60px;object-fit: cover;" />
+                  <h2 class="fw-bold mb-0 mt-2"> {{ mesa.numero_mesa }}</h2>
+                </div>
+                <div class="card-body text-center p-4">
+                  <span class="badge rounded-pill px-4 py-2 mb-3" [ngClass]="{
+                  'bg-success': mesa.status.toLowerCase() === 'libre',
+                  'bg-danger': mesa.status.toLowerCase() === 'ocupada',
+                  'bg-warning text-dark': mesa.status.toLowerCase() === 'pendiente'
+                }">
+                    {{ mesa.status }}
+                  </span>
+
+                  <div class="d-flex gap-2 justify-content-center mt-3">
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#mesaModal"
+                      (click)="abrirModalMesa(mesa)">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button class="btn btn-danger btn-sm" (click)="eliminarMesa(mesa.id)">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="mesas.length === 0" class="text-center py-5">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <p class="text-muted mt-3">No hay mesas registradas</p>
+          </div>
+        </div>
+      </div>
+      <!-- End: Mesas sub-tab -->
+
+      <!-- SUB-TAB: HORARIOS -->
+      <div *ngIf="activeSubTab === 'horarios'">
+        <app-admin-horarios></app-admin-horarios>
+      </div>
+      <!-- End: Horarios sub-tab -->
+
+      <!-- SUB-TAB: CONFIG TEMA -->
+      <div *ngIf="activeSubTab === 'seleccionar'">
+        <app-theme></app-theme>
+      </div>
+      <!-- End: Config Tema sub-tab -->
+
+    </div>
+    <!-- END: Ajustes Tab with all subtabs -->
+
+
+    <!-- ========================================== -->
+    <!-- 📂 TAB: GASTOS -->
+    <!-- ========================================== -->
+    <div class="tab-pane active show" *ngIf="activeTab === 'gastos'">
+      <app-gasto></app-gasto>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 📂 TAB: CONTABILIDAD -->
+    <!-- ========================================== -->
+    <div class="tab-pane active show" *ngIf="activeTab === 'contabilidad'">
+      <app-contabilidad #contabilidadComponent></app-contabilidad>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 📂 TAB: PENDIENTES -->
+    <!-- ========================================== -->
+    <div class="tab-pane active show" *ngIf="activeTab === 'pendientes'">
+      <app-pendientes #pendientesComponent></app-pendientes>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 📂 TAB: MESAS -->
+    <!-- ========================================== -->
+    <div class="tab-pane active show" *ngIf="activeTab === 'mesas'">
+      <app-mesas></app-mesas>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 📂 TAB: CANCELAR VENTAS -->
+    <!-- ========================================== -->
+    <div class="tab-pane active show" *ngIf="activeTab === 'cancelar'">
+      <app-admin-ventas></app-admin-ventas>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 📂 TAB: INGRESOS -->
+    <!-- ========================================== -->
+    <div class="tab-pane active show" *ngIf="activeTab === 'ingresos'">
+      <app-ingresos></app-ingresos>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 📂 TAB: PEDIDO -->
+    <!-- ========================================== -->
+    <div class="tab-pane active show" *ngIf="activeTab === 'pedido'">
+      <app-garzon [showHeaderAndMenu]="false"></app-garzon>
+    </div>
+
+  </div>
+</div>
+<div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0 rounded-3">
+
+      <!-- Header -->
+      <div class="modal-header bg-orange text-white">
+        <h5 class="modal-title fw-bold" id="exampleModalLabel2">Nueva Carta</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"
+          (click)="resetProductForm()"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <form [formGroup]="productForm" (ngSubmit)="onSubmit()" novalidate>
+
+          <!-- Nombre -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre</label>
+            <input type="text" class="form-control"
+              [class.is-invalid]="productForm.get('name')?.invalid && productForm.get('name')?.touched"
+              placeholder="Ej: Pizza Margarita" formControlName="name" required>
+            <div *ngIf="productForm.get('name')?.invalid && productForm.get('name')?.touched" class="invalid-feedback">
+              El nombre es obligatorio.
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Descripción</label>
+            <textarea rows="3" class="form-control"
+              [class.is-invalid]="productForm.get('description')?.invalid && productForm.get('description')?.touched"
+              placeholder="Describe el producto brevemente..." formControlName="description">
+            </textarea>
+            <div *ngIf="productForm.get('description')?.invalid && productForm.get('description')?.touched"
+              class="invalid-feedback">
+              La descripción es obligatoria.
+            </div>
+          </div>
+
+          <!-- Precio -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Precio</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="text" class="form-control" mask="separator.0" thousandSeparator="."
+                [class.is-invalid]="productForm.get('price')?.invalid && productForm.get('price')?.touched"
+                placeholder="0" formControlName="price" pattern="[0-9.]*" inputmode="numeric" required>
+              <div *ngIf="productForm.get('price')?.invalid && productForm.get('price')?.touched"
+                class="invalid-feedback">
+                <span *ngIf="productForm.get('price')?.errors?.['min']">El precio no puede ser negativo.</span>
+                <span *ngIf="productForm.get('price')?.errors?.['required']">El precio es requerido.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Imagen -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Imagen</label>
+            <input type="file" #fileInput accept="image/*" class="form-control" (change)="onFileSelected($event)">
+          </div>
+
+          <!-- Vista previa -->
+          <div *ngIf="imagePreview" class="text-center mb-3">
+            <p class="fw-semibold mb-2">Vista previa:</p>
+            <img [src]="imagePreview" alt="Vista previa de imagen" class="img-thumbnail shadow-sm"
+              style="max-width: 180px; height: auto; border-radius: 10px;">
+          </div>
+
+          <!-- Categoría -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Categorías</label>
+
+            <div class="border rounded p-2"
+              [class.border-danger]="selectedCategoryIds.length === 0 && productForm.touched"
+              style="max-height: 180px; overflow-y: auto;">
+              <div *ngFor="let categoria of categorias" class="form-check">
+                <input type="checkbox" [id]="'cat-' + categoria.id" [value]="categoria.id"
+                  [checked]="selectedCategoryIds.includes(categoria.id)"
+                  (change)="onCategoryToggle(categoria.id, $event)">
+                <label class="form-check-label" [for]="'cat-' + categoria.id">
+                  {{ categoria.nombre }}
+                </label>
+              </div>
+            </div>
+            <div *ngIf="selectedCategoryIds.length === 0 && productForm.touched" class="text-danger small mt-1">
+              Debes seleccionar al menos una categoría.
+            </div>
+
+            <!-- Vista previa de selección -->
+            <div class="mt-2" *ngIf="selectedCategories.length > 0">
+              <span class="badge bg-primary me-1" *ngFor="let cat of selectedCategories">
+                {{ getCategoryName(cat.id) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div class="d-flex justify-content-end gap-2 pt-3">
+            <button #closeCreateBtn type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+              (click)="resetProductForm()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-plus-circle me-1"></i> Crear Carta
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1">
+  <div class="modal-dialog bg-dark">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Nueva Categoría</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="guardarCategoria()" #createCatForm="ngForm" class="p-2">
+
+          <!-- Nombre -->
+          <div class="mb-3">
+            <label for="nombreCategoria" class="form-label fw-bold">Nombre de la Categoría</label>
+            <input type="text" id="nombreCategoria" class="form-control" placeholder="Ej: Electrónica"
+              [(ngModel)]="categoria.nombre" name="nombre" required #nombreCat="ngModel"
+              [class.is-invalid]="nombreCat.invalid && (nombreCat.touched || createCatForm.submitted)">
+            <div *ngIf="nombreCat.invalid && (nombreCat.touched || createCatForm.submitted)" class="invalid-feedback">
+              El nombre es obligatorio.
+            </div>
+          </div>
+
+          <!-- Selector de iconos con vista previa -->
+          <div class="mb-3">
+            <label for="iconoSelect" class="form-label fw-bold">Selecciona un Icono</label>
+            <div class="row row-cols-4 row-cols-md-6 g-2 border rounded p-2"
+              [class.border-danger]="!categoria.icono && createCatForm.submitted"
+              style="height: 250px;width:100%; overflow-y: auto;">
+              <div class="col" *ngFor="let icono of iconosDisponibles">
+                <button type="button" class="btn w-100 p-2"
+                  [ngClass]="{'btn-primary': categoria.icono === icono, 'btn-outline-secondary': categoria.icono !== icono}"
+                  (click)="categoria.icono = icono" title="{{ icono }}">
+
+                  <!-- Si es Bootstrap Icon -->
+                  <i *ngIf="isBootstrapIcon(icono)" [class]="'bi ' + icono" style="font-size: 1.5rem;"></i>
+
+                  <!-- Si es Imagen -->
+                  <img *ngIf="!isBootstrapIcon(icono)" [src]="icono"
+                    style="width: 24px; height: 24px; object-fit: contain;"
+                    [style.filter]="categoria.icono === icono ? 'brightness(0) invert(1)' : 'none'" alt="icon">
+                </button>
+              </div>
+            </div>
+            <div *ngIf="!categoria.icono && createCatForm.submitted" class="text-danger small mt-1">
+              Debes seleccionar un icono.
+            </div>
+          </div>
+
+          <!-- Vista previa grande -->
+          <div *ngIf="categoria.icono" class="text-center mb-3 p-4 rounded"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <p class="mb-2 fw-semibold text-white">Vista previa:</p>
+
+            <i *ngIf="isBootstrapIcon(categoria.icono)" [class]="'bi ' + categoria.icono"
+              style="font-size: 4rem; color: white;"></i>
+
+            <img *ngIf="!isBootstrapIcon(categoria.icono)" [src]="categoria.icono"
+              style="width: 64px; height: 64px; object-fit: contain; filter: brightness(0) invert(1);"
+              alt="Vista previa">
+
+            <p class="mt-2 text-white-50 small">{{ categoria.icono }}</p>
+          </div>
+
+          <!-- Botón Guardar -->
+          <div class="d-flex justify-content-end gap-2">
+            <button #closeCatCreateBtn type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-orange px-4 fw-bold">
+              Guardar
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel3">
+  <div class="modal-dialog">
+    <div class="modal-content bg-light text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{ isEditingUser ? 'Editar Usuario' : 'Nuevo Usuario' }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <form [formGroup]="userForm" (ngSubmit)="guardarUsuario()">
+
+          <div class="mb-4">
+            <label class="form-label">Tipo Usuario</label>
+            <select class="form-select" formControlName="tipo"
+              [class.is-invalid]="userForm.get('tipo')?.invalid && userForm.get('tipo')?.touched">
+              <option *ngFor="let categoria of usuarios">
+                {{ categoria }}
+              </option>
+            </select>
+            <div *ngIf="userForm.get('tipo')?.invalid && userForm.get('tipo')?.touched" class="invalid-feedback">
+              El tipo de usuario es obligatorio.
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" formControlName="full_name"
+              [class.is-invalid]="userForm.get('full_name')?.invalid && userForm.get('full_name')?.touched">
+            <div *ngIf="userForm.get('full_name')?.invalid && userForm.get('full_name')?.touched"
+              class="invalid-feedback">
+              El nombre completo es obligatorio.
+            </div>
+          </div>
+
+          <!-- Hidden username for autofill but we keep the formControl -->
+          <div class="mb-4">
+            <label class="form-label">Nombre Usuario (Login)</label>
+            <input type="text" class="form-control" formControlName="username"
+              [class.is-invalid]="userForm.get('username')?.invalid && userForm.get('username')?.touched">
+            <div *ngIf="userForm.get('username')?.invalid && userForm.get('username')?.touched"
+              class="invalid-feedback">
+              El nombre de usuario es obligatorio.
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-calendar-heart me-1"></i>Fecha Nacimiento
+            </label>
+            <div class="input-group">
+              <span class="input-group-text bg-primary text-white">
+                <i class="bi bi-calendar3"></i>
+              </span>
+              <input class="form-control" placeholder="Seleccionar fecha..." name="dp" ngbDatepicker #d="ngbDatepicker"
+                formControlName="fecha_nacimiento" readonly style="background-color: #fff; cursor: pointer;"
+                [maxDate]="maxDate" [minDate]="minDate" [startDate]="{year: 2000, month: 1}" (click)="d.toggle()" />
+              <button class="btn btn-primary" (click)="d.toggle()" type="button" title="Abrir calendario">
+                <i class="bi bi-calendar-event"></i> Seleccionar
+              </button>
+            </div>
+            <small class="text-muted mt-1 d-block">
+              <i class="bi bi-info-circle me-1"></i>Opcional - Click para abrir el calendario
+            </small>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">Contraseña</label>
+            <input type="password" class="form-control" formControlName="contrasena"
+              [placeholder]="isEditingUser ? 'Dejar en blanco para mantener actual' : ''"
+              [class.is-invalid]="userForm.get('contrasena')?.invalid && userForm.get('contrasena')?.touched">
+            <div *ngIf="userForm.get('contrasena')?.invalid && userForm.get('contrasena')?.touched"
+              class="invalid-feedback">
+              La contraseña es obligatoria.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Imagen de Perfil</label>
+            <input type="file" class="form-control" name="image" accept="image/*" (change)="onFileSelecte($event)"
+              #userFileInput>
+          </div>
+
+          <!-- Vista previa de imagen - siempre visible -->
+          <div class="mb-4 text-center">
+            <label class="form-label d-block">Vista previa:</label>
+            <img [src]="imagePreview || 'icono.jpeg'" class="img-thumbnail shadow"
+              style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;"
+              alt="Vista previa de imagen de perfil" onerror="this.src='assets/icono.jpeg'">
+            <p class="text-muted small mt-2" *ngIf="!selectedImage && isEditingUser">
+              <i class="bi bi-info-circle me-1"></i>Imagen actual del usuario
+            </p>
+            <p class="text-muted small mt-2" *ngIf="!selectedImage && !isEditingUser">
+              <i class="bi bi-info-circle me-1"></i>Se usará imagen por defecto si no selecciona una
+            </p>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" #closeUserBtn>Cancelar</button>
+            <button type="submit" class="btn btn-primary">{{ isEditingUser ? 'Actualizar' : 'Crear' }}
+              usuario</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content shadow-lg border-0 rounded-3">
+
+      <div class="modal-header bg-orange text-white">
+        <h5 class="modal-title fw-bold" id="editProductModalLabel">Editar Producto</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="editProductForm" (ngSubmit)="onEditSubmit()">
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre</label>
+            <input type="text" class="form-control"
+              [class.is-invalid]="editProductForm.get('name')?.invalid && editProductForm.get('name')?.touched"
+              formControlName="name">
+            <div *ngIf="editProductForm.get('name')?.invalid && editProductForm.get('name')?.touched"
+              class="invalid-feedback">
+              El nombre es obligatorio.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Descripción</label>
+            <textarea class="form-control"
+              [class.is-invalid]="editProductForm.get('description')?.invalid && editProductForm.get('description')?.touched"
+              formControlName="description"></textarea>
+            <div *ngIf="editProductForm.get('description')?.invalid && editProductForm.get('description')?.touched"
+              class="invalid-feedback">
+              La descripción es obligatoria.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Precio</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="text" class="form-control" mask="separator.0" thousandSeparator="."
+                [class.is-invalid]="editProductForm.get('price')?.invalid && editProductForm.get('price')?.touched"
+                formControlName="price" pattern="[0-9.]*" inputmode="numeric" placeholder="0">
+              <div *ngIf="editProductForm.get('price')?.invalid && editProductForm.get('price')?.touched"
+                class="invalid-feedback">
+                <span *ngIf="editProductForm.get('price')?.errors?.['min']">El precio no puede ser negativo.</span>
+                <span *ngIf="editProductForm.get('price')?.errors?.['required']">El precio es requerido.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Imagen</label>
+            <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*">
+          </div>
+
+          <div *ngIf="imagePreview" class="mb-3 text-center">
+            <p class="fw-semibold mb-2">Vista previa:</p>
+            <img [src]="imagePreview" class="img-thumbnail shadow-sm"
+              style="max-width: 150px; height: auto; border-radius: 10px;">
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Categorías</label>
+            <div class="border rounded p-2" style="max-height: 180px; overflow-y: auto;"
+              [class.border-danger]="editProductForm.touched && isCategoriesInvalid()">
+              <div formArrayName="categories" *ngIf="categoriesFormArrays">
+                <div *ngFor="let catCtrl of categoriesFormArrays.controls; let i = index">
+                  <div class="form-check">
+                    <input type="checkbox" [formControlName]="i" [id]="'edit-cat-' + i">
+                    <label class="form-check-label" [for]="'edit-cat-' + i">
+                      {{ categorias[i].nombre }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="editProductForm.touched && isCategoriesInvalid()" class="text-danger small mt-1">
+              Debes seleccionar al menos una categoría.
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 pt-3">
+            <button #closeEditBtn type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-success px-4">
+              <i class="bi bi-check-circle me-1"></i> Guardar cambios
+            </button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white p-3">
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="editCategoryLabel">Editar Categoría</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Nombre</label>
+            <input formControlName="nombre" class="form-control" placeholder="Nombre"
+              [class.is-invalid]="categoryForm.get('nombre')?.invalid && categoryForm.get('nombre')?.touched">
+            <div *ngIf="categoryForm.get('nombre')?.invalid && categoryForm.get('nombre')?.touched"
+              class="invalid-feedback">
+              El nombre es obligatorio.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="text-white mb-2 fw-bold">Selecciona un Icono:</label>
+            <div class="row row-cols-4 row-cols-md-6 g-2 border border-secondary rounded p-2"
+              [class.border-danger]="categoryForm.get('icono')?.invalid && categoryForm.touched"
+              style="max-height: 200px; overflow-y: auto;">
+              <div class="col" *ngFor="let icono of iconosDisponibles">
+                <button type="button" class="btn w-100 p-2"
+                  [ngClass]="{'btn-primary': categoryForm.get('icono')?.value === icono, 'btn-outline-light': categoryForm.get('icono')?.value !== icono}"
+                  (click)="categoryForm.patchValue({icono: icono}); categoryForm.get('icono')?.markAsTouched()"
+                  title="{{ icono }}">
+
+                  <i [class]="'bi ' + icono" style="font-size: 1.3rem;"></i>
+                  <img *ngIf="!isBootstrapIcon(icono)" [src]="icono"
+                    style="width: 24px; height: 24px; object-fit: contain;"
+                    [style.filter]="categoryForm.get('icono')?.value === icono ? 'brightness(0) invert(1)' : 'none'"
+                    alt="icon">
+                </button>
+              </div>
+            </div>
+            <div *ngIf="categoryForm.get('icono')?.invalid && categoryForm.touched" class="text-danger small mt-1">
+              Debes seleccionar un icono.
+            </div>
+          </div>
+
+          <div *ngIf="categoryForm.get('icono')?.value" class="text-center mb-3 p-4 rounded"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <p class="mb-2 fw-semibold text-white">Vista previa:</p>
+
+            <i *ngIf="isBootstrapIcon(categoryForm.get('icono')?.value)"
+              [class]="'bi ' + categoryForm.get('icono')?.value" style="font-size: 4rem; color: white;"></i>
+
+            <img *ngIf="!isBootstrapIcon(categoryForm.get('icono')?.value)" [src]="categoryForm.get('icono')?.value"
+              style="width: 64px; height: 64px; object-fit: contain; filter: brightness(0) invert(1);"
+              alt="Vista previa">
+
+            <p class="mt-2 text-white-50 small">{{ categoryForm.get('icono')?.value }}</p>
+          </div>
+
+
+          <!-- Footer: Botones -->
+          <div class="modal-footer border-0">
+            <button #closeCatEditBtn type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <button class="btn btn-orange" type="submit">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div><!-- ========================================== -->
+<!-- 🚚 MODAL COSTO DE ENVÍO -->
+<!-- ========================================== -->
+<div class="modal fade" id="costoEnvioModal" tabindex="-1" aria-labelledby="costoEnvioModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white shadow-lg border-0">
+
+      <!-- Header -->
+      <div class="modal-header border-bottom border-secondary">
+        <h5 class="modal-title fw-bold" id="costoEnvioModalLabel">
+          <i class="bi bi-truck me-2"></i>
+          {{ selectedCostoEnvio ? 'Editar' : 'Nuevo' }} Costo de Envío
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body py-4">
+        <form [formGroup]="costoEnvioForm" (ngSubmit)="guardarCostoEnvio()" novalidate>
+
+          <div class="mb-4">
+            <label for="precioEnvio" class="form-label fw-semibold">
+              <i class="bi bi-cash-stack me-1"></i> Precio de Envío
+            </label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text bg-secondary text-white border-0">
+                <i class="bi bi-currency-dollar"></i>
+              </span>
+              <input type="text" mask="separator.0" thousandSeparator="." id="precioEnvio"
+                class="form-control bg-secondary text-white border-0" placeholder="Ejemplo: 2500"
+                formControlName="precio_envio" min="0" step="100"
+                [class.is-invalid]="costoEnvioForm.get('precio_envio')?.invalid && costoEnvioForm.get('precio_envio')?.touched">
+            </div>
+
+            <!-- Error validation -->
+            <div *ngIf="costoEnvioForm.get('precio_envio')?.invalid && costoEnvioForm.get('precio_envio')?.touched"
+              class="invalid-feedback">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              Por favor ingrese un precio válido (mayor a 0)
+            </div>
+
+            <!-- Helper text -->
+            <div class="form-text text-muted small">
+              <i class="bi bi-info-circle me-1"></i>
+              Este será el costo que se aplicará a los pedidos delivery
+            </div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="mb-4">
+            <label for="descripcionEnvio" class="form-label fw-semibold">
+              <i class="bi bi-file-text me-1"></i> Descripción
+            </label>
+            <textarea id="descripcionEnvio" class="form-control bg-secondary text-white border-0" rows="3"
+              placeholder="Ejemplo: Envío estándar, Envío express, etc."
+              formControlName="descripcion"></textarea>
+            <div class="form-text text-muted small">
+              <i class="bi bi-info-circle me-1"></i>
+              Descripción opcional del costo de envío
+            </div>
+          </div>
+
+          <!-- Por Defecto -->
+          <div class="mb-4">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="porDefectoCheck" formControlName="porDefecto">
+              <label class="form-check-label fw-semibold" for="porDefectoCheck">
+                <i class="bi bi-star-fill me-1 text-warning"></i> Establecer como costo por defecto
+              </label>
+            </div>
+            <div class="form-text text-muted small">
+              <i class="bi bi-info-circle me-1"></i>
+              El costo por defecto se aplicará automáticamente a los nuevos pedidos
+            </div>
+          </div>
+
+          <!-- Footer Buttons -->
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button #closeShippingBtn type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+              <i class="bi bi-x-circle me-1"></i> Cancelar
+            </button>
+            <button type="submit" class="btn btn-orange px-4">
+              <i class="bi bi-check-circle me-1"></i>
+              {{ selectedCostoEnvio ? 'Actualizar' : 'Guardar' }}
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 🏠 MODAL GESTIÓN DE MESAS -->
+<!-- ========================================== -->
+<div class="modal fade" id="mesaModal" tabindex="-1" aria-labelledby="mesaModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white shadow-lg border-0">
+
+      <!-- Header -->
+      <div class="modal-header border-bottom border-secondary">
+        <h5 class="modal-title fw-bold" id="mesaModalLabel">
+          <img src="/mesa.png" alt=""
+            style="font-size: 2.5rem;width:40px;height:40px;object-fit: cover; filter: brightness(0) invert(1);" />
+          {{ selectedMesa ? 'Editar' : 'Nueva' }} Mesa
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body py-4">
+        <form [formGroup]="mesaForm" (ngSubmit)="guardarMesa()" novalidate>
+
+          <!-- Número de Mesa -->
+          <div class="mb-4">
+            <label for="numeroMesa" class="form-label fw-semibold">
+              <i class="bi bi-hash me-1"></i> Número de Mesa
+            </label>
+            <input type="text" id="numeroMesa" class="form-control bg-secondary text-white border-0"
+              placeholder="Ej: 1, A1, VIP, Mesa 10..." formControlName="numero_mesa"
+              [class.is-invalid]="mesaForm.get('numero_mesa')?.invalid && mesaForm.get('numero_mesa')?.touched">
+
+            <!-- Validation -->
+            <div *ngIf="mesaForm.get('numero_mesa')?.invalid && mesaForm.get('numero_mesa')?.touched"
+              class="invalid-feedback">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              Por favor ingrese un número o nombre de mesa
+            </div>
+          </div>
+
+          <!-- Estado -->
+          <div class="mb-4">
+            <label for="statusMesa" class="form-label fw-semibold">
+              <i class="bi bi-circle-fill me-1"></i> Estado
+            </label>
+            <select id="statusMesa" class="form-select bg-secondary text-white border-0" formControlName="status">
+              <option value="Libre">Libre</option>
+              <option value="Ocupada">Ocupada</option>
+              <option value="Reservada">Reservada</option>
+            </select>
+
+            <!-- Helper text -->
+            <div class="form-text text-muted small">
+              <i class="bi bi-info-circle me-1"></i>
+              Selecciona el estado actual de la mesa
+            </div>
+          </div>
+
+          <!-- Footer Buttons -->
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button #closeTableBtn type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+              <i class="bi bi-x-circle me-1"></i> Cancelar
+            </button>
+            <button type="submit" class="btn btn-orange px-4">
+              <i class="bi bi-check-circle me-1"></i>
+              {{ selectedMesa ? 'Actualizar' : 'Crear' }}
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

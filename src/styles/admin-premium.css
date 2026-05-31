@@ -1,0 +1,391 @@
+/* ========================================
+   ESTILO PREMIUM DARK - COMPONENTES ADMIN
+   ======================================== */
+
+/* --- BACKGROUNDS & CONTAINERS --- */
+.container,
+.container-fluid,
+.dashboard,
+.filters,
+.cards {
+    color: #f1f3f5 !important;
+}
+
+/* --- CARDS Y CONTENEDORES --- */
+.card,
+.glass-card,
+.premium-card {
+    border-radius: 1.5rem;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f1f3f5 !important;
+}
+
+.card-body {
+    background-color: transparent !important;
+    color: #f1f3f5 !important;
+}
+
+.bg-dark {
+    background-color: #1a1a2e !important;
+    color: #f1f3f5 !important;
+}
+
+/* --- HEADERS DE CARDS --- */
+.card-header,
+.bg-gradient-primary {
+    background: #ff7f00 !important;
+    color: white !important;
+    border-radius: 1.5rem 1.5rem 0 0 !important;
+    border: none !important;
+}
+
+.card-header h4,
+.card-header h5 {
+    color: white !important;
+    margin: 0;
+}
+
+/* --- TÍTULOS Y TEXTOS --- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #f1f3f5 !important;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+}
+
+.card h1,
+.card h2,
+.card h3,
+.card h4,
+.card h5,
+.card h6 {
+    color: #f1f3f5 !important;
+}
+
+/* Iconos dorados */
+h1 i,
+h2 i,
+h3 i,
+h4 i,
+h5 i,
+h6 i,
+.card h4 i {
+    color: #ffd700 !important;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5));
+}
+
+/* Texto general */
+p,
+span,
+div,
+label,
+small {
+    color: #d1d5db !important;
+}
+
+.text-white {
+    color: #ffffff !important;
+}
+
+.text-light {
+    color: #e5e7eb !important;
+}
+
+.text-muted {
+    color: #9ca3af !important;
+}
+
+.text-secondary {
+    color: #a0a0b5 !important;
+}
+
+/* --- FORMULARIOS --- */
+.form-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    color: #e5e7eb !important;
+    letter-spacing: 0.5px;
+}
+
+.form-control,
+.form-select,
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+select,
+textarea {
+    background-color: #2a2a3e !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #f1f3f5 !important;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    background-color: #1a1a2e !important;
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    color: #ffffff !important;
+    outline: none;
+}
+
+.form-control::placeholder,
+input::placeholder,
+textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Selects - opciones */
+.form-select option,
+select option {
+    background-color: #2a2a3e;
+    color: #f1f3f5;
+}
+
+/* Form check (switches y checkboxes) */
+.form-check-label {
+    color: #e5e7eb !important;
+}
+
+/* --- BOTONES --- */
+.btn-primary {
+    background: #ff7f00 !important;
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.btn-outline-success {
+    border-color: #10b981;
+    color: #10b981 !important;
+}
+
+.btn-outline-success:hover {
+    background-color: #10b981;
+    color: white !important;
+}
+
+/* --- TABLAS --- */
+.table {
+    border-radius: 1rem;
+    overflow: hidden;
+    border-collapse: separate;
+    border-spacing: 0;
+    color: #1f2937 !important;
+    background-color: transparent;
+}
+
+.table-dark,
+.table {
+    background-color: #ffffff !important;
+    color: #1f2937 !important;
+}
+
+/* Headers de tabla */
+.table-dark thead,
+.table-light,
+.table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+.table-dark thead th,
+.table-light th,
+.table thead th {
+    border: none;
+    padding: 1rem;
+    color: black !important;
+}
+
+/* Filas de tabla */
+.table-dark tbody tr,
+.table tbody tr {
+    background-color: #f9fafb !important;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    color: #1f2937 !important;
+}
+
+.table-dark tbody tr:hover,
+.table tbody tr:hover {
+    background-color: #f3f4f6 !important;
+    transform: scale(1.01);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.table-dark tbody td,
+.table tbody td {
+    padding: 1rem;
+    border: none;
+    vertical-align: middle;
+    color: #1f2937 !important;
+}
+
+.table-responsive {
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5rem;
+}
+
+/* --- ALERTAS --- */
+.alert {
+    border-radius: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #1f2937 !important;
+}
+
+.alert-info {
+    background-color: #3b82f6;
+    color: white !important;
+}
+
+.alert-warning {
+    background-color: #f59e0b;
+    color: white !important;
+}
+
+/* --- BADGES --- */
+.badge {
+    color: white !important;
+}
+
+/* --- COLORES DE TEXTO ESPECÍFICOS --- */
+.text-success {
+    color: #10b981 !important;
+}
+
+.text-danger {
+    color: #ef4444 !important;
+}
+
+.text-warning {
+    color: #f59e0b !important;
+}
+
+.text-info {
+    color: #3b82f6 !important;
+}
+
+.text-primary {
+    color: #667eea !important;
+}
+
+/* --- MODALES PREMIUM DARK --- */
+.modal-content {
+    border-radius: 1.5rem !important;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    color: #f1f3f5 !important;
+}
+
+.modal-header {
+    background: #ff7f00;
+    color: white !important;
+    border-radius: 1.5rem 1.5rem 0 0 !important;
+    border-bottom: none !important;
+    padding: 1.5rem;
+}
+
+.modal-title {
+    color: white !important;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.modal-body {
+    background-color: transparent !important;
+    color: #f1f3f5 !important;
+    padding: 2rem;
+}
+
+.modal-footer {
+    background-color: transparent !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 1.5rem;
+    border-radius: 0 0 1.5rem 1.5rem !important;
+}
+
+/* Botón cerrar modal */
+.btn-close,
+.btn-close-white {
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+}
+
+.btn-close:hover,
+.btn-close-white:hover {
+    opacity: 1;
+}
+
+/* Backdrop del modal */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.modal-backdrop.show {
+    opacity: 0.8 !important;
+}
+
+/* Animación del modal */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .card {
+        padding: 1.5rem !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-size: 1.2rem !important;
+    }
+
+    .form-control,
+    .form-select {
+        font-size: 0.9rem;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 1rem;
+    }
+}
+
+.fuerte_letra{
+    font-weight: bold;
+}

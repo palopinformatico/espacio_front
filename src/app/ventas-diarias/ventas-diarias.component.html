@@ -1,0 +1,101 @@
+<div class="container-fluid py-4">
+  <div class="card shadow-lg border-0 rounded-4">
+    <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
+      <h4 class="mb-0"><i class="bi bi-bar-chart-line"></i> Ventas Diarias</h4>
+      <small class="text-light opacity-75">Actualizado: {{ ultimaActualizacion | date:'HH:mm:ss' }}</small>
+    </div>
+
+    <div class="card-body bg-dark">
+      <!-- 🔹 Filtros -->
+      <form class="row g-3 mb-4 align-items-end" (ngSubmit)="buscarVentas()">
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Desde</label>
+          <input type="datetime-local" class="form-control form-control-lg" [(ngModel)]="desde" name="desde">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Hasta</label>
+          <input type="datetime-local" class="form-control form-control-lg" [(ngModel)]="hasta" name="hasta">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Tipo de Pedido</label>
+          <select class="form-select form-select-lg" [(ngModel)]="tipoPedido" name="tipoPedido">
+            <option value="">Todos</option>
+            <option value="local">Local</option>
+            <option value="delivery">Delivery</option>
+          </select>
+        </div>
+        <div class="col-md-3 text-center">
+          <button type="submit" class="btn btn-primary btn-lg w-100">
+            <i class="bi bi-search"></i> Buscar
+          </button>
+        </div>
+      </form>
+
+      <!-- 🔹 Resumen -->
+      <div class="row text-center mb-4">
+        <div class="col-md-4">
+          <div class="card bg-opacity-10 border-2 shadow-sm py-4 rounded-4">
+            <div class="fs-5 text-success fw-semibold">Total Hoy</div>
+            <div class="display-6 fw-bold text-success">
+              {{ formatPrice(totalVentasHoy) }}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card bg-opacity-10 border-2 shadow-sm py-4 rounded-5">
+            <div class="fs-5 text-info fw-semibold">Cantidad Pedidos</div>
+            <div class="display-6 fw-bold text-info">{{ cantidadPedidosHoy }}</div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+  <div class="card bg-opacity-10 border-2 shadow-sm py-4 rounded-4">
+    <div class="fs-5 text-warning fw-semibold">Total Propinas</div>
+    <div class="display-6 fw-bold text-warning">
+      {{ formatPrice(totalPropinasHoy) }}
+    </div>
+  </div>
+</div>
+
+      </div>
+
+      <!-- 🔹 Gráfico -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+          <canvas id="ventasChart" height="100"></canvas>
+        </div>
+      </div>
+
+      <!-- 🔹 Tabla -->
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Mesa</th>
+              <th>Tipo</th>
+              <th>Método Pago</th>
+              <th>Total</th>
+              <th>Propina</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let venta of ventas; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ venta.numero_mesa }}</td>
+              <td><span class="badge bg-primary">{{ venta.orderType }}</span></td>
+              <td>{{ venta.paymentMethod || '-' }}</td>
+              <td class="fw-bold">{{ formatPrice(venta.total) }}</td>
+              <td class="fw-bold text-warning">{{ formatPrice(venta.propina) }}</td>
+              <td>{{ venta.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+            </tr>
+          </tbody>
+
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

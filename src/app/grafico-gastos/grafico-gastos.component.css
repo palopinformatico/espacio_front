@@ -1,0 +1,55 @@
+
+.glass-card {
+  backdrop-filter: blur(12px);
+  background: 0 8px 24px rgba(0, 0, 0, .25);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, .3);
+  }
+}
+.apexcharts-tooltip,
+.apexcharts-tooltip-series-group,
+.apexcharts-tooltip-title {
+  background: #1e1e2f !important;   /* fondo oscuro */
+  color: #fff !important;            /* texto blanco */
+  border: 1px solid #444 !important;
+}
+
+/* Texto dentro del tooltip */
+.apexcharts-tooltip-text,
+.apexcharts-tooltip-text span,
+.apexcharts-tooltip-title-text {
+  color: #fff !important;
+}
+
+/* El mini tooltip que aparece EXACTO sobre el marker */
+.apexcharts-tooltip.apexcharts-active {
+  background: #1e1e2f !important;
+  color: #fff !important;
+}
+
+/* El popover que aparece cuando haces hover sobre un punto */
+.apexcharts-xaxistooltip,
+.apexcharts-yaxistooltip {
+  background: #1e1e2f !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+}
+
+/* Bordes del pointer triangular */
+.apexcharts-xaxistooltip:after,
+.apexcharts-yaxistooltip:after {
+  border-color: #1e1e2f transparent transparent transparent !important;
+}
+
+@media (max-width: 576px) {
+  .glass-card {
+    padding: 12px;
+  }
+}

@@ -1,0 +1,315 @@
+<app-header></app-header>
+
+<div id="tabs" #tabs class="container mt-4">
+  <!-- Navegación Tabs -->
+  <ul class="nav nav-pills justify-content-center mb-4">
+    <li class="nav-item">
+      <a class="nav-link px-4 py-2 fw-semibold" [ngClass]="{ 'active': activeTab === 'local' }"
+        (click)="setActiveTab('local')" [class.disabled]="!localEnabled">
+        <i class="bi bi-shop me-2"></i> Local
+        <span *ngIf="!localEnabled" class="badge bg-secondary ms-2">Cerrado</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link px-4 py-2 fw-semibold" [ngClass]="{ 'active': activeTab === 'delivery' }"
+        [class.disabled]="!deliveryEnabled" (click)="setActiveTab('delivery')">
+        <i class="bi bi-truck me-2"></i> Delivery
+        <span *ngIf="!deliveryEnabled" class="badge bg-secondary ms-2">Cerrado</span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- Mensaje de disponibilidad -->
+  <div *ngIf="disponibilidadMensaje && (!localEnabled || !deliveryEnabled)" 
+       class="alert alert-info d-flex align-items-center mb-4" 
+       role="alert">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    <div>{{ disponibilidadMensaje }}</div>
+  </div>
+
+  <!-- Contenido dinámico -->
+  <div class="tab-content">
+    <!-- TAB LOCAL -->
+    <div class="tab-pane fade show active" *ngIf="activeTab === 'local'">
+
+      <!-- Carrusel de Categorías -->
+      <div class="category-carousel-container">
+        <button class="carousel-nav-btn left" (click)="scrollCarousel('left')">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <div #carousel class="category-carousel">
+          <!-- Categoría "Todos" -->
+          <div class="categoria-item" [class.active]="!sid" (click)="buscarxcategoria(0)">
+            <i class="bi bi-grid-3x3-gap-fill category-icon"></i>
+            <span class="category-name">Todos</span>
+          </div>
+
+          <!-- Categorías dinámicas -->
+          <div *ngFor="let category of categorias" class="categoria-item" [class.active]="sid === category.id"
+            (click)="buscarxcategoria(category.id)">
+            <!-- Bootstrap Icon -->
+            <i *ngIf="isBootstrapIcon(category.icono)" [class]="getIconClass(category.icono)"
+              class="category-icon category-icon-md"></i>
+            <!-- Legacy Image -->
+            <img *ngIf="!isBootstrapIcon(category.icono)" [src]="category.icono" [alt]="category.nombre"
+              class="category-icon">
+            <span class="category-name">{{ category.nombre }}</span>
+          </div>
+        </div>
+
+        <button class="carousel-nav-btn right" (click)="scrollCarousel('right')">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
+
+
+
+
+      <!-- Premium Table Selection & Cart Summary Row -->
+      <div class="row mb-3"> <!-- Reduced margin-bottom -->
+        <!-- Columna Izquierda: Seleccionar Mesa -->
+        <div class="col-md-8" *ngIf="localEnabled">
+          <div class="card border-0 shadow-lg mesas-select-card h-100">
+            <div class="card-body p-3 d-flex flex-row align-items-center justify-content-between">
+              <label for="mesaSelectGarzon" class="form-label text-white display-4 mb-0 me-2 text-nowrap fw-bold">
+                <h1 class="fuerte_letra">NUMERO DE MESA</h1>
+              </label>
+              <div class="input-group w-auto">
+                <span class="input-group-text bg-white border-0 text-primary py-2 start-icon">
+                  <img src="mesa.png" alt="" class="me-2" width="20px" height="20px">
+                </span>
+                <select class="form-select border-0 fw-bold text-dark mesa-select-input py-1 form-select-lg"
+                  id="mesaSelectGarzon" [(ngModel)]="mesaSeleccionada" (ngModelChange)="onMesaChange()"
+                  style="max-width: 150px;">
+                  <option [ngValue]="0" disabled selected>--</option>
+                  <ng-container *ngFor="let mesa of mesas">
+                    <option *ngIf="mesa.status.toLowerCase() !== 'ocupada'" [ngValue]="mesa.id" class="py-1">
+                      {{ mesa.numero_mesa }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Div vacío para mantener el layout cuando local está deshabilitado -->
+        <div class="col-md-8" *ngIf="!localEnabled"></div>
+
+        <!-- Columna Derecha: Botón Resumen Pedido (Separado) -->
+        <div class="col-md-4">
+          <button
+            class="btn fw-bold text-white position-relative w-100 h-100 d-flex flex-row justify-content-center align-items-center btn_o py-2 px-3"
+            data-bs-toggle="modal" data-bs-target="#cartModal"> <!-- Removed btn-lg -->
+
+            <div class="d-flex align-items-center me-2">
+              <!-- Smaller icon fs-5 -->
+              <h1 class="fuerte_letra "><i class="bi bi-cart fs-1"></i>RESUMEN PEDIDO</h1> <!-- small text -->
+            </div>
+
+            <span *ngIf="getCantidadTotal() > 0"
+              class="badge rounded-pill bg-danger shadow-sm border border-white px-2 py-1 ms-2"
+              style="font-size: 0.7rem;">
+              {{ getCantidadTotal() }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- 🔍 BÚSQUEDA Y ORDENAMIENTO PREMIUM -->
+      <!-- ========================================== -->
+      <div class="search-sort-container mb-4">
+        <div class="card border-0 shadow-lg search-sort-card">
+          <div class="card-body p-4">
+            <div class="row g-3 align-items-center">
+              <!-- Barra de búsqueda -->
+              <div class="col-12 col-md-6">
+                <div class="input-group input-group-lg search-container-premium">
+                  <span class="input-group-text bg-transparent border-0 text-secondary">
+                    <i class="bi bi-search"></i>
+                  </span>
+                  <input type="text" class="form-control bg-transparent border-0 text-white search-input"
+                    placeholder="Buscar el antojo de hoy..." [(ngModel)]="filtro" (ngModelChange)="filtrarProductos()">
+                  <button *ngIf="filtro" class="btn btn-link text-white-50 text-decoration-none" type="button"
+                    (click)="limpiarFiltro()">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Ordenamiento -->
+              <div class="col-12 col-md-6">
+                <div class="d-flex gap-2 justify-content-md-end flex-wrap">
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-light" [class.active]="ordenActual === 'asc'"
+                      (click)="ordenarPorPrecio('asc')">
+                      <i class="bi bi-sort-numeric-down me-1"></i> Menor precio
+                    </button>
+                    <button type="button" class="btn btn-outline-light" [class.active]="ordenActual === 'desc'"
+                      (click)="ordenarPorPrecio('desc')">
+                      <i class="bi bi-sort-numeric-up me-1"></i> Mayor precio
+                    </button>
+                  </div>
+                  <button type="button" class="btn btn-warning" *ngIf="ordenActual || filtro"
+                    (click)="resetearFiltros()">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contador de resultados -->
+            <div class="mt-3 text-white-50 small" *ngIf="filtro || ordenActual">
+              <i class="bi bi-info-circle me-1"></i>
+              Mostrando {{ productosFiltrados.length }} producto(s)
+              <span *ngIf="filtro"> que coinciden con "{{ filtro }}"</span>
+              <span *ngIf="ordenActual === 'asc'"> - Ordenado por menor precio</span>
+              <span *ngIf="ordenActual === 'desc'"> - Ordenado por mayor precio</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Productos -->
+      <div class="row mt-4">
+        <div class="col-md-3 mb-4" *ngFor="let product of productos">
+          <div class="card shadow-sm h-100 producto-card">
+            <img [src]="product.imageUrl" class="card-img-top" alt="{{ product.name }}"
+              (error)="handleImageError($event)" loading="lazy" decoding="async">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text small flex-grow-1">{{ product.description }}</p>
+              <p class="card-text fw-bold">{{ formatPrice(product.price) }}</p>
+              <button class="btn button-orange mt-auto" (click)="agregarAlCarrito(product)">
+                <i class="bi bi-cart-plus me-1"></i> Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensaje sin resultados -->
+      <div *ngIf="productos.length === 0 && filtro" class="text-center py-5">
+        <div class="card border-0 shadow-lg mx-auto no-results-card">
+          <div class="card-body p-5">
+            <i class="bi bi-search text-warning search-icon-lg"></i>
+            <h4 class="text-white mt-3">No se encontraron productos</h4>
+            <p class="text-white-50">No hay productos que coincidan con "{{ filtro }}"</p>
+            <button class="btn btn-warning mt-2" (click)="limpiarFiltro()">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Ver todos los productos
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paginación -->
+
+
+
+      <!-- MODAL DEL CARRITO DE COMPRAS (Nuevo Diseño) -->
+      <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content cart-modal-content">
+
+            <!-- Header Modal -->
+            <div class="modal-header cart-modal-header">
+              <h5 class="modal-title fw-bold cart-modal-title">
+                <i class="bi bi-cart3 me-2 text-white"></i> Mi Pedido
+              </h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+            </div>
+
+            <!-- Body Modal -->
+            <div class="modal-body p-4">
+
+              <div *ngIf="carrito.length === 0" class="text-center py-5">
+                <i class="bi bi-cart-x text-white-50 cart-empty-icon"></i>
+                <h5 class="text-white mt-3">¡Tu carrito está vacío!</h5>
+                <p class="text-white-50">Agrega unos deliciosos platos para comenzar.</p>
+                <button class="btn btn-outline-warning mt-2" data-bs-dismiss="modal">
+                  Ir al Menú
+                </button>
+              </div>
+
+              <div *ngIf="carrito.length > 0">
+                <!-- Lista de Productos -->
+                <div class="cart-items-list mb-4">
+                  <div *ngFor="let item of carrito"
+                    class="d-flex align-items-center justify-content-between py-3 border-bottom border-secondary">
+                    <div class="d-flex align-items-center flex-grow-1">
+                      <div class="ms-3">
+                        <h6 class="text-white mb-0 fw-bold">{{ item.name }}</h6>
+                        <small class="text-success fw-bold">{{ formatPrice(item.price) }}</small>
+                      </div>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                      <span class="badge bg-dark border border-secondary text-white me-3 px-3 py-2">
+                        x{{ item.cantidad }}
+                      </span>
+                      <button class="btn btn-sm btn-danger rounded-circle shadow-sm"
+                        (click)="eliminarDelCarrito(item.id)" title="Eliminar">
+                        <i class="bi bi-trash-fill"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Resumen Financiero -->
+                <div class="cart-summary p-3 rounded-3">
+                  <div class="d-flex justify-content-between mb-2 text-white-50 small">
+                    <span>Subtotal</span>
+                    <span>{{ formatPrice(getSubtotal()) }}</span>
+                  </div>
+                  <hr class="border-secondary">
+                  <div class="d-flex justify-content-between mt-2">
+                    <span class="text-white fs-5 fw-bold">Total</span>
+                    <span class="text-warning fs-4 fw-bold">{{ formatPrice(getTotals())}}</span>
+                  </div>
+                </div>
+
+                <!-- Detalle / Nota -->
+                <div class="mt-4">
+                  <label for="mensaje" class="form-label text-white-50 small">Escribe tu mensaje (opcional)</label>
+                  <textarea class="form-control bg-dark text-white border-secondary" id="mensaje" [(ngModel)]="detalle"
+                    rows="2" placeholder="Ej: Sin cebolla, aderezo aparte..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer Modal -->
+            <div class="modal-footer border-top border-dark justify-content-between">
+              <button type="button" class="btn btn-lg fw-bold text-white flex-grow-1 me-2 btn-confirm-order"
+                (click)="aceptarPedido()" [disabled]="enviandoPedido || carrito.length === 0">
+                <span *ngIf="!enviandoPedido">Confirmar</span>
+                <span *ngIf="enviandoPedido">
+                  <span class="spinner-border spinner-border-sm me-2"></span> Enviando...
+                </span>
+              </button>
+
+              <button type="button" class="btn btn-lg fw-bold text-white flex-grow-1 ms-2 btn-add-more"
+                data-bs-dismiss="modal">
+                Agregar otro
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- TAB DELIVERY -->
+    <div class="tab-pane fade show active" *ngIf="activeTab === 'delivery'">
+      <app-delivery></app-delivery>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 🚀 BOTÓN SCROLL TO TOP PREMIUM -->
+<!-- ========================================== -->
+<button *ngIf="showScrollButton" class="scroll-to-top-btn" (click)="scrollToTop()" title="Volver arriba">
+  <i class="bi bi-arrow-up-circle-fill"></i>
+</button>

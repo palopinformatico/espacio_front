@@ -1,0 +1,677 @@
+<div class="contabilidad-dashboard">
+
+  <!-- Header & Filtros con Navegación -->
+  <div class="dashboard-header">
+    <!-- Sección izquierda: Filtros de tiempo y fechas -->
+    <div class="filters-section">
+      <div class="time-pills">
+        <button class="time-pill" [class.active]="currentRange === 'hoy'" (click)="applyRange('hoy')">Hoy</button>
+        <button class="time-pill" [class.active]="currentRange === 'semana'"
+          (click)="applyRange('semana')">Semana</button>
+        <button class="time-pill" [class.active]="currentRange === 'mes'" (click)="applyRange('mes')">Mes</button>
+        <button class="time-pill" [class.active]="currentRange === 'anio'" (click)="applyRange('anio')">Año</button>
+        <button class="time-pill" [class.active]="currentRange === 'personalizado'"
+          (click)="applyRange('personalizado')">Personalizado</button>
+      </div>
+
+      <div class="date-filters">
+        <div class="date-group">
+          <label for="fechaInicio">Fecha de inicio</label>
+          <input id="fechaInicio" type="date" class="date-input" [(ngModel)]="start">
+        </div>
+        <div class="date-group">
+          <label for="fechaFin">Fecha fin</label>
+          <input id="fechaFin" type="date" class="date-input" [(ngModel)]="end">
+        </div>
+        <button class="btn-primary" (click)="applyRange('personalizado')">Aplicar</button>
+      </div>
+    </div>
+
+    <!-- Sección derecha: Tabs de navegación en dos filas -->
+    <div class="navigation-section">
+      <!-- Primera fila de navegación -->
+      <div class="nav-row nav-row-top">
+        <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'finanzas' }" (click)="setActiveTab('finanzas')">
+          Finanzas
+        </button>
+        <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'mesas' }" (click)="setActiveTab('mesas')">
+          Mesas
+        </button>
+        <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'delivery' }" (click)="setActiveTab('delivery')">
+          Delivery
+        </button>
+      </div>
+
+      <!-- Segunda fila de navegación -->
+      <div class="nav-row nav-row-bottom">
+        <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'gastos' }" (click)="setActiveTab('gastos')">
+          Egresos
+        </button>
+        <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'productos' }"
+          (click)="setActiveTab('productos')">
+          Productos
+        </button>
+        <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'clientes' }" (click)="setActiveTab('clientes')">
+          Clientes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: FINANZAS -->
+  <section class="tab-content" *ngIf="activeTab === 'finanzas'">
+    <p class="period-text">Período: <span>{{ currentRange | titlecase }} · {{ start | date:'dd/MM/yyyy' }} → {{ end |
+        date:'dd/MM/yyyy' }}</span></p>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-ingresos">
+        <div class="kpi-header">
+          <span class="kpi-label">Ingresos</span>
+          <div class="kpi-icon">💰</div>
+        </div>
+        <p class="kpi-value">{{ formatMonto(kpisFinanzas.ingresos) }}</p>
+      </div>
+
+      <div class="kpi-card kpi-egresos">
+        <div class="kpi-header">
+          <span class="kpi-label">Egresos</span>
+          <div class="kpi-icon">📤</div>
+        </div>
+        <p class="kpi-value">{{ formatMonto(kpisFinanzas.egresos) }}</p>
+      </div>
+
+      <div class="kpi-card kpi-propinas">
+        <div class="kpi-header">
+          <span class="kpi-label">Propinas</span>
+          <div class="kpi-icon">🤝</div>
+        </div>
+        <p class="kpi-value">{{ formatMonto(kpisFinanzas.propinas) }}</p>
+      </div>
+
+      <div class="kpi-card kpi-balance">
+        <div class="kpi-header">
+          <span class="kpi-label">Balance</span>
+          <div class="kpi-icon">📊</div>
+        </div>
+        <p class="kpi-value">{{ formatMonto(kpisFinanzas.balance) }}</p>
+      </div>
+
+      <div class="kpi-card kpi-por-cobrar">
+        <div class="kpi-header">
+          <span class="kpi-label">Por cobrar</span>
+          <div class="kpi-icon">🧾</div>
+        </div>
+        <p class="kpi-value">{{ formatMonto(kpisFinanzas.porCobrar) }}</p>
+      </div>
+
+      <div class="kpi-card kpi-por-cobrar">
+        <div class="kpi-header">
+          <span class="kpi-label">IVA (19%)</span>
+          <div class="kpi-icon">🧾</div>
+        </div>
+        <p class="kpi-value">{{ formatMonto(kpisFinanzas.ingresos * 0.19) }}</p>
+      </div>
+
+      <div class="kpi-card kpi-por-cobrar">
+        <div class="kpi-header">
+          <span class="kpi-label">Costo Delivery</span>
+          <div class="kpi-icon">🧾</div>
+        </div>
+        <p class="kpi-value">{{ formatMonto(kpisFinanzas.costoDelivery) }}</p>
+      </div>
+
+      <div class="kpi-card kpi-ticket">
+        <div class="kpi-header">
+          <span class="kpi-label">Ticket Promedio</span>
+          <div class="kpi-icon">🎫</div>
+        </div>
+        <p class="kpi-value">{{ formatMonto(kpisFinanzas.ticketBar) }}</p>
+      </div>
+    </div>
+
+
+    <!-- Gráficos -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Balance Semanal</h3>
+          <span>Ingresos, egresos, propinas y balance por día</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartMensual" [series]="chartMensual.series" [chart]="chartMensual.chart"
+            [xaxis]="chartMensual.xaxis" [yaxis]="chartMensual.yaxis" [stroke]="chartMensual.stroke"
+            [markers]="chartMensual.markers" [colors]="chartMensual.colors" [fill]="chartMensual.fill"
+            [grid]="chartMensual.grid" [legend]="chartMensual.legend" [tooltip]="chartMensual.tooltip"
+            [dataLabels]="chartMensual.dataLabels">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Evolución de la Semana</h3>
+          <span>Tendencia dentro de la semana</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartEvolucion" [series]="chartEvolucion.series" [chart]="chartEvolucion.chart"
+            [xaxis]="chartEvolucion.xaxis" [yaxis]="chartEvolucion.yaxis" [colors]="chartEvolucion.colors"
+            [plotOptions]="chartEvolucion.plotOptions" [legend]="chartEvolucion.legend"
+            [tooltip]="chartEvolucion.tooltip" [grid]="chartEvolucion.grid">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Top días con mayor recaudación</h3>
+          <span>Los días más fuertes del período seleccionado</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartTopDias" [series]="chartTopDias.series" [chart]="chartTopDias.chart"
+            [xaxis]="chartTopDias.xaxis" [yaxis]="chartTopDias.yaxis" [colors]="chartTopDias.colors"
+            [plotOptions]="chartTopDias.plotOptions" [tooltip]="chartTopDias.tooltip" [grid]="chartTopDias.grid">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Ingresos vs Propinas</h3>
+          <span>Porcentaje de ingresos que corresponde a propinas</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartDistribucion" [series]="chartDistribucion.series" [chart]="chartDistribucion.chart"
+            [labels]="chartDistribucion.labels" [colors]="chartDistribucion.colors" [legend]="chartDistribucion.legend"
+            [plotOptions]="chartDistribucion.plotOptions" [dataLabels]="chartDistribucion.dataLabels"
+            [tooltip]="chartDistribucion.tooltip" [stroke]="chartDistribucion.stroke">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Ingresos vs Egresos</h3>
+          <span>Balance neto (Ingresos - Egresos)</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartIngresosEgresos" [series]="chartIngresosEgresos.series" [chart]="chartIngresosEgresos.chart"
+            [labels]="chartIngresosEgresos.labels" [colors]="chartIngresosEgresos.colors" [legend]="chartIngresosEgresos.legend"
+            [plotOptions]="chartIngresosEgresos.plotOptions" [dataLabels]="chartIngresosEgresos.dataLabels"
+            [tooltip]="chartIngresosEgresos.tooltip" [stroke]="chartIngresosEgresos.stroke">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB: MESAS -->
+  <section class="tab-content" *ngIf="activeTab === 'mesas'">
+    <div class="section-header">
+      <h2>Rendimiento por mesa</h2>
+      <p>Comparativo de consumo por mesa o sector del local.</p>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Ingresos por mesa</h3>
+          <span>Top mesas por recaudación</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartMesasIngresos" [series]="chartMesasIngresos.series" [chart]="chartMesasIngresos.chart"
+            [xaxis]="chartMesasIngresos.xaxis" [yaxis]="chartMesasIngresos.yaxis" [colors]="chartMesasIngresos.colors"
+            [plotOptions]="chartMesasIngresos.plotOptions" [tooltip]="chartMesasIngresos.tooltip"
+            [grid]="chartMesasIngresos.grid">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Horas punta por mesa</h3>
+          <span>Distribución horaria del consumo</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartMesasHoras" [series]="chartMesasHoras.series" [chart]="chartMesasHoras.chart"
+            [xaxis]="chartMesasHoras.xaxis" [yaxis]="chartMesasHoras.yaxis" [stroke]="chartMesasHoras.stroke"
+            [fill]="chartMesasHoras.fill" [colors]="chartMesasHoras.colors" [grid]="chartMesasHoras.grid"
+            [tooltip]="chartMesasHoras.tooltip">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB: PRODUCTOS -->
+  <section class="tab-content" *ngIf="activeTab === 'productos'">
+    <div class="section-header">
+      <h2>Desempeño de productos</h2>
+      <p>Productos más vendidos y distribución por categoría.</p>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Top productos vendidos</h3>
+          <span>Ranking por unidades o monto</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartProductosTop" [series]="chartProductosTop.series" [chart]="chartProductosTop.chart"
+            [xaxis]="chartProductosTop.xaxis" [yaxis]="chartProductosTop.yaxis" [colors]="chartProductosTop.colors"
+            [plotOptions]="chartProductosTop.plotOptions" [tooltip]="chartProductosTop.tooltip"
+            [grid]="chartProductosTop.grid">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Ingresos por categoría</h3>
+          <span>Distribución del ingreso por tipo de producto</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartProductosCategoria" [series]="chartProductosCategoria.series"
+            [chart]="chartProductosCategoria.chart" [labels]="chartProductosCategoria.labels"
+            [colors]="chartProductosCategoria.colors" [legend]="chartProductosCategoria.legend"
+            [plotOptions]="chartProductosCategoria.plotOptions" [dataLabels]="chartProductosCategoria.dataLabels"
+            [tooltip]="chartProductosCategoria.tooltip" [stroke]="chartProductosCategoria.stroke">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB: CLIENTES -->
+  <section class="tab-content" *ngIf="activeTab === 'clientes'">
+    <div class="section-header">
+      <h2>Clientes</h2>
+      <p>Comportamiento de clientes: nuevos vs recurrentes y actividad del período.</p>
+    </div>
+
+    <p class="period-text">Período: <span>Semana · 2025-12-29 → 2026-01-04</span></p>
+
+    <div class="kpi-grid-3">
+      <div class="kpi-card kpi-clientes compact">
+        <div class="kpi-header">
+          <span class="kpi-label">Clientes (período)</span>
+          <div class="kpi-icon">👥</div>
+        </div>
+        <p class="kpi-value">{{ kpisClientes.total }}</p>
+      </div>
+
+      <div class="kpi-card kpi-nuevos compact">
+        <div class="kpi-header">
+          <span class="kpi-label">Clientes nuevos</span>
+          <div class="kpi-icon">🆕</div>
+        </div>
+        <p class="kpi-value">{{ kpisClientes.nuevos }}</p>
+      </div>
+
+      <div class="kpi-card kpi-recurrentes compact">
+        <div class="kpi-header">
+          <span class="kpi-label">Clientes recurrentes</span>
+          <div class="kpi-icon">🔁</div>
+        </div>
+        <p class="kpi-value">{{ kpisClientes.recurrentes }}</p>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card compact">
+        <div class="chart-header">
+          <h3>Nuevos vs Recurrentes</h3>
+          <span>Composición del período</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartClientesNuevosVsRecurrentes" [series]="chartClientesNuevosVsRecurrentes.series"
+            [chart]="chartClientesNuevosVsRecurrentes.chart" [labels]="chartClientesNuevosVsRecurrentes.labels"
+            [colors]="chartClientesNuevosVsRecurrentes.colors" [legend]="chartClientesNuevosVsRecurrentes.legend"
+            [plotOptions]="chartClientesNuevosVsRecurrentes.plotOptions"
+            [dataLabels]="chartClientesNuevosVsRecurrentes.dataLabels"
+            [tooltip]="chartClientesNuevosVsRecurrentes.tooltip" [stroke]="chartClientesNuevosVsRecurrentes.stroke">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="chart-card compact">
+        <div class="chart-header">
+          <h3>Actividad de clientes</h3>
+          <span>Clientes activos por día</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartClientesActividad" [series]="chartClientesActividad.series"
+            [chart]="chartClientesActividad.chart" [xaxis]="chartClientesActividad.xaxis"
+            [yaxis]="chartClientesActividad.yaxis" [stroke]="chartClientesActividad.stroke"
+            [fill]="chartClientesActividad.fill" [colors]="chartClientesActividad.colors"
+            [grid]="chartClientesActividad.grid" [tooltip]="chartClientesActividad.tooltip"
+            [legend]="chartClientesActividad.legend">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid-4">
+      <div class="chart-card compact">
+        <div class="chart-header">
+          <h3>Top clientes por gasto</h3>
+          <span>Ranking por monto total</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartClientesTopGasto" [series]="chartClientesTopGasto.series"
+            [chart]="chartClientesTopGasto.chart" [xaxis]="chartClientesTopGasto.xaxis"
+            [yaxis]="chartClientesTopGasto.yaxis" [colors]="chartClientesTopGasto.colors"
+            [plotOptions]="chartClientesTopGasto.plotOptions" [tooltip]="chartClientesTopGasto.tooltip"
+            [grid]="chartClientesTopGasto.grid">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="chart-card compact">
+        <div class="chart-header">
+          <h3>Top clientes por pedidos</h3>
+          <span>Ranking por cantidad de pedidos</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartClientesTopPedidos" [series]="chartClientesTopPedidos.series"
+            [chart]="chartClientesTopPedidos.chart" [xaxis]="chartClientesTopPedidos.xaxis"
+            [yaxis]="chartClientesTopPedidos.yaxis" [colors]="chartClientesTopPedidos.colors"
+            [plotOptions]="chartClientesTopPedidos.plotOptions" [tooltip]="chartClientesTopPedidos.tooltip"
+            [grid]="chartClientesTopPedidos.grid">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="chart-card compact">
+        <div class="chart-header">
+          <h3>Ticket promedio por cliente</h3>
+          <span>Promedio por cliente del período</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartClientesTicketPromedio" [series]="chartClientesTicketPromedio.series"
+            [chart]="chartClientesTicketPromedio.chart" [colors]="chartClientesTicketPromedio.colors"
+            [plotOptions]="chartClientesTicketPromedio.plotOptions" [labels]="chartClientesTicketPromedio.labels"
+            [stroke]="chartClientesTicketPromedio.stroke">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="chart-card compact">
+        <div class="chart-header">
+          <h3>Frecuencia de compra</h3>
+          <span>Distribución por # de pedidos</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartClientesFrecuencia" [series]="chartClientesFrecuencia.series"
+            [chart]="chartClientesFrecuencia.chart" [labels]="chartClientesFrecuencia.labels"
+            [colors]="chartClientesFrecuencia.colors" [legend]="chartClientesFrecuencia.legend"
+            [plotOptions]="chartClientesFrecuencia.plotOptions" [dataLabels]="chartClientesFrecuencia.dataLabels"
+            [tooltip]="chartClientesFrecuencia.tooltip" [stroke]="chartClientesFrecuencia.stroke">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB: DELIVERY -->
+  <section class="tab-content" *ngIf="activeTab === 'delivery'">
+    <div class="section-header">
+      <h2>Delivery</h2>
+      <p>Detalle de pedidos delivery, tiempos y desempeño operativo.</p>
+    </div>
+
+    <p class="period-text">Período: <span>Semana · 2025-12-29 → 2026-01-04</span></p>
+
+    <div class="kpi-grid-6">
+      <div class="kpi-card kpi-pedidos">
+        <div class="kpi-header">
+          <span class="kpi-label">Pedidos</span>
+          <div class="kpi-icon">🧾</div>
+        </div>
+        <p class="kpi-value">{{ kpisDelivery.pedidos }}</p>
+      </div>
+
+      <div class="kpi-card kpi-pagados">
+        <div class="kpi-header">
+          <span class="kpi-label">Pagados</span>
+          <div class="kpi-icon">✅</div>
+        </div>
+        <p class="kpi-value">{{ kpisDelivery.pagados }}</p>
+      </div>
+
+      <div class="kpi-card kpi-pendientes">
+        <div class="kpi-header">
+          <span class="kpi-label">Pendientes</span>
+          <div class="kpi-icon">⏳</div>
+        </div>
+        <p class="kpi-value">{{ kpisDelivery.pendientes }}</p>
+      </div>
+
+      <div class="kpi-card kpi-tiempo">
+        <div class="kpi-header">
+          <span class="kpi-label">Tiempo prom.</span>
+          <div class="kpi-icon">🕒</div>
+        </div>
+        <p class="kpi-value">{{ kpisDelivery.tiempoPromedio }} min</p>
+      </div>
+
+      <div class="kpi-card kpi-recaudado">
+        <div class="kpi-header">
+          <span class="kpi-label">Recaudado</span>
+          <div class="kpi-icon">💵</div>
+        </div>
+        <p class="kpi-value">{{ formatMonto(kpisDelivery.recaudado - (kpisDelivery.costoEnvio || 0)) }}</p>
+      </div>
+
+      <div class="kpi-card kpi-recaudado">
+        <div class="kpi-header">
+          <span class="kpi-label">Costo de envio</span>
+          <div class="kpi-icon">🚚</div>
+        </div>
+        <p class="kpi-value">{{ formatMonto(kpisDelivery.costoEnvio || 0) }}</p>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Pedidos Delivery por día</h3>
+          <span>Volumen y tendencia del período</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartDeliveryPedidos" [series]="chartDeliveryPedidos.series"
+            [chart]="chartDeliveryPedidos.chart" [xaxis]="chartDeliveryPedidos.xaxis"
+            [yaxis]="chartDeliveryPedidos.yaxis" [stroke]="chartDeliveryPedidos.stroke"
+            [fill]="chartDeliveryPedidos.fill" [colors]="chartDeliveryPedidos.colors" [grid]="chartDeliveryPedidos.grid"
+            [tooltip]="chartDeliveryPedidos.tooltip">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Tiempo de despacho</h3>
+          <span>Promedio (min) por día</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartDeliveryTiempo" [series]="chartDeliveryTiempo.series"
+            [chart]="chartDeliveryTiempo.chart" [xaxis]="chartDeliveryTiempo.xaxis"
+            [yaxis]="chartDeliveryTiempo.yaxis" [stroke]="chartDeliveryTiempo.stroke"
+            [fill]="chartDeliveryTiempo.fill" [colors]="chartDeliveryTiempo.colors"
+            [grid]="chartDeliveryTiempo.grid" [tooltip]="chartDeliveryTiempo.tooltip">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Estados de pedidos</h3>
+          <span>Composición del período</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartDeliveryEstados" [series]="chartDeliveryEstados.series"
+            [chart]="chartDeliveryEstados.chart" [labels]="chartDeliveryEstados.labels"
+            [colors]="chartDeliveryEstados.colors" [legend]="chartDeliveryEstados.legend"
+            [dataLabels]="chartDeliveryEstados.dataLabels" [plotOptions]="chartDeliveryEstados.plotOptions"
+            [tooltip]="chartDeliveryEstados.tooltip" [stroke]="chartDeliveryEstados.stroke">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Recaudación Delivery</h3>
+          <span>Total recaudado por día</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartDeliveryRecaudacion" [series]="chartDeliveryRecaudacion.series"
+            [chart]="chartDeliveryRecaudacion.chart" [xaxis]="chartDeliveryRecaudacion.xaxis"
+            [yaxis]="chartDeliveryRecaudacion.yaxis" [colors]="chartDeliveryRecaudacion.colors"
+            [grid]="chartDeliveryRecaudacion.grid" [tooltip]="chartDeliveryRecaudacion.tooltip"
+            [plotOptions]="chartDeliveryRecaudacion.plotOptions" [dataLabels]="chartDeliveryRecaudacion.dataLabels">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Clientes: nuevos vs recurrentes</h3>
+          <span>Solo pedidos delivery (período)</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartDeliveryClientes" [series]="chartDeliveryClientes.series"
+            [chart]="chartDeliveryClientes.chart" [labels]="chartDeliveryClientes.labels"
+            [colors]="chartDeliveryClientes.colors" [legend]="chartDeliveryClientes.legend"
+            [dataLabels]="chartDeliveryClientes.dataLabels" [plotOptions]="chartDeliveryClientes.plotOptions"
+            [tooltip]="chartDeliveryClientes.tooltip" [stroke]="chartDeliveryClientes.stroke">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Top barrios (delivery)</h3>
+          <span>Ranking por barrio_sector</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartDeliveryTopBarrios" [series]="chartDeliveryTopBarrios.series"
+            [chart]="chartDeliveryTopBarrios.chart" [xaxis]="chartDeliveryTopBarrios.xaxis"
+            [yaxis]="chartDeliveryTopBarrios.yaxis" [colors]="chartDeliveryTopBarrios.colors"
+            [grid]="chartDeliveryTopBarrios.grid" [tooltip]="chartDeliveryTopBarrios.tooltip"
+            [plotOptions]="chartDeliveryTopBarrios.plotOptions" [dataLabels]="chartDeliveryTopBarrios.dataLabels">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB: GASTOS -->
+  <section class="tab-content" *ngIf="activeTab === 'gastos'">
+    <div class="section-header">
+      <h2>Gastos</h2>
+      <p>Resumen de egresos: categorías, medios de pago y evolución.</p>
+    </div>
+
+    <p class="period-text">Período: <span>Semana · 2025-12-29 → 2026-01-04</span></p>
+
+    <div class="kpi-grid-3">
+      <div class="kpi-card kpi-gastos-total">
+        <div class="kpi-header">
+          <span class="kpi-label">Total Gastos</span>
+          <div class="kpi-icon">🧾</div>
+        </div>
+        <p class="kpi-value">{{ formatMonto(kpisGastos.total) }}</p>
+      </div>
+
+      <div class="kpi-card kpi-categoria-top">
+        <div class="kpi-header">
+          <span class="kpi-label">Categoría Top</span>
+          <div class="kpi-icon">🏷️</div>
+        </div>
+        <p class="kpi-value">{{ kpisGastos.categoriaTop || '—' }}</p>
+        <span class="kpi-subvalue">{{ formatMonto(kpisGastos.categoriaTopMonto) }}</span>
+      </div>
+
+      <div class="kpi-card kpi-medio-top">
+        <div class="kpi-header">
+          <span class="kpi-label">Medio de Pago Top</span>
+          <div class="kpi-icon">💳</div>
+        </div>
+        <p class="kpi-value">{{ kpisGastos.medioTop || '—' }}</p>
+        <span class="kpi-subvalue">{{ formatMonto(kpisGastos.medioTopMonto) }}</span>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Gastos por Categoría</h3>
+          <span>Distribución del período</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartGastosCategoria" [series]="chartGastosCategoria.series"
+            [chart]="chartGastosCategoria.chart" [labels]="chartGastosCategoria.labels"
+            [colors]="chartGastosCategoria.colors" [legend]="chartGastosCategoria.legend"
+            [plotOptions]="chartGastosCategoria.plotOptions" [dataLabels]="chartGastosCategoria.dataLabels"
+            [tooltip]="chartGastosCategoria.tooltip" [stroke]="chartGastosCategoria.stroke">
+          </apx-chart>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Gastos por Medio de Pago</h3>
+          <span>Cómo se pagaron los egresos</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartGastosMedioPago" [series]="chartGastosMedioPago.series"
+            [chart]="chartGastosMedioPago.chart" [labels]="chartGastosMedioPago.labels"
+            [colors]="chartGastosMedioPago.colors" [legend]="chartGastosMedioPago.legend"
+            [plotOptions]="chartGastosMedioPago.plotOptions" [dataLabels]="chartGastosMedioPago.dataLabels"
+            [tooltip]="chartGastosMedioPago.tooltip" [stroke]="chartGastosMedioPago.stroke">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid-1">
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Evolución de Gastos</h3>
+          <span>Tendencia del período</span>
+        </div>
+        <div class="chart-body">
+          <apx-chart *ngIf="chartGastosEvolucion" [series]="chartGastosEvolucion.series"
+            [chart]="chartGastosEvolucion.chart" [xaxis]="chartGastosEvolucion.xaxis"
+            [yaxis]="chartGastosEvolucion.yaxis" [stroke]="chartGastosEvolucion.stroke"
+            [fill]="chartGastosEvolucion.fill" [colors]="chartGastosEvolucion.colors"
+            [grid]="chartGastosEvolucion.grid" [tooltip]="chartGastosEvolucion.tooltip">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB: ANALÍTICA -->
+  <section class="tab-content" *ngIf="activeTab === 'analitica'">
+    <div class="section-header">
+      <h2>Analítica</h2>
+      <p>Sección placeholder para la demo.</p>
+    </div>
+
+    <p class="period-text">Período: <span>Semana · 2025-12-29 → 2026-01-04</span></p>
+
+    <div class="placeholder-box">
+      <span>📊</span>
+      <p>Esta sección se implementará más adelante. Por ahora la demo se enfoca en Finanzas, Mesas, Productos, Clientes,
+        Delivery y Gastos.</p>
+    </div>
+  </section>
+
+</div>

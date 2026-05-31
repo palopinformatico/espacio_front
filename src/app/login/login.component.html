@@ -1,0 +1,58 @@
+<div class="login-container">
+<br><br><br>
+  <div class="container-fluid h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+      <div class="col-12 col-sm-8 col-md-6 col-lg-4 col-xl-3">
+        <div class="login-card">
+          <!-- Logo Section -->
+          <div class="logo-section text-center mb-5">
+            <div class="logo-text">
+              <img src="./logo.png" alt="Logo" class="logo-image mb-3" style="width:200px;">
+            </div>
+          </div>
+
+          <!-- Login Form -->
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+
+            <!-- Username -->
+            <div class="form-group mb-4">
+              <div class="input-wrapper">
+                <i class="bi bi-person input-icon text-white"></i>
+                <input type="text"
+                       class="form-control custom-input"
+                       placeholder="Nombre"
+                       formControlName="username">
+              </div>
+              <div *ngIf="f['username'].invalid && f['username'].touched" class="text-danger small">
+                El nombre es obligatorio
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group mb-4">
+              <div class="input-wrapper">
+                <i class="bi bi-lock input-icon text-white"></i>
+                <input type="password"
+                       class="form-control custom-input"
+                       placeholder="Password"
+                       formControlName="password">
+              </div>
+              <div *ngIf="f['password'].invalid && f['password'].touched" class="text-danger small">
+                La contraseña es obligatoria
+              </div>
+            </div>
+
+            <!-- Button -->
+            <button type="submit" class="btn login-btn w-100" [disabled]="loading || loginForm.invalid">
+              <span *ngIf="!loading" class="btn-text">LOGIN</span>
+              <div *ngIf="loading" class="spinner-border spinner-border-sm" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

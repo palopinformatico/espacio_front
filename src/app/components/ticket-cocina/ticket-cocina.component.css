@@ -1,0 +1,252 @@
+/* Ticket de Cocina - Diseño Grande y Legible */
+.ticket-cocina {
+  width: 80mm;
+  max-width: 80mm;
+  margin: 0 auto;
+  padding: 8mm;
+  font-family: 'Arial', 'Helvetica', sans-serif;
+  background: white;
+  color: #000;
+  font-size: 13pt;
+  font-weight: 500;
+}
+
+/* Header */
+.ticket-header {
+  text-align: center;
+  margin-bottom: 5mm;
+}
+
+.badge-cocina {
+  background: #000;
+  color: white;
+  padding: 3mm 0;
+  font-size: 18pt;
+  font-weight: bold;
+  letter-spacing: 2mm;
+  margin-bottom: 4mm;
+  border-radius: 2mm;
+}
+
+.mesa-numero {
+  font-size: 22pt;
+  font-weight: bold;
+  margin: 3mm 0;
+  padding: 3mm;
+  background: #f0f0f0;
+  border: 2px solid #000;
+  border-radius: 2mm;
+  letter-spacing: 1mm;
+}
+
+.pedido-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3mm;
+  font-size: 11pt;
+  font-weight: 600;
+}
+
+.pedido-num {
+  color: #333;
+}
+
+.hora {
+  background: #000;
+  color: white;
+  padding: 1mm 3mm;
+  border-radius: 2mm;
+  font-weight: bold;
+}
+
+/* Dividers */
+.divider-thick {
+  border-top: 3px double #000;
+  margin: 5mm 0;
+}
+
+/* Productos Section */
+.productos-section {
+  margin: 5mm 0;
+}
+
+.productos-title {
+  text-align: center;
+  font-size: 13pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 4mm;
+  letter-spacing: 0.5mm;
+  border-bottom: 2px solid #000;
+  padding-bottom: 2mm;
+}
+
+.productos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13pt;
+}
+
+.productos-table thead tr {
+  background: #e0e0e0;
+  border: 2px solid #000;
+}
+
+.productos-table th {
+  padding: 2.5mm;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 11pt;
+  border-bottom: 2px solid #000;
+}
+
+.productos-table tbody tr {
+  border-bottom: 1px solid #ddd;
+  min-height: 10mm;
+}
+
+.productos-table tbody tr.alt-row {
+  background: #f9f9f9;
+}
+
+.productos-table td {
+  padding: 3mm 2mm;
+  vertical-align: middle;
+}
+
+.producto-nombre {
+  font-weight: 600;
+  font-size: 14pt;
+  line-height: 1.4;
+}
+
+.bullet {
+  font-size: 16pt;
+  margin-right: 2mm;
+  font-weight: bold;
+}
+
+.cantidad-badge {
+  text-align: center;
+  width: 20mm;
+}
+
+.cantidad-badge .badge {
+  background: #000;
+  color: white;
+  padding: 2mm 4mm;
+  border-radius: 2mm;
+  font-weight: bold;
+  font-size: 15pt;
+  display: inline-block;
+  min-width: 15mm;
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Notas Section */
+.notas-section {
+  margin: 5mm 0;
+  padding: 3mm;
+  background: #fff9e6;
+  border: 2px dashed #ffa500;
+  border-radius: 2mm;
+}
+
+.notas-title {
+  font-size: 12pt;
+  font-weight: bold;
+  margin-bottom: 2mm;
+  color: #ff6600;
+}
+
+.notas-content {
+  font-size: 13pt;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #000;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Footer */
+.footer-section {
+  text-align: center;
+  margin-top: 5mm;
+}
+
+.timestamp {
+  font-size: 10pt;
+  color: #666;
+  margin-bottom: 3mm;
+}
+
+.prioridad-badge {
+  margin-top: 3mm;
+}
+
+.badge-alta {
+  display: inline-block;
+  background: #ff3333;
+  color: white;
+  padding: 2mm 4mm;
+  font-size: 11pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5mm;
+  border-radius: 2mm;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .ticket-cocina {
+    width: 80mm;
+    max-width: 80mm;
+    padding: 5mm;
+    margin: 0;
+    page-break-after: always;
+  }
+
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .badge-alta {
+    animation: none;
+    background: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .mesa-numero,
+  .badge-cocina,
+  .cantidad-badge .badge,
+  .notas-section {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

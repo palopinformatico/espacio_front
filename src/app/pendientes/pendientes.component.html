@@ -1,0 +1,299 @@
+<div class="container-fluid py-3">
+
+  <!-- Header -->
+  <!-- <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-card rounded shadow-sm">
+    <h4 class="mb-0"><i class="bi bi-basket2-fill me-2"></i>Pedidos Pendientes</h4>
+    <span class="badge bg-warning text-dark fs-6 fw-semibold">{{ pendientes.length }}</span>
+  </div> -->
+
+  <!-- Tabs Local / Delivery -->
+  <div class="d-flex nav-pills-custom">
+    <a class="nav-link-custom" [ngClass]="{ 'active': activeTab === 'local' }" (click)="setActiveTab('local')">
+      <i class="bi bi-house-door-fill me-2"></i> Local
+      <span class="badge">{{ pedidosLocal.length }}</span>
+    </a>
+    <a class="nav-link-custom" [ngClass]="{ 'active': activeTab === 'delivery' }" (click)="setActiveTab('delivery')">
+      <i class="bi bi-truck me-2"></i> Delivery
+      <span class="badge">{{ pedidosDelivery.length }}</span>
+    </a>
+  </div>
+
+  <div class="tab-content">
+
+    <!-- Local -->
+    <div class="tab-pane fade show active" *ngIf="activeTab === 'local'">
+      <div *ngIf="pedidosLocal.length; else noLocal">
+        <div class="row g-4">
+          <div *ngFor="let o of pedidosLocal; trackBy: trackById" class="col-12 col-md-6 col-lg-4 col-xl-3">
+            <div class="card card-order">
+
+              <!-- Header -->
+              <div class="card-header-orange">
+                <span class="order-id">#{{ o.numeroVenta || o.id }}</span>
+                <span class="order-title">{{ o.mesa?.numero_mesa || o.tableNumber || '000' }}</span>
+              </div>
+
+              <!-- Body -->
+              <div class="card-body-order">
+                <ul class="order-items-list">
+                  <li *ngFor="let p of o.items" class="order-item">
+                    <span class="item-name">{{ p.name }} X{{ p.cantidad }}</span>
+                    <span class="item-price">{{ formatPrice(p.subtotal) }}</span>
+                  </li>
+                </ul>
+
+                <div class="order-totals">
+                  <div class="total-row">
+                    <span>Subtotal (Neto)</span>
+                    <span>{{ formatPrice(o.neto || 0) }}</span>
+                  </div>
+                  <div class="total-row">
+                    <span>Propina sugerida</span>
+                    <span>{{ formatPrice(o.propina || 0) }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between final-total">
+                    <span>TOTAL</span>
+                    <span>{{ formatPrice((o.neto || 0) + (o.propina || 0)) }}</span>
+                  </div>
+                </div>
+
+                <!-- Description -->
+                <div class="delivery-info">
+                  <div class="info-row">
+                    <span class="info-label">Descripción</span>
+                    {{ o.detalle_venta || 'Sin descripción' }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Buttons Local -->
+              <div class="p-3 pt-0">
+                <button class="btn-action btn-orange" (click)="abrirModalPropina(o)">
+                  <i class="bi bi-star me-1"></i> Propina
+                </button>
+                <div class="btn-row">
+                  <button class="btn-action btn-orange" (click)="imprimirTicketCaja(o)">
+                    <i class="bi bi-receipt me-1"></i> Ticket Caja
+                  </button>
+                  <button class="btn-action btn-orange" (click)="imprimirTicketCocina(o)">
+                    <i class="bi bi-cup-hot me-1"></i> Ticket Cocina
+                  </button>
+                </div>
+                <div class="btn-row">
+                  <button class="btn-action btn-green" (click)="aceptar(o.id)">
+                    <i class="bi bi-cash me-1"></i> Pagar
+                  </button>
+                  <button class="btn-action btn-red" (click)="cancelar(o.id)">
+                    <i class="bi bi-x-circle me-1"></i> Cancelar
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #noLocal>
+        <div class="text-center py-5 text-white-50">
+          <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+          <h5>No hay pedidos locales pendientes</h5>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Delivery -->
+    <div class="tab-pane fade show active" *ngIf="activeTab === 'delivery'">
+      <div *ngIf="pedidosDelivery.length; else noDelivery">
+        <div class="row g-4">
+          <div *ngFor="let o of pedidosDelivery; trackBy: trackById" class="col-12 col-md-6 col-lg-4 col-xl-3">
+            <div class="card card-order">
+
+              <!-- Header -->
+              <div class="card-header-orange">
+                <span class="order-id">#{{ o.numeroVenta || o.id }}</span>
+                <span class="order-title" style="font-size: 0.9rem; text-transform: none;">
+                  {{ o.customer?.customerName || 'Cliente' }}
+                </span>
+              </div>
+
+              <!-- Body -->
+              <div class="card-body-order">
+                <ul class="order-items-list mb-2">
+                  <li *ngFor="let p of o.items" class="order-item">
+                    <span class="item-name">{{ p.name }} X{{ p.cantidad }}</span>
+                    <span class="item-price">{{ formatPrice(p.subtotal) }}</span>
+                  </li>
+                </ul>
+
+                <div class="order-totals mb-3">
+                  <div class="total-row">
+                    <span>Subtotal (Neto)</span>
+                    <span>{{ formatPrice(o.neto || 0) }}</span>
+                  </div>
+                  <div class="total-row">
+                    <span>Costo delivery</span>
+                    <span>{{ formatPrice(o.costo_delivery || 0) }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between final-total">
+                    <span>TOTAL</span>
+                    <span>{{ formatPrice((o.neto || 0) + (o.costo_delivery || 0)) }}</span>
+                  </div>
+                </div>
+
+                <!-- Customer Info -->
+                <div class="delivery-info">
+                  <div class="info-row">
+                    <span class="info-label">Nombre Completo</span>
+                    {{ o.customer?.customerName || 'Sin Nombre' }}
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Teléfono</span>
+                    {{ o.customer?.customerPhone || 'Sin Teléfono' }}
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Dirección</span>
+                    {{ o.customer?.customerAddress || 'Sin Dirección' }}
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Email</span>
+                    {{ o.customer?.customerEmail || 'Sin Email' }}
+                  </div>
+                </div>
+
+                <!-- Description Input -->
+                <div class="delivery-info">
+                  <div class="info-row">
+                    <span class="info-label">Descripción</span>
+                    {{ o.detalle_venta || 'Sin descripción' }}
+                  </div>
+                </div>
+
+                <!-- Payment Method Information -->
+                <div class="delivery-info">
+                  <div class="info-row">
+                    <span class="info-label">Información medio de pago</span>
+                    {{ o.paymentMethod || 'Sin método de pago especificado' }}
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Buttons Delivery -->
+              <div class="p-3 pt-0">
+                <button class="btn-action btn-orange" (click)="abrirModalPropinaDelivery(o)">
+                  <i class="bi bi-star me-1"></i> Propina
+                </button>
+                <div class="btn-row">
+                  <button class="btn-action btn-orange" (click)="imprimirTicketCaja(o)">
+                    <i class="bi bi-receipt me-1"></i> Ticket Caja
+                  </button>
+                  <button class="btn-action btn-orange" (click)="imprimirTicketCocina(o)">
+                    <i class="bi bi-cup-hot me-1"></i> Ticket Cocina
+                  </button>
+                </div>
+                <div class="btn-row">
+                  <button class="btn-action" [class.btn-blue]="!pedidosAceptados.has(o.id)" [class.btn-green]="pedidosAceptados.has(o.id)" [disabled]="pedidosAceptados.has(o.id)" (click)="pendiente(o.id)">
+                    <i class="bi bi-check-circle me-1"></i> Aceptar pedido
+                  </button>
+                  <button class="btn-action btn-red" (click)="cancelar(o.id)">
+                    <i class="bi bi-x-circle me-1"></i> Cancelar pedido
+                  </button>
+                </div>
+                <button class="btn-action btn-green" (click)="aceptar(o.id)">
+                  <i class="bi bi-cash me-1"></i> Pagar
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #noDelivery>
+        <div class="text-center py-5 text-white-50">
+          <i class="bi bi-truck fs-1 d-block mb-3"></i>
+          <h5>No hay pedidos delivery pendientes</h5>
+        </div>
+      </ng-template>
+    </div>
+
+  </div>
+
+  <!-- Modal Propina (Reutilizado) -->
+  <div class="modal fade" id="modalPropina" tabindex="-1" aria-hidden="true" #modalPropina>
+    <div class="modal-dialog modal-dialog-centered modal-md">
+      <div class="modal-content shadow-lg border-0 rounded-4">
+
+        <!-- Header -->
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-semibold">Propina del Pedido</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body">
+
+          <!-- Subtotal -->
+          <div class="d-flex justify-content-between mb-3">
+            <span class="text-white-50">Subtotal</span>
+            <span class="fw-semibold">{{ pedidoActual.subtotal | currency:'CLP':'symbol' }}</span>
+          </div>
+
+          <!-- Selector de propina -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-white">Seleccionar propina</label>
+
+            <div class="btn-group w-100 mb-2">
+              <button class="btn btn-outline-warning" [class.active]="pedidoActual.propinaSeleccionada === 0.05"
+                (click)="seleccionarPropina(0.05)">
+                5%
+              </button>
+              <button class="btn btn-outline-warning" [class.active]="pedidoActual.propinaSeleccionada === 0.10"
+                (click)="seleccionarPropina(0.10)">
+                10%
+              </button>
+              <button class="btn btn-outline-warning" [class.active]="pedidoActual.propinaSeleccionada === 0.12"
+                (click)="seleccionarPropina(0.12)">
+                12%
+              </button>
+              <button class="btn btn-outline-secondary" [class.active]="pedidoActual.propinaSeleccionada === -1"
+                (click)="seleccionarPropina(-1)">
+                Otro
+              </button>
+            </div>
+
+            <!-- Input personalizado -->
+            <input *ngIf="pedidoActual.propinaSeleccionada === -1" type="number"
+              class="form-control bg-dark text-white border-secondary" placeholder="Propina personalizada en CLP"
+              [(ngModel)]="pedidoActual.propinaPersonalizada" (ngModelChange)="recalcularPropina()">
+
+            <!-- Propina calculada -->
+            <div class="d-flex justify-content-between mb-3 mt-3">
+              <span class="text-white-50">Propina</span>
+              <span class="fw-semibold text-warning">{{ pedidoActual.propina | currency:'CLP':'symbol' }}</span>
+            </div>
+
+            <!-- Total final -->
+            <div class="d-flex justify-content-between fs-5 border-top border-secondary pt-3">
+              <span class="fw-semibold">Total</span>
+              <span class="fw-bold text-success">{{ pedidoActual.total | currency:'CLP':'symbol' }}</span>
+            </div>
+
+          </div>
+
+          <!-- Footer -->
+          <div class="modal-footer border-0 pt-0">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button class="btn btn-orange px-4" (click)="guardarPropina()">Guardar</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detalle Modal (Hidden but kept for logic stability if needed, though buttons are now on card) -->
+  <div class="modal fade" id="detallePedidoModal" tabindex="-1" aria-hidden="true">
+    <!-- ... (kept largely same or simplified if unused currently) ... -->
+  </div>
+
+</div>

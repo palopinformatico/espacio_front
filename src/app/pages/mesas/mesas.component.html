@@ -1,0 +1,85 @@
+<div class="container pb-5">
+  <!-- Botón para crear nueva mesa -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <button class="btn btn-success btn-lg" (click)="abrirModal()">
+        <i class="bi bi-plus-circle me-2"></i>Crear Nueva Mesa
+      </button>
+    </div>
+  </div>
+  
+  <div class="row g-4">
+    <div class="col-md-6 col-lg-4 col-xl-3" *ngFor="let mesa of mesas">
+      <div class="glass-card" [style.--status-color]="
+           mesa.status.toLowerCase() === 'libre' ? '#8FBC8F' : 
+           mesa.status.toLowerCase() === 'ocupada' ? '#fc8181' : '#63b3ed'">
+        <!-- cambio de color de status -->
+        <div class="d-flex justify-content-between align-items-start">
+          <div class="table-icon-wrapper">
+            <img src="mesa.png" alt="" class="me-2 white" width="40px" height="40px" style="position: relative; left: 4px;">
+          </div>
+          <span class="status-badge" [ngClass]="{
+            'status-libre': mesa.status.toLowerCase() === 'libre',
+            'status-ocupada': mesa.status.toLowerCase() === 'ocupada',
+            'status-reservada': mesa.status.toLowerCase() === 'reservada'
+          }">
+            {{ mesa.status }}
+          </span>
+        </div>
+
+        <h1 class="table-number"> {{ mesa.numero_mesa }}</h1>
+        <p class="text-white-50 small mb-4">
+          <i class="bi bi-clock me-1"></i> Última act: Hace un momento
+        </p>
+
+        <div class="card-actions">
+          <button class="btn-action" (click)="irDetalle(mesa.id)">
+            <i class="bi bi-eye"></i> Ver Detalle
+          </button>
+          <button class="btn-action btn-danger" (click)="confirmarEliminarMesa(mesa)">
+            <i class="bi bi-trash"></i> Eliminar
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para crear nueva mesa -->
+<div class="modal fade" id="crearMesaModal" tabindex="-1" aria-labelledby="crearMesaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title" id="crearMesaModalLabel">
+          <i class="bi bi-plus-circle me-2"></i>Crear Nueva Mesa
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="agregarMesa()">
+          <div class="mb-3">
+            <label for="numeroMesa" class="form-label">Número de Mesa</label>
+            <input type="text" class="form-control" id="numeroMesa" 
+                   [(ngModel)]="nuevaMesa.numero_mesa" name="numeroMesa" required>
+          </div>
+          <div class="mb-3">
+            <label for="statusMesa" class="form-label">Estado</label>
+            <select class="form-control" id="statusMesa" 
+                    [(ngModel)]="nuevaMesa.status" name="statusMesa" required>
+              <option value="Libre">Libre</option>
+              <option value="Ocupada">Ocupada</option>
+              <option value="Reservada">Reservada</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-check-circle me-1"></i>Crear Mesa
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

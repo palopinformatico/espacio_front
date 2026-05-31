@@ -1,0 +1,20 @@
+.horario-card {
+  background-color: #1c1c1c;
+  transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+  border: 2px solid transparent;
+}
+
+.horario-card.activo {
+  border-color: #28a745; /* Verde activo */
+  background-color: #212529;
+}
+
+.horario-card.inactivo {
+  border-color: #dc3545; /* Rojo inactivo */
+  background-color: #1c1c1c;
+}
+
+.horario-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}

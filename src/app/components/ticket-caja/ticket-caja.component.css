@@ -1,0 +1,209 @@
+/* Ticket de Caja - Diseño Profesional para Impresión */
+.ticket-caja {
+  width: 80mm;
+  max-width: 80mm;
+  margin: 0 auto;
+  padding: 10mm;
+  font-family: 'Courier New', monospace;
+  background: white;
+  color: #000;
+  font-size: 11pt;
+}
+
+/* Header */
+.ticket-header {
+  text-align: center;
+  margin-bottom: 8mm;
+}
+
+.logo-section {
+  margin-bottom: 3mm;
+}
+
+.ticket-logo {
+  width: 40mm;
+  height: auto;
+  object-fit: contain;
+}
+
+.business-name {
+  font-size: 16pt;
+  font-weight: bold;
+  margin: 2mm 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5mm;
+}
+
+.business-info {
+  font-size: 9pt;
+  margin: 1mm 0;
+  color: #333;
+}
+
+/* Dividers */
+.divider {
+  border-top: 2px dashed #000;
+  margin: 4mm 0;
+}
+
+.divider-thin {
+  border-top: 1px solid #000;
+  margin: 2mm 0;
+}
+
+/* Ticket Info */
+.ticket-info {
+  margin-bottom: 4mm;
+}
+
+.ticket-title {
+  text-align: center;
+  font-size: 14pt;
+  font-weight: bold;
+  margin-bottom: 3mm;
+  text-transform: uppercase;
+  letter-spacing: 0.3mm;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 1.5mm 0;
+  font-size: 10pt;
+}
+
+.info-row .label {
+  font-weight: bold;
+}
+
+.info-row .value {
+  font-weight: normal;
+}
+
+/* Products Table */
+.products-section {
+  margin: 4mm 0;
+}
+
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9pt;
+}
+
+.products-table thead tr {
+  border-bottom: 1px solid #000;
+}
+
+.products-table th {
+  padding: 2mm 0;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 8pt;
+}
+
+.products-table tbody tr {
+  border-bottom: 1px dotted #999;
+}
+
+.products-table td {
+  padding: 2mm 0;
+  vertical-align: top;
+}
+
+.product-name {
+  font-weight: 500;
+}
+
+.price {
+  font-weight: bold;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Totals */
+.totals-section {
+  margin: 4mm 0;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 1.5mm 0;
+  font-size: 11pt;
+}
+
+.total-row.grand-total {
+  font-size: 14pt;
+  font-weight: bold;
+  margin-top: 3mm;
+}
+
+.total-row .label {
+  font-weight: 600;
+}
+
+.total-row .value {
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+/* Footer */
+.footer-section {
+  text-align: center;
+  margin-top: 6mm;
+}
+
+.thank-you {
+  font-size: 12pt;
+  font-weight: bold;
+  margin: 2mm 0;
+  text-transform: uppercase;
+}
+
+.footer-info {
+  font-size: 9pt;
+  color: #666;
+  margin: 1mm 0;
+}
+
+.qr-section {
+  margin-top: 4mm;
+}
+
+.qr-label {
+  font-size: 8pt;
+  color: #666;
+  margin-bottom: 2mm;
+}
+
+/* Print Styles */
+@media print {
+  .ticket-caja {
+    width: 80mm;
+    max-width: 80mm;
+    padding: 5mm;
+    margin: 0;
+    page-break-after: always;
+  }
+
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+}

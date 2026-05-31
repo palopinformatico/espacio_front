@@ -1,0 +1,36 @@
+/* ============================================================
+   APEXCHARTS DARK/LIGHT OVERRIDES
+   ============================================================ */
+
+.apexcharts-tooltip,
+.apexcharts-xaxistooltip,
+.apexcharts-yaxistooltip {
+  background: #1e1e2f !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+}
+
+.apexcharts-tooltip span,
+.apexcharts-xaxistooltip span,
+.apexcharts-yaxistooltip span {
+  color: #fff !important;
+}
+
+/* Ejes */
+.apexcharts-xaxis text,
+.apexcharts-yaxis text {
+  fill: #fff !important;
+  color: #fff !important;
+}
+
+.apexcharts-xaxis-title text,
+.apexcharts-yaxis-title text {
+  fill: #fff !important;
+  color: #fff !important;
+}
+
+@media (max-width: 576px) {
+  .glass-card {
+    padding: 12px;
+  }
+}

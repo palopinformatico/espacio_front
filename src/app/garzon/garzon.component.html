@@ -1,0 +1,790 @@
+<app-header *ngIf="isGarzon && showHeaderAndMenu"></app-header>
+
+<div id="tabs" #tabs class="container mt-4" *ngIf="isGarzon && showHeaderAndMenu">
+  <!-- Menú de pestañas -->
+  <ul class="nav nav-pills justify-content-center mb-4">
+    <li class="nav-item">
+      <a class="nav-link px-4 py-2 fw-semibold" [ngClass]="{ 'active': activeTab === 'pedido' }"
+        (click)="setActiveTab('pedido')">
+        <i class="bi bi-cart me-2"></i> Pedido
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link px-4 py-2 fw-semibold" [ngClass]="{ 'active': activeTab === 'bar' }"
+        (click)="setActiveTab('bar')">
+        <i class="bi bi-cup-straw me-2"></i> Bar
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link px-4 py-2 fw-semibold" [ngClass]="{ 'active': activeTab === 'mesas' }"
+        (click)="setActiveTab('mesas')">
+        <img src="mesa.png" alt="" class="me-2 white" width="20px" height="20px"> Mesas
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link px-4 py-2 fw-semibold" [ngClass]="{ 'active': activeTab === 'gastos' }"
+        (click)="setActiveTab('gastos')">
+        <i class="bi bi-cash-stack me-2"></i> Gastos
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link px-4 py-2 fw-semibold" [ngClass]="{ 'active': activeTab === 'ingresos' }"
+        (click)="setActiveTab('ingresos')">
+        <i class="bi bi-wallet2 me-2"></i> Ingresos
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link px-4 py-2 fw-semibold" [ngClass]="{ 'active': activeTab === 'pendientes' }"
+        (click)="setActiveTab('pendientes')">
+        <i class="bi bi-bell-fill me-2"></i> Pendientes
+      </a>
+    </li>
+  </ul>
+</div>
+
+<!-- Contenido -->
+<div class="tab-content" *ngIf="isGarzon">
+
+    <!-- TAB PEDIDO -->
+    <div id="pedido" class="tab-pane fade show active" *ngIf="activeTab === 'pedido'">
+
+
+
+      <!-- Carrusel de Categorías   "message": "Unauthorized",-->
+      <div class="category-carousel-container">
+        <button class="carousel-nav-btn left" (click)="scrollCarousel('left')">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <div #carousel class="category-carousel">
+          <!-- Categoría "Todos" -->
+          <div class="categoria-item" [class.active]="!sidPedido" (click)="buscarCategoriaPedido(0)">
+            <i class="bi bi-grid-3x3-gap-fill category-icon"></i>
+            <span class="category-name">Todos</span>
+          </div>
+
+          <!-- Categorías dinámicas -->
+          <div *ngFor="let category of categorias" class="categoria-item" [class.active]="sidPedido === category.id"
+            (click)="buscarCategoriaPedido(category.id)">
+            <!-- Bootstrap Icon -->
+            <i *ngIf="isBootstrapIcon(category.icono)" [class]="getIconClass(category.icono)" class="category-icon"
+              style="font-size: 2rem;"></i>
+            <!-- Legacy Image -->
+            <img *ngIf="!isBootstrapIcon(category.icono)" [src]="category.icono" [alt]="category.nombre"
+              class="category-icon">
+            <span class="category-name">{{ category.nombre }}</span>
+          </div>
+        </div>
+
+        <button class="carousel-nav-btn right" (click)="scrollCarousel('right')">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- Premium Selected Table Display -->
+      <!-- Premium Table Selection -->
+      <div class="row mb-3">
+        <!-- Columna Izquierda: Seleccionar Mesa -->
+        <div class="col-md-8" *ngIf="localDisponible">
+          <div class="card border-0 shadow-lg mesas-select-card h-100">
+            <div class="card-body p-3 d-flex flex-row align-items-center justify-content-between">
+              <label for="mesaSelectGarzon" class="form-label text-white display-4 mb-0 me-2 text-nowrap fw-bold">
+                <h1 class="fuerte_letra">NUMERO DE MESA</h1>
+              </label>
+              <div class="input-group w-auto">
+                <span class="input-group-text bg-white border-0 text-primary py-2 start-icon">
+                  <img src="mesa.png" alt="" class="me-2" width="20px" height="20px">
+                </span>
+                <select class="form-select border-0 fw-bold text-dark mesa-select-input py-1 form-select-lg"
+                  id="mesaSelectGarzon" [(ngModel)]="mesaSeleccionada" (ngModelChange)="onMesaChange()"
+                  style="max-width: 150px;">
+                  <option [ngValue]="0" disabled selected>--</option>
+                  <ng-container *ngFor="let mesa of mesas">
+                    <option *ngIf="mesa.status.toLowerCase() !== 'ocupada'" [ngValue]="mesa.id" class="py-1">
+                      {{ mesa.numero_mesa }}
+                    </option>
+                  </ng-container>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Div vacío para mantener el layout cuando local está deshabilitado -->
+        <div class="col-md-8" *ngIf="!localDisponible"></div>
+
+        <!-- Columna Derecha: Botón Resumen Pedido -->
+        <div class="col-md-4">
+          <button
+            class="btn btn_o fw-bold text-white position-relative w-100 h-100 d-flex flex-row justify-content-center align-items-center btn-resumen py-2 px-3"
+            data-bs-toggle="modal" data-bs-target="#cartModalGarzon">
+
+            <div class="d-flex align-items-center me-2">
+              <h1 class="fuerte_letra"><i class="bi bi-cart fs-1"></i>RESUMEN PEDIDO</h1> <!-- small text -->
+            </div>
+
+            <span *ngIf="getCantidadTotal() > 0"
+              class="badge rounded-pill bg-danger shadow-sm border border-white px-2 py-1 ms-2"
+              style="font-size: 0.7rem;">
+              {{ getCantidadTotal() }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- 🔍 BÚSQUEDA Y ORDENAMIENTO PREMIUM -->
+      <!-- ========================================== -->
+      <div class="search-sort-container mb-4">
+        <div class="card border-0 shadow-lg"
+          style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 15px;">
+          <div class="card-body p-4">
+            <div class="row g-3 align-items-center">
+              <!-- Barra de búsqueda -->
+              <div class="col-12 col-md-6">
+                <div class="input-group input-group-lg">
+                  <span class="input-group-text bg-dark border-0 text-white">
+                    <i class="bi bi-search"></i>
+                  </span>
+                  <input type="text" class="form-control bg-dark border-0 text-white" placeholder="Buscar producto..."
+                    [(ngModel)]="filtroPedido" (ngModelChange)="filtrarProductosPedido()" style="box-shadow: none;">
+                  <button *ngIf="filtroPedido" class="btn btn-outline-light" type="button"
+                    (click)="limpiarFiltroPedido()">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Ordenamiento -->
+              <div class="col-12 col-md-6">
+                <div class="d-flex gap-2 justify-content-md-end flex-wrap">
+                  <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-light" [class.active]="ordenPedido === 'asc'"
+                      (click)="ordenarPorPrecioPedido('asc')">
+                      <i class="bi bi-sort-numeric-down me-1"></i> Menor precio
+                    </button>
+                    <button type="button" class="btn btn-outline-light" [class.active]="ordenPedido === 'desc'"
+                      (click)="ordenarPorPrecioPedido('desc')">
+                      <i class="bi bi-sort-numeric-up me-1"></i> Mayor precio
+                    </button>
+                  </div>
+                  <button type="button" class="btn btn-warning" *ngIf="ordenPedido || filtroPedido"
+                    (click)="resetearFiltrosPedido()">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contador de resultados -->
+            <div class="mt-3 text-white-50 small" *ngIf="filtroPedido || ordenPedido">
+              <i class="bi bi-info-circle me-1"></i>
+              Mostrando {{ productosPedido.length }} producto(s)
+              <span *ngIf="filtroPedido"> que coinciden con "{{ filtroPedido }}"</span>
+              <span *ngIf="ordenPedido === 'asc'"> - Ordenado por menor precio</span>
+              <span *ngIf="ordenPedido === 'desc'"> - Ordenado por mayor precio</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Productos -->
+      <div class="row mt-4">
+        <div class="col-md-3 mb-4" *ngFor="let product of productosPedido">
+          <div class="card shadow-sm h-100 producto-card">
+            <img [src]="product.imageUrl" class="card-img-top" alt="{{ product.name }}"
+              (error)="handleImageError($event)" loading="lazy" decoding="async">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ product.name }}</h5>
+              <p class="card-text small flex-grow-1">{{ product.description }}</p>
+              <p class="card-text fw-bold">{{ formatPrice(product.price) }}</p>
+              <button class="btn button-orange mt-auto" (click)="agregarAlCarrito(product)">
+                <i class="bi bi-cart-plus me-1"></i> Agregar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- Mensaje sin resultados -->
+      <div *ngIf="productosPedido.length === 0 && filtroPedido" class="text-center py-5">
+        <div class="card border-0 shadow-lg mx-auto"
+          style="max-width: 400px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 15px;">
+          <div class="card-body p-5">
+            <i class="bi bi-search text-warning" style="font-size: 4rem;"></i>
+            <h4 class="text-white mt-3">No se encontraron productos</h4>
+            <p class="text-white-50">No hay productos que coincidan con "{{ filtroPedido }}"</p>
+            <button class="btn btn-warning mt-2" (click)="limpiarFiltroPedido()">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Ver todos los productos
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL DEL CARRITO DE COMPRAS (Nuevo Diseño) -->
+      <div class="modal fade" id="cartModalGarzon" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content cart-modal-content">
+
+            <!-- Header Modal -->
+            <div class="modal-header cart-modal-header">
+              <h5 class="modal-title fw-bold cart-modal-title">
+                <i class="bi bi-cart3 me-2 text-white"></i> Mi Pedido
+              </h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+            </div>
+
+            <!-- Body Modal -->
+            <div class="modal-body p-4">
+
+              <div *ngIf="carrito.length === 0" class="text-center py-5">
+                <i class="bi bi-cart-x text-white-50 cart-empty-icon"></i>
+                <h5 class="text-white mt-3">¡Tu carrito está vacío!</h5>
+                <p class="text-white-50">Agrega unos deliciosos platos para comenzar.</p>
+                <button class="btn btn-outline-warning mt-2" data-bs-dismiss="modal">
+                  Ir al Menú
+                </button>
+              </div>
+
+              <div *ngIf="carrito.length > 0">
+                <!-- Lista de Productos -->
+                <div class="cart-items-list mb-4">
+                  <div *ngFor="let item of carrito"
+                    class="d-flex align-items-center justify-content-between py-3 border-bottom border-secondary">
+                    <div class="d-flex align-items-center flex-grow-1">
+                      <div class="ms-3">
+                        <h6 class="text-white mb-0 fw-bold">{{ item.name }}</h6>
+                        <small class="text-success fw-bold">{{ formatPrice(item.price) }}</small>
+                      </div>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                      <span class="badge bg-dark border border-secondary text-white me-3 px-3 py-2">
+                        x{{ item.cantidad }}
+                      </span>
+                      <button class="btn btn-sm btn-danger rounded-circle shadow-sm"
+                        (click)="eliminarDelCarrito(item.id)" title="Eliminar">
+                        <i class="bi bi-trash-fill"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Resumen Financiero -->
+                <div class="cart-summary p-3 rounded-3">
+                  <div class="d-flex justify-content-between mb-2 text-white-50 small">
+                    <span>Subtotal</span>
+                    <span>{{ formatPrice(getSubtotal()) }}</span>
+                  </div>
+                  <hr class="border-secondary">
+                  <div class="d-flex justify-content-between mt-2">
+                    <span class="text-white fs-5 fw-bold">Total</span>
+                    <span class="text-warning fs-4 fw-bold">{{ formatPrice(getTotal()) }}</span>
+                  </div>
+                </div>
+
+                <!-- Detalle / Nota -->
+                <div class="mt-4">
+                  <label for="mensaje" class="form-label text-white-50 small">Escribe tu mensaje (opcional)</label>
+                  <textarea class="form-control bg-dark text-white border-secondary" id="mensaje" [(ngModel)]="detalle"
+                    rows="2" placeholder="Ej: Sin cebolla, aderezo aparte..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer Modal -->
+            <div class="modal-footer border-top border-dark justify-content-between">
+              <button type="button" class="btn btn-lg fw-bold text-white flex-grow-1 me-2 btn-confirm-order"
+                (click)="aceptarPedido()" [disabled]="enviandoPedido || carrito.length === 0">
+                <span *ngIf="!enviandoPedido">Confirmar</span>
+                <span *ngIf="enviandoPedido">
+                  <span class="spinner-border spinner-border-sm me-2"></span> Enviando...
+                </span>
+              </button>
+
+              <button type="button" class="btn btn-lg fw-bold text-white flex-grow-1 ms-2 btn-add-more"
+                data-bs-dismiss="modal">
+                Agregar otro
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 🍺 TAB BAR - ULTRA PREMIUM -->
+    <!-- ========================================== -->
+    <div id="bar" class="tab-pane fade show active" *ngIf="activeTab === 'bar'">
+
+
+      <!-- Carrusel de Categorías Bar -->
+      <div class="category-carousel-container mb-4">
+        <button class="carousel-nav-btn left" (click)="scrollCarousel('left')">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <div #carousel class="category-carousel">
+          <!-- Categoría "Todos" -->
+          <div class="categoria-item" [class.active]="!sidBar" (click)="buscarCategoriaBar(0)">
+            <i class="bi bi-grid-3x3-gap-fill category-icon"></i>
+            <span class="category-name">Todos</span>
+          </div>
+
+          <!-- Categorías dinámicas -->
+          <div *ngFor="let category of categorias" class="categoria-item" [class.active]="sidBar === category.id"
+            (click)="buscarCategoriaBar(category.id)">
+            <i *ngIf="isBootstrapIcon(category.icono)" [class]="getIconClass(category.icono)" class="category-icon"
+              style="font-size: 2rem;"></i>
+            <img *ngIf="!isBootstrapIcon(category.icono)" [src]="category.icono" [alt]="category.nombre"
+              class="category-icon">
+            <span class="category-name">{{ category.nombre }}</span>
+          </div>
+        </div>
+
+        <button class="carousel-nav-btn right" (click)="scrollCarousel('right')">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- Sub-Tabs Navigation -->
+      <div class="bar-sub-nav">
+        <div class="bar-sub-pill" [class.active]="activeBarTab === 'consumo'" (click)="setActiveBarTab('consumo')">
+          En consumo
+        </div>
+        <div class="bar-sub-pill" [class.active]="activeBarTab === 'abiertos'" (click)="setActiveBarTab('abiertos')">
+          Tickets Abiertos
+          <span class="badge rounded-pill bg-danger ms-2" *ngIf="getTicketsAbiertos() > 0">
+            {{ getTicketsAbiertos() }}
+          </span>
+        </div>
+        <div class="bar-sub-pill" [class.active]="activeBarTab === 'cerrados'" (click)="setActiveBarTab('cerrados')">
+          Tickets Cerrados
+          <span class="badge rounded-pill bg-danger ms-2" *ngIf="getTicketsCerrados() > 0">
+            {{ getTicketsCerrados() }}
+          </span>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="activeBarTab === 'consumo'">
+        <!-- Columna de Productos -->
+        <div class="col-lg-8 mb-4">
+          <div class="card border-0 shadow-lg products-available-card">
+            <div class="card-header border-0 py-3 card-header-orange">
+              <h5 class="text-white mb-0">
+                Productos Disponibles
+              </h5>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-6 col-md-4 col-lg-3" *ngFor="let product of productosBar">
+                  <div class="product-card-bar" (click)="agregarAlCarritoBar(product)">
+                    <div class="product-image-container">
+                      <img [src]="product.imageUrl" [alt]="product.name" (error)="handleImageError($event)"
+                        class="product-image-bar">
+                      <div class="product-overlay">
+                        <i class="bi bi-plus-circle-fill"></i>
+                      </div>
+                    </div>
+                    <div class="product-info-bar">
+                      <h6 class="product-name-bar">{{ product.name }}</h6>
+                      <span class="product-price-bar">{{ formatPrice(product.price) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sin productos -->
+              <div *ngIf="productosBar.length === 0" class="text-center py-5">
+                <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+                <p class="text-muted mt-3">No hay productos disponibles</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columna del Carrito Bar -->
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-lg sticky-top cart-bar-card">
+
+            <!-- Header Carrito -->
+            <div class="card-header border-0 py-3 card-header-orange">
+              <h5 class="text-white mb-0 fw-bold">
+                Carrito Bar
+                <span class="badge bg-white text-primary ms-2">{{ carritoBar.length }}</span>
+              </h5>
+            </div>
+
+            <div class="card-body p-4">
+              <!-- 🍺 Banner de Sesión Activa -->
+              <div *ngIf="ticketNormalActivo" class="alert alert-info border-0 mb-4"
+                style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 12px;">
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-hourglass-split text-white me-3" style="font-size: 1.5rem;"></i>
+                  <div class="flex-grow-1">
+                    <h6 class="text-white mb-1 fw-bold">
+                      <i class="bi bi-file-text me-1"></i>Ticket Normal
+                      <span *ngIf="sesionTicketIds.length > 0" class="badge bg-white text-info ms-1">#{{
+                        sesionTicketIds[0] }}</span>
+                    </h6>
+                    <small class="text-white-50">
+                      {{ productosEnSesion.length }} producto(s) • Total: {{ formatPrice(getTotalSesion()) }}
+                    </small>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-light btn-sm rounded-pill text-danger" (click)="limpiarSesionCompleta()"
+                      title="Salir del modo edición (no cierra el ticket)">
+                      <i class="bi bi-x-circle-fill me-1"></i>Salir
+                    </button>
+                    <button class="btn btn-light btn-sm rounded-pill text-success" (click)="cerrarTicketNormal()"
+                      [disabled]="enviandoTicketBar" title="Cerrar ticket definitivamente">
+                      <i class="bi bi-check-circle-fill me-1"></i>Cerrar
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 🍺 Productos en Sesión Activa -->
+              <div *ngIf="ticketNormalActivo && productosEnSesion.length > 0" class="mb-4">
+                <h6 class="text-white-50 small mb-2">
+                  <i class="bi bi-list-check me-1"></i>Productos en este ticket:
+                </h6>
+                <div class="productos-sesion-list" style="max-height: 150px; overflow-y: auto;">
+                  <div *ngFor="let item of productosEnSesion"
+                    class="d-flex justify-content-between align-items-center py-2 px-3 mb-1"
+                    style="background: rgba(102, 126, 234, 0.15); border-radius: 8px;">
+                    <span class="text-white small">{{ item.name }}</span>
+                    <span class="text-success small fw-bold">x{{ item.cantidad }} • {{ formatPrice(item.price *
+                      item.cantidad) }}</span>
+                  </div>
+                </div>
+                <hr class="border-secondary">
+              </div>
+
+              <!-- Lista de items del carrito actual -->
+              <div *ngIf="carritoBar.length === 0 && !ticketNormalActivo" class="text-center py-4">
+                <i class="bi bi-cart-x text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-2">Carrito vacío</p>
+              </div>
+
+              <div *ngIf="carritoBar.length === 0 && ticketNormalActivo" class="text-center py-4">
+                <i class="bi bi-plus-circle text-info" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-2">Agrega más productos al ticket abierto</p>
+              </div>
+
+              <div *ngFor="let item of carritoBar" class="cart-item-bar mb-3">
+                <div class="d-flex align-items-center cart-item-content">
+                  <div class="flex-grow-1">
+                    <h6 class="text-white mb-1">{{ item.name }}</h6>
+                    <span class="text-success fw-bold">{{ formatPrice(item.price * item.cantidad) }}</span>
+                  </div>
+                  <!-- Controles de cantidad +/- -->
+                  <!-- Controles de cantidad +/- -->
+                  <div class="d-flex align-items-center">
+                    <button class="btn btn-qty" (click)="eliminarDelCarritoBar(item.id)" title="Quitar 1">
+                      <i class="bi bi-dash"></i>
+                    </button>
+                    <span class="text-white fw-bold px-2" style="min-width: 30px; text-align: center;">
+                      {{ item.cantidad }}
+                    </span>
+                    <button class="btn btn-qty" (click)="incrementarCantidadBar(item.id)" title="Agregar 1">
+                      <i class="bi bi-plus"></i>
+                    </button>
+                    <button class="btn btn-delete-item" (click)="eliminarProductoCompletoBar(item.id)"
+                      title="Eliminar todo">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Total del carrito actual -->
+              <div *ngIf="carritoBar.length > 0">
+                <hr class="border-secondary">
+
+                <!-- 💰 Checkbox Propina -->
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="propinaBar" [(ngModel)]="incluirPropinaBar" >
+                  <label class="form-check-label text-white-50" for="propinaBar">
+                    Agregar 10% Propina ({{ formatPrice(getPropinaSugerida()) }})
+                  </label>
+                </div>
+
+                <!-- 💰 Propina Manual -->
+                <div class="mb-3" *ngIf="!incluirPropinaBar">
+                  <label class="text-white-50 small mb-1">Propina Manual:</label>
+                  <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-dark border-secondary text-white">$</span>
+                    <input type="number" class="form-control bg-dark border-secondary text-white"
+                      [(ngModel)]="propinaManualBar" placeholder="0" min="0" mask="separator.0" thousandSeparator=".">
+                  </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <span class="text-white fs-5">Total a Pagar:</span>
+                  <span class="text-success fs-4 fw-bold">{{ formatPrice(getTotalPagarBar()) }}</span>
+                </div>
+
+                <!-- Selector Tipo Ticket (siempre visible) -->
+                <div class="mb-4">
+                  <label class="text-white-50 small mb-2 d-block">Tipo de Ticket:</label>
+                  <div class="btn-group w-100" role="group">
+                    <button type="button" class="btn btn-ticket-type"
+                      [class.active]="tipoTicketSeleccionado === 'normal'"
+                      [class.btn-normal]="tipoTicketSeleccionado === 'normal'"
+                      (click)="seleccionarTipoTicket('normal')">
+                      <i class="bi bi-file-text me-1"></i>Normal
+                      <span *ngIf="ticketNormalActivo" class="badge bg-success ms-1">Activo</span>
+                    </button>
+                    <button type="button" class="btn btn-ticket-type"
+                      [class.active]="tipoTicketSeleccionado === 'rapido'"
+                      [class.btn-rapido]="tipoTicketSeleccionado === 'rapido'"
+                      (click)="seleccionarTipoTicket('rapido')">
+                      <i class="bi bi-lightning-fill me-1"></i>Rápido
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Botón Enviar / Agregar -->
+                <button class="btn w-100 py-3 fw-bold btn-enviar-ticket"
+                  [class.btn-normal-submit]="tipoTicketSeleccionado === 'normal'"
+                  [class.btn-rapido-submit]="tipoTicketSeleccionado === 'rapido'" (click)="enviarTicketBar()"
+                  [disabled]="enviandoTicketBar">
+                  <span *ngIf="!enviandoTicketBar">
+                    <ng-container *ngIf="tipoTicketSeleccionado === 'rapido'">
+                      <i class="bi bi-lightning-charge-fill me-2"></i>Enviar Rápido ⚡
+                    </ng-container>
+                    <ng-container *ngIf="tipoTicketSeleccionado === 'normal' && ticketNormalActivo">
+                      <i class="bi bi-plus-circle-fill me-2"></i>Agregar al Ticket
+                    </ng-container>
+                    <ng-container *ngIf="tipoTicketSeleccionado === 'normal' && !ticketNormalActivo">
+                      <i class="bi bi-send-fill me-2"></i>Crear Ticket Normal
+                    </ng-container>
+                  </span>
+                  <span *ngIf="enviandoTicketBar">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Procesando...
+                  </span>
+                </button>
+
+                <!-- Botón Cerrar Ticket (solo si hay sesión activa) -->
+                <button *ngIf="ticketNormalActivo" class="btn btn-success w-100 mt-2 py-2 fw-bold"
+                  (click)="cerrarTicketNormal()" [disabled]="enviandoTicketBar">
+                  <i class="bi bi-check-circle-fill me-1"></i>Cerrar y Enviar Ticket Normal
+                  <span class="ms-2 badge bg-white text-success">{{ formatPrice(getTotalSesion()) }}</span>
+                </button>
+
+                <!-- Botón Limpiar Carrito -->
+                <!-- Botón Limpiar Carrito -->
+                <button class="btn w-100 mt-2 btn-crimson fw-bold" (click)="limpiarCarritoBar()">
+                  <i class="bi bi-trash me-2"></i>Limpiar Carrito
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- 📊 HISTORIAL DE CONSUMO - ULTRA PREMIUM -->
+      <!-- ========================================== -->
+
+
+      <!-- ========================================== -->
+      <!-- 📋 TAB TICKETS ABIERTOS -->
+      <!-- ========================================== -->
+      <div class="row g-3" *ngIf="activeBarTab === 'abiertos'">
+        <!-- Botón Actualizar Tickets Abiertos -->
+        <div class="col-12 d-flex justify-content-end mb-2">
+          <button class="btn btn-refresh-orange btn-sm rounded-pill px-3" (click)="cargarTicketsBar()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Actualizar Lista
+          </button>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="cargandoTickets" class="col-12 text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p class="text-secondary mt-2">Cargando tickets...</p>
+        </div>
+
+        <div *ngIf="!cargandoTickets && getTicketsAbiertos() === 0" class="col-12 text-center py-5">
+          <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+          <p class="text-muted mt-2">No hay tickets abiertos</p>
+        </div>
+
+        <ng-container *ngFor="let grupo of ticketsBarAgrupados">
+          <div class="col-12 col-md-6 col-lg-4" *ngIf="!cargandoTickets && grupo.estadoTicket === 0">
+            <div class="ticket-card-consumo ticket-abierto">
+              <div class="ticket-header">
+                <span class="ticket-id">
+                  <i class="bi bi-collection me-1"></i>{{ grupo.productos.length }} producto(s)
+                </span>
+                <span class="ticket-tipo-badge" [class.tipo-normal]="grupo.tipoTicket === 'normal'"
+                  [class.tipo-rapido]="grupo.tipoTicket === 'rapido'">
+                  <i class="bi" [ngClass]="grupo.tipoTicket === 'rapido' ? 'bi-lightning-fill' : 'bi-file-text'"></i>
+                  {{ grupo.tipoTicket }}
+                </span>
+              </div>
+              <div class="ticket-body">
+                <div class="productos-grupo" style="max-height: 120px; overflow-y: auto;">
+                  <div *ngFor="let producto of grupo.productos" class="ticket-product mb-1" style="font-size: 0.9rem;">
+                    <i class="bi bi-box-seam me-1"></i>
+                    <span>{{ producto.name }}</span>
+                    <span class="text-muted ms-1">x{{ producto.cantidad }}</span>
+                    <span class="text-success float-end">{{ formatPrice(producto.total) }}</span>
+                  </div>
+                </div>
+                <!-- 💰 Mostrar Propina si existe -->
+                <div *ngIf="grupo.propina && grupo.propina > 0" class="mt-2 pt-2 border-top border-secondary">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-white-50">Subtotal:</small>
+                    <small class="text-white fw-bold">{{ formatPrice(grupo.totalGrupo) }}</small>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mt-1">
+                    <small class="text-warning"><i class="bi bi-star-fill me-1"></i>Propina:</small>
+                    <small class="text-warning fw-bold">{{ formatPrice(grupo.propina) }}</small>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mt-1">
+                    <span class="text-white fw-bold">Total:</span>
+                    <span class="text-success fw-bold">{{ formatPrice(grupo.totalGrupo + grupo.propina) }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ticket-footer">
+                <span class="ticket-estado estado-abierto">
+                  <i class="bi bi-clock"></i> Abierto
+                </span>
+                <div class="d-flex gap-1">
+                  <button class="btn btn-sm btn-outline-secondary rounded-pill" (click)="imprimirTicketBar(grupo)"
+                    title="Imprimir ticket">
+                    <i class="bi bi-printer-fill"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-warning rounded-pill" (click)="reanudarTicketAbierto(grupo)"
+                    title="Editar ticket">
+                    <i class="bi bi-pencil-fill me-1"></i>Editar
+                  </button>
+                  <button class="btn btn-sm btn-success rounded-pill" (click)="cerrarGrupoTickets(grupo)">
+                    <i class="bi bi-check-lg me-1"></i>Cerrar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- ✅ TAB TICKETS CERRADOS -->
+      <!-- ========================================== -->
+      <div class="row g-3" *ngIf="activeBarTab === 'cerrados'">
+        <!-- Botón Actualizar Tickets Cerrados -->
+        <div class="col-12 d-flex justify-content-end mb-2">
+          <button class="btn btn-refresh-orange btn-sm rounded-pill px-3" (click)="cargarTicketsBar()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Actualizar Lista
+          </button>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="cargandoTickets" class="col-12 text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p class="text-secondary mt-2">Cargando tickets...</p>
+        </div>
+
+        <div *ngIf="!cargandoTickets && getTicketsCerrados() === 0" class="col-12 text-center py-5">
+          <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+          <p class="text-muted mt-2">No hay tickets cerrados</p>
+        </div>
+
+        <ng-container *ngFor="let grupo of ticketsBarAgrupados">
+          <div class="col-12 col-md-6 col-lg-4" *ngIf="!cargandoTickets && grupo.estadoTicket === 1">
+            <div class="ticket-card-consumo ticket-cerrado">
+              <div class="ticket-header">
+                <span class="ticket-id">
+                  <i class="bi bi-collection me-1"></i>{{ grupo.productos.length }} producto(s)
+                </span>
+                <span class="ticket-tipo-badge" [class.tipo-normal]="grupo.tipoTicket === 'normal'"
+                  [class.tipo-rapido]="grupo.tipoTicket === 'rapido'">
+                  <i class="bi" [ngClass]="grupo.tipoTicket === 'rapido' ? 'bi-lightning-fill' : 'bi-file-text'"></i>
+                  {{ grupo.tipoTicket }}
+                </span>
+              </div>
+              <div class="ticket-body">
+                <div class="productos-grupo" style="max-height: 120px; overflow-y: auto;">
+                  <div *ngFor="let producto of grupo.productos" class="ticket-product mb-1" style="font-size: 0.9rem;">
+                    <i class="bi bi-box-seam me-1"></i>
+                    <span>{{ producto.name }}</span>
+                    <span class="text-muted ms-1">x{{ producto.cantidad }}</span>
+                    <span class="text-success float-end">{{ formatPrice(producto.total) }}</span>
+                  </div>
+                </div>
+                <!-- 💰 Mostrar Propina si existe -->
+                <div *ngIf="grupo.propina && grupo.propina > 0" class="mt-2 pt-2 border-top border-secondary">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-white-50">Subtotal:</small>
+                    <small class="text-white fw-bold">{{ formatPrice(grupo.totalGrupo) }}</small>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mt-1">
+                    <small class="text-warning"><i class="bi bi-star-fill me-1"></i>Propina:</small>
+                    <small class="text-warning fw-bold">{{ formatPrice(grupo.propina) }}</small>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mt-1">
+                    <span class="text-white fw-bold">Total:</span>
+                    <span class="text-success fw-bold">{{ formatPrice(grupo.totalGrupo + grupo.propina) }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="ticket-footer">
+                <span class="ticket-estado estado-cerrado">
+                  <i class="bi bi-check-circle-fill"></i> Cerrado
+                </span>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill ms-auto" (click)="imprimirTicketBar(grupo)"
+                  title="Imprimir ticket">
+                  <i class="bi bi-printer-fill me-1"></i>Imprimir
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+
+    </div>
+
+    <!-- TAB MESAS -->
+    <div id="mesas" class="tab-pane fade show active" *ngIf="activeTab === 'mesas'">
+      <app-mesas></app-mesas>
+    </div>
+
+    <!-- TAB GASTOS -->
+    <div id="gastos" class="tab-pane fade show active" *ngIf="activeTab === 'gastos'">
+      <app-gasto></app-gasto>
+    </div>
+
+    <!-- TAB INGRESOS -->
+    <div id="ingresos" class="tab-pane fade show active" *ngIf="activeTab === 'ingresos'">
+      <app-ingresos></app-ingresos>
+    </div>
+
+    <!-- TAB PENDIENTES -->
+    <div id="pendientes" class="tab-pane fade show active" *ngIf="activeTab === 'pendientes'">
+      <app-pendientes #pendientesComponent></app-pendientes>
+    </div>
+
+
+
+
+    <!-- ========================================== -->
+    <!-- 🚀 BOTÓN SCROLL TO TOP PREMIUM -->
+    <!-- ========================================== -->
+    <button *ngIf="showScrollButton" class="scroll-to-top-btn" (click)="scrollToTop()" title="Volver arriba">
+      <i class="bi bi-arrow-up-circle-fill"></i>
+    </button>

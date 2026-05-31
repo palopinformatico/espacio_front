@@ -1,0 +1,198 @@
+<div class="theme-editor container py-4" *ngIf="theme">
+
+  <div class="row g-4">
+
+    <!-- LEFT PANEL -->
+    <div class="col-lg-5">
+      
+      <div class="card shadow-sm p-3 mb-3">
+        <h4 class="mb-3 fw-bold">🎨 Theme Editor — Bootstrap PRO</h4>
+
+        <!-- Select Theme -->
+        <label class="form-label">Seleccionar Tema</label>
+        <select class="form-select mb-3"
+                [ngModel]="theme.id"
+                (ngModelChange)="selectThemeById($event)">
+          <option *ngFor="let t of themes" [value]="t.id">
+            {{ t.name }}
+          </option>
+        </select>
+
+        <!-- Name -->
+        <label class="form-label">Nombre del Tema</label>
+        <input class="form-control mb-3" [(ngModel)]="theme.name" (input)="preview()" />
+
+        <!-- Colors -->
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <label class="form-label">Primario</label>
+            <input type="color"
+                   class="form-control form-control-color"
+                   [(ngModel)]="theme.primaryColor"
+                   (input)="preview()" />
+          </div>
+
+          <div class="col-6">
+            <label class="form-label">Secundario</label>
+            <input type="color"
+                   class="form-control form-control-color"
+                   [(ngModel)]="theme.secondaryColor"
+                   (input)="preview()" />
+          </div>
+        </div>
+
+        <!-- Background Color -->
+        <label class="form-label">Color Fondo (fallback)</label>
+        <input type="color"
+               class="form-control form-control-color mb-3"
+               [(ngModel)]="theme.backgroundColor"
+               (input)="preview()" />
+
+        <!-- Gradient -->
+        <label class="form-label">Gradiente CSS</label>
+
+        <div class="d-flex gap-2 flex-wrap mt-2 mb-2">
+          <button class="btn btn-sm btn-outline-primary"
+                  *ngFor="let g of gradientPresets"
+                  (click)="applyGradientPreset(g)">
+            {{ g.name }}
+          </button>
+        </div>
+
+        <input class="form-control mb-3"
+               placeholder="linear-gradient(45deg,#ff7f00,#ffc107)"
+               [(ngModel)]="theme.gradient"
+               (input)="preview()" />
+
+        <!-- Background Image -->
+        <label class="form-label">Imagen de Fondo</label>
+        <input type="file" class="form-control" accept="image/*" (change)="fileSelected($event)" />
+
+        <div *ngIf="previewImg" class="mt-2">
+          <img [src]="previewImg" class="img-fluid rounded-3 shadow-sm" style="max-height: 150px;" />
+        </div>
+
+        <!-- Options -->
+        <div class="row g-3 mt-3">
+
+          <div class="col-6">
+            <label class="form-label">Modo</label>
+            <select class="form-select"
+                    [(ngModel)]="theme.mode"
+                    (change)="preview()">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="glass">Glass</option>
+            </select>
+          </div>
+
+          <div class="col-6">
+            <label class="form-label">Esquinas</label>
+            <select class="form-select"
+                    [(ngModel)]="theme.borderStyle"
+                    (change)="preview()">
+              <option value="rounded">Rounded</option>
+              <option value="square">Square</option>
+            </select>
+          </div>
+
+          <div class="col-6">
+            <label class="form-label">Sombras</label>
+            <select class="form-select"
+                    [(ngModel)]="theme.cardShadow"
+                    (change)="preview()">
+              <option value="none">None</option>
+              <option value="normal">Normal</option>
+              <option value="deep">Deep</option>
+            </select>
+          </div>
+
+          <div class="col-6">
+            <label class="form-label">Layout</label>
+            <select class="form-select"
+                    [(ngModel)]="theme.layoutType"
+                    (change)="preview()">
+              <option value="full">Full</option>
+              <option value="boxed">Boxed</option>
+              <option value="minimal">Minimal</option>
+              <option value="glass">Glass</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+          <button class="btn btn-primary flex-grow-1" (click)="save()">Guardar</button>
+          <button class="btn btn-outline-secondary" (click)="resetPreview()">Reset</button>
+        </div>
+      </div>
+
+      <!-- Color Presets -->
+      <div class="card shadow-sm p-3">
+        <h6 class="fw-bold">Paletas Rápidas</h6>
+        <div class="d-flex gap-2 flex-wrap mt-2">
+          <button *ngFor="let p of colorPresets"
+                  class="btn btn-sm text-white"
+                  [style.background]="p.primary"
+                  (click)="applyColorPreset(p)">
+            {{ p.name }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANEL = PREVIEW -->
+    <div class="col-lg-7">
+
+      <div class="card shadow-sm border-0 preview-container">
+        <h5 class="p-3 fw-bold">Preview en Vivo</h5>
+
+        <div class="preview p-3">
+
+          <!-- HEADER PREVIEW -->
+          <div class="d-flex align-items-center justify-content-between mb-3 header-preview">
+            <img src="/logo.png" alt="logo" style="width: 150px;">
+            <button class="btn btn-warning fw-bold">Cerrar sesión</button>
+          </div>
+
+          <!-- Category -->
+          <div class="d-flex gap-3 overflow-auto py-2 mb-3">
+            <div class="categoria-item px-3 py-2 rounded"
+                 *ngFor="let i of [1,2,3,4,5]">
+              Categoria
+            </div>
+          </div>
+
+          <!-- Products -->
+          <div class="row g-3">
+            <div class="col-md-4" *ngFor="let i of [1,2,3,4]">
+              <div class="card producto-card h-100 shadow-sm">
+                <img src="https://picsum.photos/seed/{{i}}/600/400"
+                     class="card-img-top"
+                     style="height:150px; object-fit: cover;">
+                <div class="card-body">
+                  <h5 class="card-title">Producto {{i}}</h5>
+                  <p class="card-text small">Descripción corta</p>
+                  <div class="d-flex justify-content-between">
+                    <b>$ 9.99</b>
+                    <button class="btn btn-outline-primary btn-sm">Agregar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cart -->
+          <div class="card p-3 mt-3 shadow-sm">
+            <h5>Mi pedido</h5>
+            <p class="small text-muted mb-0">Carrito de ejemplo…</p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

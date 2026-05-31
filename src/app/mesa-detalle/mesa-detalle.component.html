@@ -1,0 +1,290 @@
+<div class="container-fluid py-4 min-vh-100 ">
+  <!-- Header con usuario activo -->
+  <app-header></app-header>
+
+  <div class="container">
+
+    <!-- Header Section -->
+    @if (mesa) {
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="fw-bold text-white mb-2">
+          <img src="mesa.png" alt="Mesa {{ mesa.numero_mesa }}" class="me-2" width="32" height="32"
+            style="margin-bottom: -4px;  filter: brightness(0) invert(1);">Mesa {{ mesa.numero_mesa }}
+        </h2>
+        <span class="badge rounded-pill px-3 py-2"
+          [ngClass]="{'bg-success': mesa.status === 'Libre', 'bg-danger': mesa.status === 'Ocupada', 'bg-warning text-dark': mesa.status === 'Pendiente'}"
+          style="font-size: 0.875rem; font-weight: 600;">
+          {{ mesa.status }}
+        </span>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-back-mesas btn-lg shadow-sm" (click)="volverAMesas()">
+          <i class="bi bi-arrow-left me-2"></i>Volver
+        </button>
+        <button class="btn btn-outline-primary btn-lg shadow-sm"
+          (click)="cargarProductosYCategorias(); abrirModalForzado()">
+          <i class="bi bi-plus-lg me-2"></i>Agregar Productos
+        </button>
+      </div>
+    </div>
+    }
+
+    <div class="row g-4">
+      <!-- Left Column: Active Order (Carrito) -->
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+          <div class="card-header bg-white py-3 border-bottom-0">
+            <h5 class="card-title fw-bold mb-0 text-primary">
+              <i class="bi bi-cart3 me-2"></i>Pedido Actual
+              @if (carrito && carrito.length > 0 && carrito[0]) {
+              <span class="badge bg-primary ms-2">
+                #{{ carrito[0].numeroVenta }}
+              </span>
+              }
+            </h5>
+          </div>
+
+          <div class="card-body p-0 bg-white">
+            <!-- Empty State -->
+            @if (carrito.length === 0) {
+            <div class="text-center py-5">
+              <i class="bi bi-cart-x display-1 mb-3 d-block" style="color: #e9ecef;"></i>
+              <h5 class="text-muted mb-2">Carrito Vacío</h5>
+              <p class="mb-0 small text-muted">Agrega productos para comenzar el pedido</p>
+            </div>
+            }
+
+            <!-- Order Items Table -->
+            @if (carrito.length > 0) {
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col" class="ps-4">Producto</th>
+                    <th scope="col" class="text-center">Precio</th>
+                    <th scope="col" class="text-center" style="width: 160px;">Cantidad</th>
+                    <th scope="col" class="text-end">Subtotal</th>
+                    <th scope="col" class="text-end pe-4" style="width: 80px;">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white">
+                  @for (item of carrito || []; track item.orderId) {
+                  @for (producto of item.products; track $index) {
+                  <tr class="border-bottom">
+                    <td class="ps-4">
+                      <div class="d-flex align-items-center">
+
+                        <div>
+                          <h6 class="mb-0 text-dark fw-semibold">{{ producto.name || 'Sin nombre' }}</h6>
+                          @if (item.detalle_venta) {
+                          <small class="text-muted">{{ item.detalle_venta }}</small>
+                          }
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-center text-dark">{{ formatPrice(producto.price || 0) }}</td>
+                    <td class="text-center">
+                      <div class="input-group input-group-sm mx-auto" style="max-width: 130px;">
+                        <button class="btn btn-outline-primary" type="button"
+                          (click)="actualizarCantidad(item.orderId, producto.id, -1)">
+                          <i class="bi bi-dash"></i>
+                        </button>
+                        <input type="number" class="form-control text-center border fw-semibold"
+                          [value]="producto.cantidad || 0" readonly>
+                        <button class="btn btn-outline-dark border" type="button"
+                          (click)="actualizarCantidad(item.orderId, producto.id, 1)">
+                          <i class="bi bi-plus"></i>
+                        </button>
+                      </div>
+                    </td>
+                    <td class="text-end fw-bold text-dark">{{ formatPrice(producto?.subtotal || 0) }}</td>
+                    <td class="text-end pe-4">
+                      <button class="btn btn-link text-danger p-0 text-decoration-none"
+                        (click)="onEliminarProducto(item.orderId, producto.id)" title="Eliminar">
+                        <i class="bi bi-trash fs-5"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  }
+                  }
+                </tbody>
+              </table>
+            </div>
+            }
+          </div>
+
+          <!-- Footer Summary -->
+          @if (carrito.length > 0) {
+          <div class="card-footer bg-white border-top-0 py-4">
+            <div class="d-flex justify-content-end align-items-center mb-3">
+              <span class="text-muted me-3">Subtotal:</span>
+              <span class="fs-5 fw-bold">{{ formatPrice(getSubtotal()) }}</span>
+            </div>
+            <div class="d-flex justify-content-end align-items-center mb-4">
+              <span class="text-muted me-3">Propina:</span>
+              <span class="fs-5 fw-bold text-success">{{ formatPrice(getPropina()) }}</span>
+            </div>
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+              <h4 class="mb-0 fw-bold text-dark">Total</h4>
+              <h3 class="mb-0 fw-bold text-primary">{{ formatPrice(getTotal()) }}</h3>
+            </div>
+
+            <!-- Payment Button -->
+            <div class="d-grid gap-2 mt-4">
+              <button class="btn btn-success btn-lg shadow-sm" (click)="marcarComoPagado()">
+                <i class="bi bi-check2-circle me-2"></i>Pagar y Liberar Mesa
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Right Column: Info & History -->
+      <div class="col-lg-4">
+        <!-- Quick Actions / Info -->
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+          <div class="card-body">
+            <h6 class="text-uppercase text-muted small fw-bold mb-3">Detalles</h6>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Estado:</span>
+              <span class="badge bg-light text-dark border">{{ mesa.status || 'Desconocido' }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Fecha:</span>
+              <span class="fw-medium">{{ fechas | date:'mediumDate' }}</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span>Venta #:</span>
+              <span class="fw-medium text-primary">#{{ numeroVenta || '---' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- History (Collapsed/Secondary) -->
+        <div class="card border-0 shadow-sm rounded-4">
+          <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center cursor-pointer"
+            data-bs-toggle="collapse" data-bs-target="#historyCollapse" aria-expanded="false">
+            <h6 class="mb-0 fw-bold text-secondary">
+              <i class="bi bi-clock-history me-2"></i>Historial Pagado
+            </h6>
+            <i class="bi bi-chevron-down text-muted"></i>
+          </div>
+          <div class="collapse show" id="historyCollapse">
+            <div class="card-body p-0">
+              @if (historialPedidos.length === 0) {
+              <div class="text-center py-4 text-muted small">
+                No hay historial hoy.
+              </div>
+              }
+              <ul class="list-group list-group-flush">
+                @for (order of historialPedidos; track order.id) {
+                <li class="list-group-item p-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="badge bg-light text-dark border">#{{ order.numeroVenta }}</span>
+                    <small class="text-muted">{{ order.createdAt | date:'shortTime' }}</small>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="small text-muted">{{ order.products?.length || 0 }} productos</span>
+                    <span class="fw-bold text-success">{{ formatPrice(order.totalPedido || 0) }}</span>
+                  </div>
+                </li>
+                }
+              </ul>
+              @if (historialPedidos.length > 0) {
+              <div class="p-3 bg-light border-top text-center">
+                <small class="text-muted fw-bold">Total Día: {{ formatPrice(getTotalHistorial()) }}</small>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================
+     🌟 ULTRA PREMIUM PRODUCT SELECTION MODAL
+     ========================================== -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg premium-modal">
+
+      <!-- Modal Header - Muy Compacto -->
+      <div class="modal-header border-0 bg-gradient-primary text-white py-1">
+        <h6 class="modal-title fw-semibold mb-0 small" id="productModalLabel">
+          <i class="bi bi-cart-plus me-2"></i>Agregar Productos
+        </h6>
+        <button type="button" class="btn-close btn-close-white btn-sm" (click)="cerrarModalForzado()" aria-label="Close"></button>
+      </div>
+
+      <!-- Search Bar - Compacto -->
+      <div class="px-3 py-2 bg-light border-bottom">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0">
+            <i class="bi bi-search text-muted"></i>
+          </span>
+          <input type="text" class="form-control border-start-0" placeholder="Buscar productos..."
+            [(ngModel)]="searchTerm" (input)="filtrarProductos()" style="font-size: 0.875rem;">
+        </div>
+      </div>
+
+      <!-- Products Grid - Compacto y Profesional -->
+      <div class="modal-body p-3" style="max-height: 65vh; overflow-y: auto;">
+        @if (filteredProducts.length > 0) {
+        <div class="row g-2">
+          @for (producto of filteredProducts; track producto.id) {
+          <div class="col-md-3 col-sm-4 col-6">
+            <div class="card product-card h-100 border-0 shadow-sm">
+              <div class="product-image-wrapper position-relative overflow-hidden">
+                <img [src]="producto.imageUrl || '/logo.png'" class="card-img-top product-image" [alt]="producto.name"
+                  style="height: 150px; object-fit: cover;">
+                <div
+                  class="product-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                  <button class="btn btn-primary btn-sm shadow rounded-circle p-2"
+                    (click)="agregarProductoDesdeModal(producto)">
+                    <i class="bi bi-plus-lg"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body p-2">
+                <h6 class="card-title fw-semibold text-dark mb-1 small">{{ producto?.name || 'Sin nombre' }}</h6>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="fw-bold text-primary small">{{ formatPrice(producto.price) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+        }
+
+        <!-- Empty State -->
+        @if (filteredProducts.length === 0) {
+        <div class="text-center py-5">
+          <i class="bi bi-inbox display-1 text-muted opacity-25"></i>
+          <p class="text-muted mt-3 mb-0">No se encontraron productos</p>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Toast Notification -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1060">
+  <div id="liveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive"
+    aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        <i class="bi bi-check-circle-fill me-2"></i> {{ toastMessage }}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+        aria-label="Close"></button>
+    </div>
+  </div>
+</div>

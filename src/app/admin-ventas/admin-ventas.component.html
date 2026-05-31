@@ -1,0 +1,124 @@
+<div class="container mt-4">
+  <div class="card shadow-lg border-0 p-4 bg-dark text-white">
+    <h4 class="fw-bold text-white mb-4">
+      <i class="bi bi-cash-coin me-2"></i> Ventas por Mesa y Fecha
+    </h4>
+
+    <div class="row g-3 align-items-end mb-4">
+      <div class="col-md-4">
+        <label class="form-label text-white">Filtrar por Mesa</label>
+        <select class="form-select bg-dark text-white border-secondary" [(ngModel)]="mesaId">
+          <option [ngValue]="null">Todas las Mesas</option>
+          <option *ngFor="let mesa of mesas" [value]="mesa.id">
+            Mesa {{ mesa.numero_mesa }}
+          </option>
+        </select>
+      </div>
+
+      <div class="col-md-4 d-flex">
+        <button class="btn btn-primary w-100" (click)="cargarVentasDelDia()">
+          <i class="bi bi-search me-1"></i> Actualizar / Buscar
+        </button>
+      </div>
+    </div>
+
+    <ul class="nav nav-pills mb-3 border-bottom border-secondary pb-3">
+      <li class="nav-item">
+        <button class="nav-link position-relative me-2" 
+                [class.active]="activeTab === 'Pendiente'"
+                [class.bg-warning]="activeTab === 'Pendiente'"
+                [class.text-dark]="activeTab === 'Pendiente'"
+                [class.text-white]="activeTab !== 'Pendiente'"
+                (click)="activeTab = 'Pendiente'">
+          <i class="bi bi-clock-history me-1"></i> Pendientes
+          <span class="badge bg-danger rounded-pill ms-1" *ngIf="ventasPendientes.length > 0">
+            {{ ventasPendientes.length }}
+          </span>
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link me-2" 
+                [class.active]="activeTab === 'Pagado'"
+                [class.bg-success]="activeTab === 'Pagado'"
+                [class.text-white]="true"
+                (click)="activeTab = 'Pagado'">
+          <i class="bi bi-check-circle-fill me-1"></i> Pagados
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" 
+                [class.active]="activeTab === 'Cancelado'"
+                [class.bg-danger]="activeTab === 'Cancelado'"
+                [class.text-white]="true"
+                (click)="activeTab = 'Cancelado'">
+          <i class="bi bi-x-circle-fill me-1"></i> Cancelados
+        </button>
+      </li>
+    </ul>
+
+    <div *ngIf="ventasParaMostrar.length > 0; else noData" class="table-responsive">
+      <table class="table table-dark table-hover align-middle">
+        <thead class="table-secondary">
+          <tr>
+            <th>Mesa</th>
+            <th>Tipo</th>
+            <th>Método</th>
+            <th>Propina</th>
+            <th>Neto</th>
+            <th>Total</th>
+            <th class="text-center">Estado</th>
+            <th>Fecha</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let v of ventasParaMostrar">
+            <td>{{ v.mesa || 'Barra/Delivery' }}</td>
+            <td>{{ v.tipo }}</td>
+            <td>{{ v.metodo }}</td>
+            <td>${{ v.propina | number }}</td>
+            <td>${{ v.neto | number }}</td>
+            <td class="fw-bold text-success">${{ v.total | number }}</td>
+            
+            <td class="text-center">
+              <span class="badge" [ngClass]="getEstadoBadgeClass(v.estado)">
+                <i class="bi me-1" [ngClass]="getEstadoIcono(v.estado)"></i>
+                {{ v.estado || 'Pendiente' }}
+              </span>
+            </td>
+            
+            <td>{{ v.fecha | date: 'short' }}</td>
+            
+            <td class="text-center">
+              <div class="btn-group" role="group">
+                <button *ngIf="v.estado !== 'Pagado' && v.estado !== 'Cancelado'"
+                  class="btn btn-sm btn-success" (click)="marcarComoPagado(v.id)" title="Pagar">
+                  <i class="bi bi-currency-dollar"></i>
+                </button>
+
+                <button *ngIf="v.estado !== 'Pendiente'"
+                  class="btn btn-sm btn-warning" (click)="marcarComoPendiente(v.id)" title="Volver a Pendiente">
+                  <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+
+                <button *ngIf="v.estado !== 'Cancelado'"
+                  class="btn btn-sm btn-danger" (click)="cancelarVenta(v)" title="Cancelar">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #noData>
+      <div class="text-center text-white mt-5 mb-5 p-4 border border-secondary rounded border-dashed">
+        <i class="bi bi-inbox fs-1 d-block mb-3 text-muted"></i>
+        <h5 class="text-muted">No hay ventas {{ activeTab | lowercase }}s</h5>
+        <p class="small text-secondary">Intenta cambiar el filtro de fecha o mesa.</p>
+      </div>
+    </ng-template>
+
+  </div>
+</div>

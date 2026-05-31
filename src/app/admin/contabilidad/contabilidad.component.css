@@ -1,0 +1,836 @@
+/* ============================================================
+   CONTABILIDAD DASHBOARD - ALINK.CL STYLE
+   Color principal: #ff7f00 (Naranja)
+   ============================================================ */
+
+:host {
+  display: block;
+  --bg-primary: #111827;
+  --bg-card: #1f2937;
+  --bg-input: #374151;
+  --border-color: #374151;
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --accent-primary: #ff7f00;
+  --accent-hover: #e67300;
+  --accent-focus: #ff8c33;
+}
+
+.contabilidad-dashboard {
+  padding: 2.5rem;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ============================================================
+   HEADER & FILTROS
+   ============================================================ */
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 2rem;
+}
+
+.header-title h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.025em;
+}
+
+.header-title p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Sección de filtros (izquierda) */
+.filters-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+/* Time Pills */
+.time-pills {
+  display: inline-flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.time-pill {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--text-secondary);
+  padding: 0.5rem 1.25rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.time-pill:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--text-primary);
+}
+
+.time-pill.active {
+  background: var(--accent-primary);
+  color: #ffffff;
+  border-color: var(--accent-primary);
+  font-weight: 600;
+}
+
+/* Date Filters */
+.date-filters {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.date-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.date-group label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0;
+}
+
+.date-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+  outline: none;
+  transition: all 0.2s ease;
+  min-width: 140px;
+}
+
+.date-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px rgba(255, 127, 0, 0.2);
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--accent-primary);
+  color: #000000;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+/* ============================================================
+   NAVEGACIÓN (Derecha)
+   ============================================================ */
+
+.navigation-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.nav-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* ============================================================
+   CONEXIÓN BD
+   ============================================================ */
+
+.connection-status {
+  margin-bottom: 2rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 127, 0, 0.1);
+  border: 1px solid var(--accent-primary);
+  color: var(--accent-primary);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* ============================================================
+   TABS DE NAVEGACIÓN
+   ============================================================ */
+
+/* ============================================================
+   BOTONES DE NAVEGACIÓN
+   ============================================================ */
+
+/* Individual pill button */
+.admin-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.65rem 1.5rem;
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 120px;
+}
+
+.admin-pill:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Active pill - Orange background */
+.admin-pill.active {
+  background: var(--accent-primary);
+  color: #ffffff;
+  border: 1px solid var(--accent-primary);
+  font-weight: 700;
+}
+
+.admin-pill.active:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+/* ============================================================
+   SECCIONES / TAB CONTENT
+   ============================================================ */
+
+.tab-content {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.section-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.section-header p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.period-text {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.period-text span {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ============================================================
+   KPI CARDS
+   ============================================================ */
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.kpi-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-grid-6 {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.kpi-card {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 120px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Clientes compact KPIs */
+.kpi-card.compact {
+  padding: 1rem;
+  min-height: 100px;
+}
+
+.kpi-card.compact .kpi-value {
+  font-size: 1.5rem;
+}
+
+.kpi-card.compact .kpi-header {
+  margin-bottom: 0.5rem;
+}
+
+
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.kpi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.kpi-label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.kpi-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+}
+
+.kpi-value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.kpi-subvalue {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+/* KPI Colors - Icon Bubbles */
+.kpi-ingresos .kpi-icon {
+  background: rgba(74, 222, 128, 0.2);
+}
+
+.kpi-ingresos .kpi-value {
+  color: #4ade80;
+}
+
+.kpi-egresos .kpi-icon {
+  background: rgba(248, 113, 113, 0.2);
+}
+
+.kpi-egresos .kpi-value {
+  color: #f87171;
+}
+
+.kpi-propinas .kpi-icon {
+  background: rgba(96, 165, 250, 0.2);
+}
+
+.kpi-propinas .kpi-value {
+  color: #60a5fa;
+}
+
+.kpi-balance .kpi-icon {
+  background: rgba(250, 204, 21, 0.2);
+}
+
+.kpi-balance .kpi-value {
+  color: #facc15;
+}
+
+.kpi-por-cobrar .kpi-icon {
+  background: rgba(249, 168, 212, 0.2);
+}
+
+.kpi-por-cobrar .kpi-value {
+  color: #f9a8d4;
+}
+
+.kpi-clientes .kpi-icon {
+  background: rgba(99, 102, 241, 0.2);
+}
+
+.kpi-clientes .kpi-value {
+  color: #ffffff;
+}
+
+.kpi-nuevos .kpi-icon {
+  background: rgba(52, 211, 153, 0.2);
+}
+
+.kpi-nuevos .kpi-value {
+  color: #34d399;
+}
+
+.kpi-recurrentes .kpi-icon {
+  background: rgba(34, 211, 238, 0.2);
+}
+
+.kpi-recurrentes .kpi-value {
+  color: #22d3ee;
+}
+
+.kpi-pedidos .kpi-icon {
+  background: rgba(99, 102, 241, 0.2);
+}
+
+.kpi-pedidos .kpi-value {
+  color: #ffffff;
+}
+
+.kpi-pagados .kpi-icon {
+  background: rgba(52, 211, 153, 0.2);
+}
+
+.kpi-pagados .kpi-value {
+  color: #34d399;
+}
+
+.kpi-pendientes .kpi-icon {
+  background: rgba(251, 191, 36, 0.2);
+}
+
+.kpi-pendientes .kpi-value {
+  color: #fbbf24;
+}
+
+.kpi-tiempo .kpi-icon {
+  background: rgba(34, 211, 238, 0.2);
+}
+
+.kpi-tiempo .kpi-value {
+  color: #22d3ee;
+}
+
+.kpi-puntualidad .kpi-icon {
+  background: rgba(168, 85, 247, 0.2);
+}
+
+.kpi-puntualidad .kpi-value {
+  color: #a78bfa;
+}
+
+.kpi-recaudado .kpi-icon {
+  background: rgba(74, 222, 128, 0.2);
+}
+
+.kpi-recaudado .kpi-value {
+  color: #4ade80;
+}
+
+.kpi-gastos-total .kpi-icon {
+  background: rgba(248, 113, 113, 0.2);
+}
+
+.kpi-gastos-total .kpi-value {
+  color: #f87171;
+}
+
+.kpi-categoria-top .kpi-icon {
+  background: rgba(251, 191, 36, 0.2);
+}
+
+.kpi-categoria-top .kpi-value {
+  color: #fbbf24;
+}
+
+.kpi-medio-top .kpi-icon {
+  background: rgba(34, 211, 238, 0.2);
+}
+
+.kpi-medio-top .kpi-value {
+  color: #22d3ee;
+}
+
+/* ============================================================
+   CHARTS
+   ============================================================ */
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.charts-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.charts-grid-1 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.chart-card {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  min-height: 320px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Compact chart cards for clientes section */
+.chart-card.compact {
+  padding: 1rem;
+  min-height: 240px;
+}
+
+.chart-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  border-color: rgba(255, 127, 0, 0.3);
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.chart-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.chart-header span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.chart-card.compact .chart-header h3 {
+  font-size: 1rem;
+}
+
+.chart-card.compact .chart-header span {
+  font-size: 0.7rem;
+}
+
+.chart-body {
+  min-height: 360px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0.5rem;
+}
+
+.chart-card.compact .chart-body {
+  min-height: 180px;
+}
+
+/* Reduce font size in compact charts for better readability */
+.chart-card.compact ::ng-deep .apexcharts-yaxis-label,
+.chart-card.compact ::ng-deep .apexcharts-xaxis-label {
+  font-size: 11px !important;
+}
+
+.chart-card.compact ::ng-deep .apexcharts-legend-text {
+  font-size: 11px !important;
+}
+
+/* Chart Placeholder */
+.chart-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.chart-placeholder span {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+.chart-placeholder p {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* ============================================================
+   PLACEHOLDER BOX
+   ============================================================ */
+
+.placeholder-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem;
+  background: var(--bg-card);
+  border-radius: 1rem;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.placeholder-box span {
+  font-size: 4rem;
+  opacity: 0.5;
+}
+
+.placeholder-box p {
+  font-size: 0.875rem;
+  margin: 0;
+  max-width: 600px;
+}
+
+/* ============================================================
+   APEXCHARTS OVERRIDES
+   ============================================================ */
+
+::ng-deep .apexcharts-tooltip {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+::ng-deep .apexcharts-tooltip-title {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  font-family: inherit !important;
+}
+
+::ng-deep .apexcharts-text {
+  fill: var(--text-secondary) !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+::ng-deep .apexcharts-gridline {
+  stroke: rgba(255, 255, 255, 0.05) !important;
+}
+
+::ng-deep .apexcharts-legend-text {
+  color: var(--text-secondary) !important;
+}
+
+::ng-deep .apexcharts-xaxis-label,
+::ng-deep .apexcharts-yaxis-label {
+  fill: var(--text-secondary) !important;
+  font-weight: 500 !important;
+}
+
+::ng-deep .apexcharts-xaxis-title-text,
+::ng-deep .apexcharts-yaxis-title-text {
+  fill: var(--text-primary) !important;
+  font-weight: bold !important;
+}
+
+::ng-deep .apexcharts-title-text {
+  fill: var(--text-primary) !important;
+}
+
+::ng-deep .apexcharts-menu {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 0.5rem !important;
+}
+
+::ng-deep .apexcharts-menu-item {
+  color: var(--text-primary) !important;
+}
+
+::ng-deep .apexcharts-menu-item:hover {
+  background: rgba(255, 127, 0, 0.2) !important;
+}
+
+::ng-deep .apexcharts-toolbar svg {
+  fill: rgba(255, 255, 255, 0.7) !important;
+}
+
+::ng-deep .apexcharts-toolbar:hover svg {
+  fill: var(--accent-primary) !important;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1280px) {
+  .kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .kpi-grid-6 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .charts-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .contabilidad-dashboard {
+    padding: 1.5rem;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .kpi-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .kpi-grid-6 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .filters-section {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .navigation-section {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .date-filters {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-title h1 {
+    font-size: 1.5rem;
+  }
+
+  .kpi-grid,
+  .kpi-grid-3,
+  .kpi-grid-6 {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .time-pills {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .date-filters {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .date-input {
+    width: 100%;
+  }
+
+  .btn-primary {
+    width: 100%;
+  }
+
+  .nav-row {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .admin-pill {
+    width: 100%;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}

@@ -1,0 +1,18 @@
+.card-header {
+  background: linear-gradient(90deg, #ff7f00);
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+.card {
+  border-radius: 1rem;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f3f5;
+  transition: 0.3s;
+}
+
+.btn-lg {
+  font-size: 1.1rem;
+}

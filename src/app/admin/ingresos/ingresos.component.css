@@ -1,0 +1,105 @@
+/* Dark mode styles are mostly handled by Bootstrap classes and global styles, 
+   but we can add some specific tweaks here */
+
+.btn-orange {
+    background-color: #fd7e14;
+    color: white;
+    border: none;
+}
+
+.btn-orange:hover {
+    background-color: #e36a0d;
+    color: white;
+}
+
+/* Custom scrollbar for multi-selects if needed */
+select[multiple] {
+    overflow-y: auto;
+}
+
+/* ============================================================
+   TABS DE NAVEGACIÓN
+   ============================================================ */
+
+/* ============================================================
+   TABS DE NAVEGACIÓN (Estilo Admin Pill)
+   ============================================================ */
+
+/* Pills row container */
+.pills-row-container {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+/* Pills row */
+.pills-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* Individual pill button */
+.admin-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: transparent;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: none;
+}
+
+.admin-pill i {
+    font-size: 1.1rem;
+}
+
+.admin-pill:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+/* Active pill - Orange background */
+.admin-pill.active {
+    background: #ff7f00;
+    color: white;
+    border: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 127, 0, 0.4);
+}
+
+.admin-pill.active:hover {
+    background: #ff9933;
+    border: none;
+}
+
+/* ============================================================
+   SECCIONES / TAB CONTENT
+   ============================================================ */
+
+.tab-content {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

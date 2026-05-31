@@ -1,0 +1,54 @@
+<div class="ticket-cocina" id="ticketCocina">
+  <div class="ticket-header">
+    <div class="badge-cocina">COCINA</div>
+
+    <!-- 📍 NÚMERO DE MESA -->
+    <div class="mesa-numero text-center">
+      {{ mesa }}
+    </div>
+
+    <div class="pedido-info">
+      <span class="pedido-num">Pedido #{{ pedido?.numeroVenta || pedido?.id }}</span>
+      <span class="hora">{{ hora }}</span>
+    </div>
+  </div>
+
+  <div class="divider-thick"></div>
+
+  <div class="productos-section">
+    <h3 class="productos-title">ORDEN DE COCINA</h3>
+
+    <table class="productos-table">
+      <thead>
+        <tr>
+          <th class="text-left">Producto</th>
+          <th class="text-center">Cantidad</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of pedido?.orderProducts; let i = index" [class.alt-row]="i % 2 === 1">
+          <td class="producto-nombre">
+            <span class="bullet">•</span>
+            {{ item.product?.name || item.name || 'Producto' }}
+          </td>
+          <td class="cantidad-badge">
+            <span class="badge">x{{ item.cantidad || item.quantity || 1 }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="divider-thick" *ngIf="pedido?.detalle_venta"></div>
+
+  <div class="notas-section" *ngIf="pedido?.detalle_venta">
+    <h4 class="notas-title">📝 NOTAS ESPECIALES:</h4>
+    <div class="notas-content">
+      {{ pedido.detalle_venta }}
+    </div>
+  </div>
+
+  
+
+
+</div>

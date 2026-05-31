@@ -1,0 +1,555 @@
+<!-- ============================================== -->
+<!-- 💸 GASTOS - DASHBOARD PREMIUM -->
+<!-- ============================================== -->
+<div class="gastos-dashboard">
+
+  <!-- Header -->
+  <!-- Header -->
+
+
+
+
+  <!-- NAVIGATION PILLS -->
+  <div class="d-flex justify-content-center mb-4">
+    <ul class="nav nav-pills custom-pills">
+      <li class="nav-item">
+        <a class="nav-link admin-pill" [class.active]="activeTab === 'nuevo-gasto'"
+          (click)="setActiveTab('nuevo-gasto')">
+          Nuevo Gasto
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link admin-pill" [class.active]="activeTab === 'categorias'" (click)="setActiveTab('categorias')">
+          Categorías
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link admin-pill" [class.active]="activeTab === 'proveedor'" (click)="setActiveTab('proveedor')">
+          Proveedor
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link admin-pill" [class.active]="activeTab === 'historial'" (click)="setActiveTab('historial')">
+          Historial
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- TAB 1: NUEVO GASTO -->
+  <!-- ========================================== -->
+  <div *ngIf="activeTab === 'nuevo-gasto'" class="animate-fade-in">
+    <div class="card border-0 shadow-lg mx-auto"
+      style="max-width: 800px; background-color: #1e2129; border-radius: 15px;">
+
+      <div class="card-header border-0 py-3 text-center"
+        style="background-color: #fd7e14; border-radius: 15px 15px 0 0;">
+        <h5 class="text-white mb-0 fw-bold text-uppercase">Registrar Nuevo Gasto</h5>
+      </div>
+
+      <div class="card-body p-4 p-lg-5">
+        <form [formGroup]="gastoForm" (ngSubmit)="crearGasto()">
+          <div class="row g-4">
+
+            <div class="col-12">
+              <label class="text-white-50 mb-1 small">Categoría</label>
+              <div class="input-group">
+                <span class="input-group-text bg-dark border-secondary text-secondary">
+                  <i class="bi bi-folder"></i>
+                </span>
+                <select class="form-select bg-dark text-white border-secondary" formControlName="categoriaId">
+                  <option [value]="null" selected>Seleccionar Categoría</option>
+                  <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+                </select>
+              </div>
+              <div *ngIf="gastoForm.get('categoriaId')?.invalid && gastoForm.get('categoriaId')?.touched"
+                class="text-danger small mt-1">
+                Requerido
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="text-white-50 mb-1 small">Proveedor</label>
+              <div class="input-group">
+                <span class="input-group-text bg-dark border-secondary text-secondary">
+                  <i class="bi bi-truck"></i>
+                </span>
+                <select class="form-select bg-dark text-white border-secondary" formControlName="proveedorId">
+                  <option [value]="null" selected>Seleccionar Proveedor</option>
+                  <option *ngFor="let prov of proveedores" [value]="prov.id">{{ prov.nombre }}</option>
+                </select>
+              </div>
+              <div *ngIf="gastoForm.get('proveedorId')?.invalid && gastoForm.get('proveedorId')?.touched"
+                class="text-danger small mt-1">
+                Requerido
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="text-white-50 mb-1 small">Concepto</label>
+              <div class="input-group">
+                <span class="input-group-text bg-dark border-secondary text-secondary">
+                  <i class="bi bi-card-text"></i>
+                </span>
+                <input type="text" class="form-control bg-dark text-white border-secondary" formControlName="concepto"
+                  placeholder="Ej: Compra de insumos">
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="text-white-50 mb-1 small">Fecha</label>
+              <div class="input-group">
+                <span class="input-group-text bg-dark border-secondary text-secondary">
+                  <i class="bi bi-calendar"></i>
+                </span>
+                <input type="date" class="form-control bg-dark text-white border-secondary" formControlName="startDate">
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="text-white-50 mb-1 small">Valor</label>
+              <div class="input-group">
+                <span class="input-group-text bg-dark border-secondary text-secondary">
+                  <i class="bi bi-currency-dollar"></i>
+                </span>
+                <input type="text" class="form-control bg-dark text-white border-secondary" formControlName="amount"
+                  placeholder="0" mask="separator.0" thousandSeparator="." decimalSeparator=",">
+              </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="text-white-50 mb-1 small">Método de pago</label>
+              <div class="input-group">
+                <span class="input-group-text bg-dark border-secondary text-secondary">
+                  <i class="bi bi-credit-card"></i>
+                </span>
+                <select class="form-select bg-dark text-white border-secondary" formControlName="paymentMethod">
+                  <option value="efectivo">Efectivo</option>
+                  <option value="tarjeta">Tarjeta</option>
+                  <option value="transferencia">Transferencia</option>
+                  <option value="cheque">Cheque</option>
+                </select>
+              </div>
+            </div>
+
+            <input type="hidden" formControlName="type">
+
+          </div>
+
+          <div class="d-grid mt-5">
+            <button type="submit" class="btn btn-danger btn-lg fw-bold" [disabled]="gastoForm.invalid"
+              style="background-color: #fd7e14; border-color: #fd7e14;">
+              Agregar Gastos
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- TAB 2: CATEGORÍAS -->
+  <!-- ========================================== -->
+  <div *ngIf="activeTab === 'categorias'" class="animate-fade-in">
+    <div class="card border-0 shadow-lg mx-auto"
+      style="max-width: 900px; background-color: #1e2129; border-radius: 15px;">
+      <div class="card-header border-0 py-3 d-flex justify-content-between align-items-center"
+        style="background-color: #fd7e14; border-radius: 15px 15px 0 0;">
+        <h5 class="text-white mb-0 fw-bold">Categorías</h5>
+        <button class="btn btn-warning btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#categoriaModal"
+          (click)="resetCategoriaForm()">
+          <i class="bi bi-plus-lg me-1"></i> Nueva Categoría
+        </button>
+      </div>
+      <div class="card-body p-4">
+        <div class="row g-3">
+          <div class="col-12 col-md-6 col-lg-4" *ngFor="let cat of categorias">
+            <div class="p-3 rounded-3 d-flex justify-content-between align-items-center"
+              style="background-color: #2c3038; border: 1px solid #495057;">
+              <span class="text-white fw-semibold">{{ cat.nombre }}</span>
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#categoriaModal"
+                  (click)="editarCategoria(cat)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="eliminarCategoria(cat.id!)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="categorias.length === 0" class="col-12 text-center py-5 text-muted">
+            <i class="bi bi-folder-x fs-1"></i>
+            <p class="mt-2 text-white-50">No hay categorías registradas.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- TAB 3: PROVEEDOR -->
+  <!-- ========================================== -->
+  <div *ngIf="activeTab === 'proveedor'" class="animate-fade-in">
+    <div class="card border-0 shadow-lg mx-auto"
+      style="max-width: 1400px; background-color: white; border-radius: 15px;">
+      <div class="card-header border-0 py-3 d-flex justify-content-between align-items-center"
+        style="background-color: #fd7e14; border-radius: 15px 15px 0 0;">
+        <h5 class="text-white mb-0 fw-bold">Proveedores</h5>
+        <button class="btn btn-warning btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#proveedorModal"
+          (click)="resetProveedorForm()">
+          <i class="bi bi-plus-lg me-1"></i> Nuevo Proveedor
+        </button>
+      </div>
+      <div class="card-body p-4">
+        <div class="table-container">
+          <table class="table table-light table-hover align-middle proveedores-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Razón Social</th>
+                <th>RUT</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let prov of proveedores">
+                <td>{{ prov.nombre }}</td>
+                <td>{{ prov.razon_social || '-' }}</td>
+                <td>{{ prov.rut || '-' }}</td>
+                <td>{{ prov.direccion || '-' }}</td>
+                <td>{{ prov.telefono || '-' }}</td>
+                <td>{{prov.email}}</td>
+                <td>
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#proveedorModal"
+                      (click)="editarProveedor(prov)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" (click)="eliminarProveedor(prov.id!)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="proveedores.length === 0">
+                <td colspan="7" class="text-center py-4 text-muted">No hay proveedores registrados.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- TAB 4: HISTORIAL -->
+  <!-- ========================================== -->
+  <div *ngIf="activeTab === 'historial'" class="animate-fade-in">
+    <div class="card border-0 shadow-lg mx-auto" style="background-color: #1e2129; border-radius: 15px;">
+
+      <div class="card-header border-0 py-3 d-flex justify-content-between align-items-center"
+        style="background-color: #fd7e14; border-radius: 15px 15px 0 0;">
+        <h5 class="text-white mb-0 fw-bold">Historial de Gastos</h5>
+        <span class="badge bg-primary">{{ gastosFiltrados.length }} Registros</span>
+      </div>
+
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-light table-hover mb-0 align-middle">
+            <thead class="bg-secondary text-uppercase text-white-50 small">
+              <tr>
+                <th class="ps-4">Fecha</th>
+                <th>Categoría</th>
+                <th>Concepto</th>
+                <th>Proveedor</th>
+                <th>Pago</th>
+                <th>Estado</th>
+                <th class="text-end">Monto</th>
+                <th>Usuario Registrado</th>
+                <th class="text-center pe-4" *ngIf="isAdmin">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let gasto of gastosFiltrados">
+                <td class="ps-4 text-dark-50">{{ (gasto.startDate || gasto.createdAt) | date:'dd/MM/yyyy':'UTC' }}</td>
+
+                <td>
+                  <span class="badge bg-secondary fw-normal">{{ gasto.categorias_gasto?.nombre || 'General' }}</span>
+                </td>
+
+                <td>
+                  <div class="fw-bold text-dark">{{ gasto.concepto }}</div>
+
+                </td>
+
+                <td>
+                  <div class="fw-bold text-dark">{{ gasto.proveedor?.nombre || 'Sin proveedor' }}</div>
+                </td>
+
+                <td class="text-dark-50">{{ gasto.paymentMethod | titlecase }}</td>
+
+                <td>
+                  {{ gasto.estado ? (gasto.estado | titlecase) : (gasto.deletedAt ? 'Anulado' : 'Activo') }}
+
+                </td>
+
+                <td class="text-end fw-bold text-danger">
+                  {{ formatPrice(gasto.amount) }}
+                </td>
+
+                <td class="text-end fw-bold text-danger">
+                  {{ gasto.users?.[0]?.full_name }}
+                </td>
+                <td class="text-center pe-4" *ngIf="isAdmin">
+                  <div class="btn-group" role="group">
+                    <button class="btn btn-sm btn-outline-primary" (click)="abrirModalEditar(gasto)" title="Editar">
+                      <i class="bi bi-pencil-square"></i>
+                    </button>
+
+                    <button class="btn btn-sm btn-outline-danger ms-1" (click)="eliminarGasto(gasto.id)"
+                      title="Eliminar">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr *ngIf="gastosFiltrados.length === 0">
+                <td colspan="6" class="text-center py-5 text-muted">
+                  <i class="bi bi-inbox fs-1"></i>
+                  <p class="mt-2 mb-0">No hay gastos para mostrar.</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gráfico (Opcional, se puede mantener abajo del historial) -->
+    <div class="mt-4">
+      <app-grafico-gastos></app-grafico-gastos>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ========================================== -->
+<!-- MODALES -->
+<!-- ========================================== -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background-color: #1e2129; color: white;">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title" id="editModalLabel">Editar Gasto</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+        <form [formGroup]="editForm" (ngSubmit)="guardarEdicion()">
+
+          <div class="mb-3">
+            <label class="form-label text-white-50">Monto</label>
+            <input type="number" class="form-control bg-dark text-white border-secondary" formControlName="amount">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-white-50">Fecha</label>
+            <input type="date" class="form-control bg-dark text-white border-secondary" formControlName="startDate">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-white-50">Concepto</label>
+            <input type="text" class="form-control bg-dark text-white border-secondary" formControlName="concepto">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-white-50">Categoría</label>
+            <select class="form-select bg-dark text-white border-secondary" formControlName="categoriaId">
+              <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-white-50">Proveedor</label>
+            <select class="form-select bg-dark text-white border-secondary" formControlName="proveedorId">
+              <option *ngFor="let prov of proveedores" [value]="prov.id">{{ prov.nombre }}</option>
+            </select>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-warning fw-bold" [disabled]="editForm.invalid">Guardar Cambios</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal Categoría -->
+<div class="modal fade" id="categoriaModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content custom-modal-dark">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-white">
+          {{ modoEdicionCategoria ? 'Editar Categoría' : 'Nueva Categoría' }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="categoriaForm">
+          <div class="mb-3">
+            <label class="form-label text-white-50">Nombre</label>
+            <input type="text" class="form-control bg-dark text-white border-secondary" formControlName="nombre">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-secondary">
+        <button class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-warning fw-bold" (click)="guardarCategoria()" data-bs-dismiss="modal"
+          [disabled]="categoriaForm.invalid">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Proveedor -->
+<div class="modal fade" id="proveedorModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content custom-modal-dark">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-white">
+          {{ modoEdicionProveedor ? 'Editar Proveedor' : 'Nuevo Proveedor' }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="proveedorForm">
+          <div class="mb-3">
+            <label class="form-label text-white-50">Nombre <span class="text-danger">*</span></label>
+            <input type="text" class="form-control bg-dark text-white border-secondary"
+                   formControlName="nombre"
+                   [class.is-invalid]="proveedorForm.get('nombre')?.invalid && proveedorForm.get('nombre')?.touched">
+            <div *ngIf="proveedorForm.get('nombre')?.invalid && proveedorForm.get('nombre')?.touched"
+                 class="text-danger small mt-1">
+              <div *ngIf="proveedorForm.get('nombre')?.errors?.['required']">El nombre es requerido</div>
+              <div *ngIf="proveedorForm.get('nombre')?.errors?.['minlength']">Mínimo 3 caracteres</div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-white-50">Razón Social</label>
+            <input type="text" class="form-control bg-dark text-white border-secondary"
+                   formControlName="razon_social"
+                   [class.is-invalid]="proveedorForm.get('razon_social')?.invalid && proveedorForm.get('razon_social')?.touched">
+            <div *ngIf="proveedorForm.get('razon_social')?.invalid && proveedorForm.get('razon_social')?.touched"
+                 class="text-danger small mt-1">
+              <div *ngIf="proveedorForm.get('razon_social')?.errors?.['minlength']">Mínimo 3 caracteres</div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-white-50">RUT</label>
+            <input type="text" class="form-control bg-dark text-white border-secondary"
+                   formControlName="rut"
+                   placeholder="12345678-9"
+                   [class.is-invalid]="proveedorForm.get('rut')?.invalid && proveedorForm.get('rut')?.touched">
+            <div *ngIf="proveedorForm.get('rut')?.invalid && proveedorForm.get('rut')?.touched"
+                 class="text-danger small mt-1">
+              <div *ngIf="proveedorForm.get('rut')?.errors?.['pattern']">Formato inválido (Ej: 12345678-9)</div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-white-50">Dirección</label>
+            <input type="text" class="form-control bg-dark text-white border-secondary"
+                   formControlName="direccion"
+                   [class.is-invalid]="proveedorForm.get('direccion')?.invalid && proveedorForm.get('direccion')?.touched">
+            <div *ngIf="proveedorForm.get('direccion')?.invalid && proveedorForm.get('direccion')?.touched"
+                 class="text-danger small mt-1">
+              <div *ngIf="proveedorForm.get('direccion')?.errors?.['minlength']">Mínimo 5 caracteres</div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-white-50">Teléfono</label>
+            <input type="tel" class="form-control bg-dark text-white border-secondary"
+                   formControlName="telefono"
+                   placeholder="+569 12345678"
+                   [class.is-invalid]="proveedorForm.get('telefono')?.invalid && proveedorForm.get('telefono')?.touched">
+            <div *ngIf="proveedorForm.get('telefono')?.invalid && proveedorForm.get('telefono')?.touched"
+                 class="text-danger small mt-1">
+              <div *ngIf="proveedorForm.get('telefono')?.errors?.['pattern']">Formato inválido (Ej: +569 12345678)</div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-white-50">Email (opcional)</label>
+            <input type="email" class="form-control bg-dark text-white border-secondary"
+                   formControlName="email"
+                   placeholder="correo@ejemplo.com">
+          </div>
+
+        </form>
+      </div>
+      <div class="modal-footer border-secondary">
+        <button class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-warning fw-bold" (click)="guardarProveedor()">
+          {{ modoEdicionProveedor ? 'Actualizar' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STYLES LOCALES (O podrían ir en CSS) -->
+<style>
+  .custom-pills .nav-link {
+    color: #adb5bd;
+    font-weight: 600;
+    margin: 0 5px;
+    border-radius: 0;
+    border: 1px solid #495057;
+    padding: 10px 20px;
+    transition: all 0.3s;
+  }
+
+  .custom-pills .nav-link:hover {
+    color: #fff;
+    background-color: #343a40;
+  }
+
+  .custom-pills .nav-link.active {
+    background-color: #fd7e14;
+    /* Naranja pedido */
+    color: #fff;
+    border-color: #fd7e14;
+    box-shadow: 0 4px 6px rgba(253, 126, 20, 0.3);
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .custom-modal-dark {
+    background-color: #1e2129;
+    color: #fff;
+    border: 1px solid #495057;
+  }
+</style>

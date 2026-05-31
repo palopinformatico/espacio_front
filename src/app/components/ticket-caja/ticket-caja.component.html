@@ -1,0 +1,76 @@
+<div class="ticket-caja" id="ticketCaja">
+  <div class="ticket-header">
+    <div class="logo-section">
+      <img src="/logo.png" alt="Logo" class="ticket-logo">
+    </div>
+    <h1 class="business-name">Boulevard Linares</h1>
+    <p class="business-info">Independencia 761, Linares</p>
+    <p class="business-info">Tel: +56 9 7253 1521</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="ticket-info">
+    <h2 class="ticket-title">TICKET DE VENTA</h2>
+    <div class="info-row">
+      <span class="label">N° Ticket:</span>
+      <span class="value">#{{ pedido?.numeroVenta || pedido?.id }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">Mesa:</span>
+      <span class="value">{{ mesa }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">Fecha:</span>
+      <span class="value">{{ fecha }}</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="products-section">
+    <table class="products-table">
+      <thead>
+        <tr>
+          <th class="text-left">Producto</th>
+          <th class="text-center">Cant.</th>
+          <th class="text-right">P.Unit</th>
+          <th class="text-right">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of pedido?.orderProducts">
+          <td class="product-name">{{ item.product?.name || item.name || 'Producto' }}</td>
+          <td class="text-center">{{ item.cantidad || item.quantity || 1 }}</td>
+          <td class="text-right">{{ formatPrice(item.precioUnitario || item.product?.price || item.price || 0) }}</td>
+          <td class="text-right price">{{ formatPrice(item.subtotal || 0) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="totals-section">
+    <div class="total-row">
+      <span class="label">Subtotal:</span>
+      <span class="value">{{ formatPrice(subtotal) }}</span>
+    </div>
+    <div class="total-row">
+      <span class="label">Propina (10%):</span>
+      <span class="value">{{ formatPrice(pedido?.propina || 0) }}</span>
+    </div>
+    <div class="divider-thin"></div>
+    <div class="total-row grand-total">
+      <span class="label">TOTAL:</span>
+      <span class="value">{{ formatPrice(pedido?.total || 0) }}</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="footer-section">
+    <p class="thank-you">¡Gracias por su preferencia!</p>
+    <p class="footer-info">Vuelva pronto</p>
+  </div>
+</div>

@@ -1,0 +1,429 @@
+/* Contenedor principal de tabs */
+#tabs {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+}
+
+/* ========================================== */
+/* 🎯 PILL NAVIGATION - REFERENCE IMAGE DESIGN */
+/* ========================================== */
+
+/* Pills row container */
+.pills-row-container {
+    display: flex;
+    justify-content: flex-start;
+    /* Changed from center to flex-start */
+    width: 100%;
+}
+
+/* Pills row */
+.pills-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-start;
+    /* Changed from center to flex-start */
+    align-items: center;
+}
+
+/* Individual pill button */
+.admin-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: transparent;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: none;
+}
+
+.admin-pill i {
+    font-size: 1.1rem;
+}
+
+.admin-pill:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+/* Active pill - Orange background */
+.admin-pill.active {
+    background: #ff7f00;
+    color: white;
+    border: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 127, 0, 0.4);
+}
+
+.admin-pill.active:hover {
+    background: #ff9933;
+    border: none;
+}
+
+/* ========================================== */
+/* SUB-PILL BUTTONS (for Ajustes submenu) */
+/* ========================================== */
+
+.admin-pill-sub {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: transparent;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    box-shadow: none;
+}
+
+.admin-pill-sub i {
+    font-size: 1rem;
+}
+
+.admin-pill-sub:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.admin-pill-sub.active {
+    background: #ff7f00;
+    color: #ffffff;
+    border: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 127, 0, 0.4);
+}
+
+.admin-pill-sub.active:hover {
+    background: #ff9933;
+    border: none;
+}
+
+.sub-tabs-container {
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+/* Responsive pills */
+@media (max-width: 768px) {
+    .admin-pill {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+
+    .admin-pill i {
+        font-size: 1rem;
+    }
+}
+
+/* Forzar color blanco en secciones de confiGeneral */
+.letra {
+    color: #ffffff !important;
+}
+
+.punto {
+    color: #ff8c42 !important;
+}
+
+/* Cards de categorías - Máxima especificidad */
+.card.bg-dark,
+.card.bg-dark *,
+.card.bg-dark .card-body,
+.card.bg-dark .card-title,
+.card.bg-dark .card-text {
+    color: #ffffff !important;
+}
+
+.card.bg-dark h1,
+.card.bg-dark h2,
+.card.bg-dark h3,
+.card.bg-dark h4,
+.card.bg-dark h5,
+.card.bg-dark h6 {
+    color: #ffffff !important;
+}
+
+.card.bg-dark p,
+.card.bg-dark span,
+.card.bg-dark div {
+    color: #ffffff !important;
+}
+
+/* Asegurar que los textos dentro de cards oscuros sean blancos */
+.card.text-white,
+.card.text-white *,
+.card.text-white h5,
+.card.text-white .card-title {
+    color: #ffffff !important;
+}
+
+/* Iconos/Imágenes de categorías en blanco */
+.icon-white,
+.card-img-top.icon-white {
+    filter: brightness(0) invert(1);
+}
+
+/* Botones en cards */
+.btn-orange {
+    background-color: #ff7f00 !important;
+    border-color: #ff7f00 !important;
+    color: #ffffff !important;
+}
+
+.btn-orange:hover {
+    background-color: #ff7f00 !important;
+    border-color: #ff7f00 !important;
+}
+
+/* ========================================== */
+/* 🎯 SUB-TABS - ULTRA PROFESSIONAL DESIGN */
+/* ========================================== */
+
+/* Contenedor principal de sub-tabs */
+.sub-tabs-container {
+
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 1.25rem;
+
+
+}
+
+.sub-tabs-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+/* Navegación de sub-tabs */
+.sub-tabs-nav {
+    background: transparent !important;
+    padding: 0;
+    margin: 0 !important;
+}
+
+/* Links de sub-tabs */
+.sub-tab-link {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem !important;
+    border-radius: 12px !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.85) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.sub-tab-link i {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.sub-tab-link:hover {
+    background: rgba(255, 140, 66, 0.2) !important;
+    border-color: rgba(255, 140, 66, 0.4) !important;
+    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 140, 66, 0.25);
+}
+
+.sub-tab-link:hover i {
+    transform: scale(1.1);
+}
+
+/* Sub-tab activo */
+.sub-tab-link.active {
+    background: linear-gradient(135deg, #ff8c42 0%, #f5576c 100%) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+    box-shadow: 0 4px 15px rgba(255, 140, 66, 0.4);
+    transform: translateY(-2px);
+}
+
+.sub-tab-link.active i {
+    transform: scale(1.15);
+}
+
+/* Contenido de sub-tabs */
+.sub-tab-content {
+    animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive sub-tabs */
+@media (max-width: 992px) {
+    .sub-tabs-nav {
+        justify-content: flex-start !important;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+
+    .sub-tab-link {
+        padding: 0.65rem 1rem !important;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .sub-tabs-container {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .sub-tab-link {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.8rem;
+    }
+
+    .sub-tab-link span {
+        display: none;
+    }
+
+    .sub-tab-link i {
+        margin: 0 !important;
+        font-size: 1.1rem;
+    }
+}
+
+/* ========================================== */
+/* 📅 DATEPICKER - ESTILOS PREMIUM */
+/* ========================================== */
+
+/* Contenedor del datepicker */
+::ng-deep ngb-datepicker {
+    background: #ffffff !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+/* Header del datepicker (navegación meses) */
+::ng-deep ngb-datepicker-navigation {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 0.75rem !important;
+}
+
+::ng-deep ngb-datepicker-navigation-select {
+    display: flex !important;
+    gap: 0.5rem !important;
+}
+
+::ng-deep ngb-datepicker-navigation-select select {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 0.4rem 0.75rem !important;
+    font-weight: 600 !important;
+    color: #333 !important;
+    cursor: pointer !important;
+}
+
+/* Botones de navegación (flechas) */
+::ng-deep .ngb-dp-arrow button {
+    color: white !important;
+    font-size: 1.2rem !important;
+}
+
+::ng-deep .ngb-dp-arrow button:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 8px !important;
+}
+
+/* Días de la semana (Lu, Ma, Mi...) */
+::ng-deep .ngb-dp-weekday {
+    color: #667eea !important;
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    padding: 0.5rem !important;
+}
+
+/* Contenido del mes */
+::ng-deep .ngb-dp-month {
+    background: #ffffff !important;
+}
+
+/* Días del mes */
+::ng-deep .ngb-dp-day {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+}
+
+::ng-deep [ngbDatepickerDayView] {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+    line-height: 2.5rem !important;
+    color: #333333 !important;
+    font-weight: 500 !important;
+    font-size: 0.95rem !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+::ng-deep [ngbDatepickerDayView]:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+}
+
+/* Día seleccionado */
+::ng-deep .ngb-dp-day.ngb-dp-selected [ngbDatepickerDayView],
+::ng-deep [ngbDatepickerDayView].bg-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    font-weight: 700 !important;
+}
+
+/* Día actual (hoy) */
+::ng-deep .ngb-dp-today [ngbDatepickerDayView] {
+    border: 2px solid #667eea !important;
+    font-weight: 700 !important;
+}
+
+/* Días fuera del mes actual */
+::ng-deep .ngb-dp-day.ngb-dp-outside [ngbDatepickerDayView] {
+    color: #adb5bd !important;
+}
+
+::ng-deep .ngb-dp-day.ngb-dp-outside [ngbDatepickerDayView]:hover {
+    background: #e9ecef !important;
+    color: #333 !important;
+}
+
+/* Días deshabilitados */
+::ng-deep .text-muted {
+    color: #adb5bd !important;
+}
