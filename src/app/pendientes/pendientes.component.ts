@@ -177,7 +177,7 @@ export class PendientesComponent implements OnInit, OnDestroy {
 
               const subtotal = items.reduce((sum: number, item: any) => sum + (item.subtotal || 0), 0);
               const neto = orden.neto || subtotal;
-              const propina = orden.propina || orden.propina_sugerida || Math.round(subtotal * 0.1 * 100) / 100;
+              const propina = orden.propina ?? orden.propina_sugerida ?? Math.round(subtotal * 0.1 * 100) / 100;
               const costoDelivery = orden.costo_delivery || 0;
               const total = orden.totalMesa || (neto + propina + costoDelivery);
 
