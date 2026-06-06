@@ -27,7 +27,7 @@ export const routes: Routes = [
     path: 'mesa/:id', 
     component: MesaDetalleComponent, 
     canActivate: [RoleGuard],
-    data: { role: ['garzon'] } 
+    data: { role: ['garzon', 'admin'] } 
   },
   { path: 'auth/entrar', component: LoginComponent },
   { path: '', component: UserComponent },

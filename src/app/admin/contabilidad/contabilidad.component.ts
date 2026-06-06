@@ -18,6 +18,7 @@ import {
   ApexPlotOptions
 } from 'ng-apexcharts';
 import { GastosService } from '../../services/gastos.service';
+import { IngresoService } from '../../services/ingreso.service';
 
 export interface ChartOptions {
   series: ApexAxisChartSeries;
@@ -54,6 +55,7 @@ export class ContabilidadComponent implements OnInit {
   // KPIs Finanzas
   kpisFinanzas = {
     ingresos: 0,
+    ingresosManual: 0,
     egresos: 0,
     propinas: 0,
     balance: 0,
@@ -125,7 +127,7 @@ export class ContabilidadComponent implements OnInit {
   chartGastosMedioPago: any = null;
   chartGastosEvolucion: any = null;
 
-  constructor(private gastosService: GastosService, private decimalPipe: DecimalPipe) { }
+  constructor(private gastosService: GastosService, private ingresoService: IngresoService, private decimalPipe: DecimalPipe) { }
 
   ngOnInit() {
     this.applyRange('semana');
@@ -220,12 +222,18 @@ export class ContabilidadComponent implements OnInit {
   loadFinanzasKpis() {
     this.gastosService.getKpisFinanzas(this.start, this.end).subscribe({
       next: (data) => {
-        this.kpisFinanzas = data;
+        this.kpisFinanzas = {
+          ...data,
+          ingresosManual: data.ingresosManual || 0
+        };
+        // Cargar ingresos manuales
+        this.cargarIngresosManual();
       },
       error: (err) => {
         console.error('Error al cargar KPIs de finanzas:', err);
         this.kpisFinanzas = {
           ingresos: 0,
+          ingresosManual: 0,
           egresos: 0,
           propinas: 0,
           balance: 0,
@@ -233,6 +241,31 @@ export class ContabilidadComponent implements OnInit {
           porCobrar: 0,
           ticketBar: 0
         };
+      }
+    });
+  }
+
+  cargarIngresosManual() {
+    this.ingresoService.obtenerIngresos().subscribe({
+      next: (ingresos) => {
+        // Filtrar ingresos dentro del rango de fechas
+        const ingresosEnRango = ingresos.filter(ingreso => {
+          const fechaIngreso = new Date(ingreso.fecha).toLocaleDateString('en-CA');
+          return fechaIngreso >= this.start! && fechaIngreso <= this.end!;
+        });
+        
+        // Sumar los montos
+        const totalIngresosManual = ingresosEnRango.reduce((sum, ingreso) => sum + ingreso.monto, 0);
+        
+        // Actualizar el KPI
+        this.kpisFinanzas.ingresosManual = totalIngresosManual;
+        
+        // Recalcular balance
+        this.kpisFinanzas.balance = this.kpisFinanzas.ingresos + this.kpisFinanzas.ingresosManual - this.kpisFinanzas.egresos;
+      },
+      error: (err) => {
+        console.error('Error al cargar ingresos manuales:', err);
+        this.kpisFinanzas.ingresosManual = 0;
       }
     });
   }

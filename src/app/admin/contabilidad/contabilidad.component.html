@@ -67,10 +67,18 @@
     <div class="kpi-grid">
       <div class="kpi-card kpi-ingresos">
         <div class="kpi-header">
-          <span class="kpi-label">Ingresos</span>
+          <span class="kpi-label">Ingresos Carta</span>
           <div class="kpi-icon">💰</div>
         </div>
         <p class="kpi-value">{{ formatMonto(kpisFinanzas.ingresos) }}</p>
+      </div>
+      
+      <div class="kpi-card kpi-ingresos">
+        <div class="kpi-header">
+          <span class="kpi-label">Ingresos Manual</span>
+          <div class="kpi-icon">💰</div>
+        </div>
+        <p class="kpi-value">{{ formatMonto(kpisFinanzas.ingresosManual) }}</p>
       </div>
 
       <div class="kpi-card kpi-egresos">

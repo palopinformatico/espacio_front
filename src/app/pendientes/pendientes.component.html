@@ -134,9 +134,13 @@
                     <span>Costo delivery</span>
                     <span>{{ formatPrice(o.costo_delivery || 0) }}</span>
                   </div>
+                  <div class="total-row">
+                    <span>Propina Sugerida</span>
+                    <span>{{ formatPrice(o.propina || 0) }}</span>
+                  </div>
                   <div class="d-flex justify-content-between final-total">
                     <span>TOTAL</span>
-                    <span>{{ formatPrice((o.neto || 0) + (o.costo_delivery || 0)) }}</span>
+                    <span>{{ formatPrice((o.neto || 0) + (o.costo_delivery || 0) + (o.propina || 0)) }}</span>
                   </div>
                 </div>
 

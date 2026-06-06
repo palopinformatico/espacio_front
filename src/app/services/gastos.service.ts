@@ -383,6 +383,7 @@ export class GastosService {
 
 export interface KpisFinanzasResponse {
   ingresos: number;
+  ingresosManual?: number;
   egresos: number;
   propinas: number;
   balance: number;

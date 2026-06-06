@@ -24,25 +24,26 @@
     <div class="pills-row-container mb-3">
         <div class="pills-row">
             <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'ingresos' }"
-                (click)="setActiveTab('ingresos')">
+                (click)="setActiveTab('ingresos')" *ngIf="isAdmin">
                 <i class="bi bi-wallet2 me-2"></i>
                 <span>Ingresos</span>
             </button>
-            <!--<button class="admin-pill" [ngClass]="{ 'active': activeTab === 'clientes' }"
-                (click)="setActiveTab('clientes')">
+            <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'clientes' }"
+                (click)="setActiveTab('clientes')" *ngIf="isAdmin">
                 <i class="bi bi-people me-2"></i>
                 <span>Clientes</span>
-            </button>-->
+            </button>
+            <!-- Documentos - Comentado: requiere agregar 'documentos' al tipo activeTab en el componente -->
             <!--<button class="admin-pill" [ngClass]="{ 'active': activeTab === 'documentos' }"
                 (click)="setActiveTab('documentos')">
                 <i class="bi bi-file-earmark-text me-2"></i>
                 <span>Documentos</span>
             </button>-->
-            <!--<button class="admin-pill" [ngClass]="{ 'active': activeTab === 'categorias' }"
-                (click)="setActiveTab('categorias')">
+            <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'categorias' }"
+                (click)="setActiveTab('categorias')" *ngIf="isAdmin">
                 <i class="bi bi-tags me-2"></i>
                 <span>Categorías</span>
-            </button>-->
+            </button>
         </div>
     </div>
     <hr class="border-white opacity-100" style="height: 2px;">

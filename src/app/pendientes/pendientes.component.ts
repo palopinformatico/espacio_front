@@ -177,7 +177,7 @@ export class PendientesComponent implements OnInit, OnDestroy {
 
               const subtotal = items.reduce((sum: number, item: any) => sum + (item.subtotal || 0), 0);
               const neto = orden.neto || subtotal;
-              const propina = orden.propina || Math.round(subtotal * 0.1 * 100) / 100;
+              const propina = orden.propina || orden.propina_sugerida || Math.round(subtotal * 0.1 * 100) / 100;
               const costoDelivery = orden.costo_delivery || 0;
               const total = orden.totalMesa || (neto + propina + costoDelivery);
 
@@ -810,26 +810,52 @@ export class PendientesComponent implements OnInit, OnDestroy {
     // Solo actualizar el orderId específico que estamos editando
     const orderId = this.pedidoActual.id || this.pedidoActual.numeroVenta;
     const nuevaPropina = this.pedidoActual.propina;
-    const nuevoTotal = this.pedidoActual.total;
 
-    console.log('💰 Actualizando propina para orderId específico:', orderId, { propinaTipo, propinaValor, nuevaPropina });
+    console.log('💰 Guardar Propina - orderId:', orderId, { propinaTipo, propinaValor, nuevaPropina });
 
     // Actualizar propina SOLO para esta orden específica
     firstValueFrom(this.orderService.updateOrder(orderId, {
       propinaTipo,
-      propinaValor,
-      total: nuevoTotal
+      propinaValor
     }))
-      .then(() => {
-        // Actualizar el objeto en memoria inmediatamente
-        const pedidoEnUI = this.pedidosDelivery.find(p => p.id === orderId) ||
-                           this.pedidosLocal.find(p => p.id === orderId);
+      .then((respuesta) => {
+        console.log('✅ Respuesta del backend recibida:', respuesta);
+        
+        // Buscar el pedido en ambas listas (local y delivery)
+        let pedidoEnUI = this.pedidosLocal.find(p => p.id === orderId || p.numeroVenta === orderId) ||
+                         this.pedidosDelivery.find(p => p.id === orderId || p.numeroVenta === orderId);
         
         if (pedidoEnUI) {
+          console.log('✅ Pedido encontrado en UI');
+          console.log('📊 Datos antes de actualizar:', { 
+            propina: pedidoEnUI.propina, 
+            total: pedidoEnUI.total,
+            totalMesa: pedidoEnUI.totalMesa
+          });
+          
+          // Actualizar la propina sugerida
           pedidoEnUI.propina = nuevaPropina;
+          
+          // Recalcular el total: neto + costo_delivery (si existe) + propina
+          const neto = pedidoEnUI.neto || 0;
+          const costoDelivery = pedidoEnUI.costo_delivery || 0;
+          const nuevoTotal = neto + costoDelivery + nuevaPropina;
+          
           pedidoEnUI.total = nuevoTotal;
           pedidoEnUI.totalMesa = nuevoTotal;
-          console.log('✅ Propina actualizada en UI para orderId:', orderId);
+          
+          console.log('📊 Datos después de actualizar:', { 
+            propina: pedidoEnUI.propina, 
+            total: pedidoEnUI.total,
+            totalMesa: pedidoEnUI.totalMesa,
+            neto,
+            costoDelivery,
+            nuevaPropina
+          });
+        } else {
+          console.warn('⚠️ Pedido no encontrado en UI. ID buscado:', orderId);
+          console.log('📋 Pedidos locales:', this.pedidosLocal.map(p => ({ id: p.id, numeroVenta: p.numeroVenta })));
+          console.log('📋 Pedidos delivery:', this.pedidosDelivery.map(p => ({ id: p.id, numeroVenta: p.numeroVenta })));
         }
 
         // Cerrar modal
@@ -838,19 +864,21 @@ export class PendientesComponent implements OnInit, OnDestroy {
         Swal.fire({
           icon: 'success',
           title: '¡Propina actualizada!',
-          timer: 1500,
+          text: `Propina: ${this.formatPrice(nuevaPropina)}`,
+          timer: 2000,
           showConfirmButton: false
         });
 
         this.isGuardandoPropina = false;
-        this.cdr.detectChanges(); // Forzar detección de cambios
+        // Forzar actualización de UI
+        this.cdr.detectChanges();
       })
       .catch((err) => {
         console.error('❌ Error al actualizar propina:', err);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'No se pudo actualizar la propina',
+          text: 'No se pudo actualizar la propina. Verifica tu conexión.',
         });
         this.isGuardandoPropina = false;
       });
