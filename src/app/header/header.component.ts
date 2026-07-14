@@ -1,21 +1,25 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { UsuarioService } from '../services/usuario.service';
+import { UserStateService } from '../services/user-state.service';
 import { jwtDecode } from 'jwt-decode';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private usuarioService = inject(UsuarioService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+  private userStateService = inject(UserStateService);
 
   currentUser: any = null;
   private isLoggingOut = false;
@@ -23,48 +27,57 @@ export class HeaderComponent implements OnInit {
   userName = 'Usuario';
   userImage = '/logo.png';
 
+  private userSubscription?: Subscription;
+  private userNameSubscription?: Subscription;
+  private userImageSubscription?: Subscription;
+
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
 
   constructor() { }
 
   ngOnInit(): void {
+    console.log('🔍 Header ngOnInit - Cargando usuario actual');
+    this.subscribeToUserState();
     this.loadCurrentUser();
   }
 
+  subscribeToUserState(): void {
+    console.log('🔍 Suscribiéndose a UserStateService');
+    this.userSubscription = this.userStateService.getCurrentUser().subscribe(user => {
+      console.log('🔍 currentUser$ emitio:', user);
+      this.currentUser = user;
+      this.cdr.detectChanges();
+    });
+
+    this.userNameSubscription = this.userStateService.getUserName().subscribe(name => {
+      console.log('🔍 userName$ emitio:', name);
+      this.userName = name;
+      this.cdr.detectChanges();
+    });
+
+    this.userImageSubscription = this.userStateService.getUserImage().subscribe(image => {
+      console.log('🔍 userImage$ emitio:', image);
+      this.userImage = image;
+      this.cdr.detectChanges();
+    });
+  }
+
   loadCurrentUser(): void {
+    console.log('🔍 loadCurrentUser llamado');
     // Si está en proceso de logout, no hacer nada
     if (this.isLoggingOut) {
+      console.log('🔍 isLoggingOut es true, retornando');
       return;
     }
-    
-    const token = this.authService.getToken();
-    if (token) {
-      try {
-        const decoded: any = jwtDecode(token);
-        const userId = decoded.sub || decoded.id;
 
-        if (userId) {
-          this.usuarioService.obtenerPorId(userId).subscribe({
-            next: (user) => {
-              // Debug: mostrar respuesta del backend
-              console.log('Usuario desde backend:', user);
-              // Verificar nuevamente que no esté en logout
-              if (!this.isLoggingOut) {
-                this.currentUser = user;
-                this.userName = user.full_name || user.username || decoded.username || 'Usuario';
-                console.log('UserName asignado:', this.userName);
-                this.userImage = this.getProfileImageUrl(user.profileImage);
-              }
-            },
-            error: (err) => {
-              console.error('Error al cargar usuario:', err);
-            }
-          });
-        }
-      } catch (error) {
-        console.error('Error al decodificar token:', error);
-      }
+    const user = this.authService.getUser();
+    console.log('🔍 Usuario desde AuthService:', user);
+    if (user) {
+      this.userStateService.setUser(user);
+      console.log('🔍 Usuario guardado en UserStateService');
+    } else {
+      console.log('🔍 No hay usuario en token');
     }
   }
 
@@ -96,6 +109,7 @@ export class HeaderComponent implements OnInit {
   logout() {
     // Limpiar todo primero
     this.authService.logout();
+    this.userStateService.clearUser();
 
     // Resetear estado del componente
     this.currentUser = null;
@@ -110,5 +124,32 @@ export class HeaderComponent implements OnInit {
 
   goToLogin() {
     this.router.navigate(['/auth/entrar']);
+  }
+
+  navigateToHome() {
+    console.log('🔍 navigateToHome llamado');
+    const userRole = this.currentUser?.role || this.authService.getUserRole();
+    console.log('🔍 Rol del usuario para navegación:', userRole);
+    console.log('🔍 currentUser:', this.currentUser);
+
+    let targetRoute = '/';
+
+    if (userRole === 'admin') {
+      targetRoute = '/admin';
+    } else if (userRole === 'garzon') {
+      targetRoute = '/garzon';
+    }
+
+    console.log('🔍 Navegando a:', targetRoute);
+    this.router.navigate([targetRoute]).then(() => {
+      console.log('🔍 Navegación completada a:', targetRoute);
+    });
+  }
+
+  ngOnDestroy(): void {
+    console.log('🔍 Header ngOnDestroy - Componente destruido');
+    this.userSubscription?.unsubscribe();
+    this.userNameSubscription?.unsubscribe();
+    this.userImageSubscription?.unsubscribe();
   }
 }

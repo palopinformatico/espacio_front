@@ -81,11 +81,15 @@ export class AdminComponent implements OnInit {
   @ViewChild('pendientesComponent') pendientesComponent!: PendientesComponent;
   @ViewChild('contabilidadComponent') contabilidadComponent!: ContabilidadComponent;
 
-  activeTab = 'ajustes'; // Default to ajustes to show submenu
+  activeTab = 'pedido'; // Default to pedido
   activeSubTab = 'carta'; // Default subtab under Ajustes
   selectedCategoryIds: number[] = [];
   selectedCategoryId: number | 'all' = 'all';
   categorias: Category[] = [];
+  filtroCategoria: string = '';
+  categoriasFiltradas: Category[] = [];
+  filtroCategoriaCarta: string = '';
+  categoriasFiltradasCarta: Category[] = [];
   categoriesFormArrays!: FormArray;
   categoryForm!: FormGroup;
   @ViewChild('closeCreateBtn') closeCreateBtn!: ElementRef;
@@ -133,7 +137,6 @@ export class AdminComponent implements OnInit {
   // Lista de iconos disponibles - Bootstrap Icons para Sistema POS Restaurante/Bar
   iconosDisponibles = [
     // 🍽️ COMIDAS Y PLATOS
-    'cerveza.png',
     'bi-egg-fried',           // Desayuno / Huevos
     'bi-cup-hot',             // Café / Bebidas calientes
     'bi-cup-straw',           // Bebidas frías / Jugos
@@ -263,17 +266,18 @@ export class AdminComponent implements OnInit {
     'bi-journal-check',       // Libro diario
     'bi-qr-code-scan',        // Escanear QR
     // 📂 ICONOS PERSONALIZADOS
-    'Sushi.png',
-    'bebi.png',
-    'ensaladas.png',
-    'icono_coctel.png',
-    'icono_desayuno.png',
-    'icono_pizza.png',
-    'icono_platos.png',
-    'icono_postres.png',
-    'icono_sandwich.png',
-    'mesa.png',
-    'papas.png'
+    'restaurant-cafeterias/Sushi.png',
+    'restaurant-cafeterias/bebi.png',
+    'restaurant-cafeterias/ensaladas.png',
+    'restaurant-cafeterias/icono_coctel.png',
+    'restaurant-cafeterias/icono_desayuno.png',
+    'restaurant-cafeterias/icono_pizza.png',
+    'restaurant-cafeterias/icono_platos.png', 
+    'restaurant-cafeterias/icono_postres.png',
+    'restaurant-cafeterias/icono_sandwich.png',
+    'restaurant-cafeterias/mesa.png',
+    'restaurant-cafeterias/papas.png',
+    'restaurant-cafeterias/cerveza.png'
   ];
 
   usuario: any[] = []; // Changed to any[] since Usuario interface is removed, or should import from service if available
@@ -328,10 +332,17 @@ export class AdminComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    // Asegurar que el tab 'pedido' esté activado al iniciar
+    this.activeTab = 'pedido';
 
     this.listarUsuario();
-    this.isAdmin = this.authService.getUserRole() === 'admin';
+    const userRole = this.authService.getUserRole();
+    console.log('🔍 Role del usuario:', userRole);
+    // Aceptar variantes de rol admin: admin, administrador, Admin, Administrador, etc.
+    const adminRoles = ['admin', 'administrador'];
+    this.isAdmin = userRole ? adminRoles.includes(userRole.toLowerCase()) : false;
+    console.log('🔍 isAdmin calculado:', this.isAdmin);
+    console.log('🔍 activeTab inicial:', this.activeTab);
     this.categoryForm = this.fb.group({
       nombre: ['', Validators.required],
       icono: ['', Validators.required]
@@ -388,7 +399,8 @@ export class AdminComponent implements OnInit {
     this.categoriaService.obtenerCategorias().subscribe({
       next: (response: Category[]) => {
         this.categorias = response.sort((a, b) => a.nombre.localeCompare(b.nombre));
-
+        this.categoriasFiltradas = [...this.categorias];
+        this.categoriasFiltradasCarta = [...this.categorias];
 
         // 🔹 Crear un FormControl (checkbox) por cada categoría
         const categoryControls = this.categorias.map(() => this.fb.control(false));
@@ -404,6 +416,41 @@ export class AdminComponent implements OnInit {
     });
   }
 
+  filtrarCategorias(): void {
+    if (!this.filtroCategoria || this.filtroCategoria.trim() === '') {
+      this.categoriasFiltradas = [...this.categorias];
+    } else {
+      const filtro = this.filtroCategoria.toLowerCase();
+      this.categoriasFiltradas = this.categorias.filter(cat =>
+        cat.nombre.toLowerCase().includes(filtro)
+      );
+    }
+  }
+
+  filtrarCategoriasCarta(): void {
+    if (!this.filtroCategoriaCarta || this.filtroCategoriaCarta.trim() === '') {
+      this.categoriasFiltradasCarta = [...this.categorias];
+    } else {
+      const filtro = this.filtroCategoriaCarta.toLowerCase();
+      this.categoriasFiltradasCarta = this.categorias.filter(cat =>
+        cat.nombre.toLowerCase().includes(filtro)
+      );
+    }
+    // Resetear dropdown a "Todas las categorías" al escribir
+    this.selectedCategoryId = 'all';
+  }
+
+  limpiarFiltroCategoria(): void {
+    this.filtroCategoria = '';
+    this.categoriasFiltradas = [...this.categorias];
+  }
+
+  limpiarFiltroCategoriaCarta(): void {
+    this.filtroCategoriaCarta = '';
+    this.categoriasFiltradasCarta = [...this.categorias];
+    this.loadProducts();
+  }
+
 
 
 
@@ -411,6 +458,25 @@ export class AdminComponent implements OnInit {
 
   seleccionarIcono(icono: string) {
     this.categoria.icono = icono;
+  }
+
+  /**
+   * Obtiene la ruta correcta del icono
+   */
+  getIconPath(icono: string): string {
+    if (!icono) return '';
+    // Si ya tiene el prefijo, usar tal cual
+    if (icono.includes('restaurant-cafeterias/')) {
+      return icono;
+    }
+    // Si es un Bootstrap Icon, no agregar prefijo
+    if (icono.startsWith('bi-')) {
+      return icono;
+    }
+    // Remover slash inicial si existe
+    const cleanIcono = icono.startsWith('/') ? icono.substring(1) : icono;
+    // Si no tiene prefijo y no es Bootstrap Icon, agregarlo
+    return 'restaurant-cafeterias/' + cleanIcono;
   }
 
   guardarCategoria() {
@@ -464,18 +530,35 @@ export class AdminComponent implements OnInit {
       limit: this.limit
     };
 
-    if (this.selectedCategoryId !== 'all') {
-      params.categoryIds = [this.selectedCategoryId];
+    // Si hay filtro de texto de búsqueda de producto, traer todos los productos sin filtrar por categoría
+    // El filtrado se hará localmente por nombre
+    if (!this.filtroCategoriaCarta || this.filtroCategoriaCarta.trim() === '') {
+      // Solo usar categoría seleccionada si no hay texto de búsqueda
+      if (this.selectedCategoryId !== 'all') {
+        params.categoryIds = [this.selectedCategoryId];
+      }
     }
+    // Si hay texto de búsqueda, no enviamos categoryIds para traer todos los productos
 
     this.productService.buscarProductos(params).subscribe({
       next: (response: { data: any[]; currentPage: number; totalPages: number; }) => {
-        this.products = response.data;
-        this.currentPage = response.currentPage;
-        this.totalPages = response.totalPages;
+        let loadedProducts = response.data;
 
-        // Generar los números de página
-        this.pages = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+        // Filtrar productos por nombre si hay texto de búsqueda
+        if (this.filtroCategoriaCarta && this.filtroCategoriaCarta.trim() !== '') {
+          const filtro = this.filtroCategoriaCarta.toLowerCase();
+          console.log('Filtrando por:', filtro);
+          loadedProducts = loadedProducts.filter(p =>
+            p.name.toLowerCase().includes(filtro)
+          );
+          console.log('Productos después de filtrar:', loadedProducts.length);
+        }
+
+        this.products = loadedProducts;
+        this.currentPage = 1;
+        this.totalPages = 1;
+        this.pages = [1];
+
       },
       error: (err: any) => {
         let errorMsg = 'Error desconocido';
@@ -1128,7 +1211,9 @@ export class AdminComponent implements OnInit {
   }
 
   setActiveTab(tab: string) {
+    console.log('🔄 setActiveTab llamado con:', tab);
     this.activeTab = tab;
+    console.log('🔄 activeTab después de cambiar:', this.activeTab);
 
     // Espera un ciclo de Angular para que la pestaña se active
     setTimeout(() => {

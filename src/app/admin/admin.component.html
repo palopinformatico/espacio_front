@@ -34,7 +34,8 @@
 
       <button class="admin-pill" [ngClass]="{ 'active': activeTab === 'mesas' }"
         (click)="setActiveTab('mesas')">
-        <i class="bi bi-bell-fill me-2"></i>
+        <img src="restaurant-cafeterias/mesa.png" alt="Mesas" class="me-2"
+          style="height: 20px; width: 20px; filter: brightness(0) invert(1);" />
         <span>Mesas</span>
       </button>
 
@@ -82,7 +83,7 @@
 
       <button class="admin-pill-sub" [ngClass]="{ 'active': activeSubTab === 'mesas' }"
         (click)="setActiveSubTab('mesas')">
-        <img src="mesa.png" alt="Mesas" class="me-2"
+        <img src="restaurant-cafeterias/mesa.png" alt="Mesas" class="me-2"
           style="height: 24px; width: 24px; filter: brightness(0) invert(1);">
         <span>Mesas</span>
       </button>
@@ -114,15 +115,27 @@
       <div *ngIf="activeSubTab === 'categorias'">
 
         <h3 class="linea2 "></h3>
-        <div class="container text-start my-3">
+        <div class="container d-flex justify-content-between align-items-center my-3">
+          <!-- Botón Agregar (Izquierda) -->
           <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#exampleModal" aria-hidden="true">
             <i class="bi bi-plus-lg me-2"></i>Agregar
           </button>
-        </div>
 
-        &nbsp;
+          <!-- Filtro de búsqueda de categorías -->
+          <div class="input-group" style="max-width: 300px;">
+            <span class="input-group-text bg-dark border-0 text-white">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control bg-dark border-0 text-white" placeholder="Buscar categoría..."
+              [(ngModel)]="filtroCategoria" (ngModelChange)="filtrarCategorias()" style="box-shadow: none;">
+            <button *ngIf="filtroCategoria" class="btn btn-outline-light" type="button"
+              (click)="limpiarFiltroCategoria()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+        </div>
         <div class="row g-4">
-          <div class="col-6 col-md-4 col-lg-3 col-xl-2" *ngFor="let cat of categorias">
+          <div class="col-6 col-md-4 col-lg-3 col-xl-2" *ngFor="let cat of categoriasFiltradas">
             <div class="card bg-dark text-white mb-3 h-100 border-0 rounded-4" style="min-height: 320px;">
               <div class="card-body d-flex flex-column p-4">
 
@@ -132,7 +145,7 @@
                   <div class="mb-4 text-center">
                     <i *ngIf="isBootstrapIcon(cat.icono)" [class]="getIconClass(cat.icono)"
                       style="font-size: 3.5rem; color: white;"></i>
-                    <img *ngIf="!isBootstrapIcon(cat.icono)" [src]="cat.icono"
+                    <img *ngIf="!isBootstrapIcon(cat.icono)" [src]="getIconPath(cat.icono)"
                       style="height: 64px; width: 64px; object-fit: contain; filter: brightness(0) invert(1);"
                       alt="Icono">
                   </div>
@@ -167,15 +180,29 @@
 
         <h3 class="lineaCarta"></h3>
         <div class="container d-flex justify-content-between align-items-center my-3">
-          <!-- Botón Agregar (Izquierda) -->
-          <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#exampleModal2" aria-hidden="true"
-            (click)="resetProductForm()">
-            <i class="bi bi-plus-lg me-2"></i>Agregar
-          </button>
+          <!-- Botón Agregar y Filtro de búsqueda (Izquierda) -->
+          <div class="d-flex gap-2 align-items-center">
+            <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#exampleModal2" aria-hidden="true"
+              (click)="resetProductForm()" style="white-space: nowrap;">
+              <i class="bi bi-plus-lg me-2"></i>Agregar
+            </button>
 
-          <!-- Filtro (Derecha) -->
+            <div class="input-group" style="max-width: 300px;">
+              <span class="input-group-text bg-dark border-0 text-white">
+                <i class="bi bi-search"></i>
+              </span>
+              <input type="text" class="form-control bg-dark border-0 text-white" placeholder="Buscar producto..."
+                [(ngModel)]="filtroCategoriaCarta" (ngModelChange)="filtrarCategoriasCarta(); loadProducts()" style="box-shadow: none;">
+              <button *ngIf="filtroCategoriaCarta" class="btn btn-outline-light" type="button"
+                (click)="limpiarFiltroCategoriaCarta()">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Filtro de categorías (Derecha) -->
           <select class="form-select w-auto bg-dark text-light border-orange shadow-sm" [(ngModel)]="selectedCategoryId"
-            (change)="loadProducts()">
+            (change)="limpiarFiltroCategoriaCarta(); loadProducts()">
             <option value="all">Todas las categorías</option>
             <option *ngFor="let categoria of categorias" [value]="categoria.id">
               {{ categoria.nombre }}
@@ -415,7 +442,7 @@
                 <div class="card-header text-center py-3" [style.background]="mesa.status.toLowerCase() === 'libre' ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' :
                                   mesa.status.toLowerCase() === 'ocupada' ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' :
                                   'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'">
-                  <img src="mesa.png" alt="" style="font-size: 2.5rem;width:60px;height:60px;object-fit: cover;" />
+                  <img src="restaurant-cafeterias/mesa.png" alt="" style="font-size: 2.5rem;width:60px;height:60px;object-fit: cover;" />
                   <h2 class="fw-bold mb-0 mt-2"> {{ mesa.numero_mesa }}</h2>
                 </div>
                 <div class="card-body text-center p-4">
@@ -666,7 +693,7 @@
                   <i *ngIf="isBootstrapIcon(icono)" [class]="'bi ' + icono" style="font-size: 1.5rem;"></i>
 
                   <!-- Si es Imagen -->
-                  <img *ngIf="!isBootstrapIcon(icono)" [src]="icono"
+                  <img *ngIf="!isBootstrapIcon(icono)" [src]="getIconPath(icono)"
                     style="width: 24px; height: 24px; object-fit: contain;"
                     [style.filter]="categoria.icono === icono ? 'brightness(0) invert(1)' : 'none'" alt="icon">
                 </button>
@@ -685,7 +712,7 @@
             <i *ngIf="isBootstrapIcon(categoria.icono)" [class]="'bi ' + categoria.icono"
               style="font-size: 4rem; color: white;"></i>
 
-            <img *ngIf="!isBootstrapIcon(categoria.icono)" [src]="categoria.icono"
+            <img *ngIf="!isBootstrapIcon(categoria.icono)" [src]="getIconPath(categoria.icono)"
               style="width: 64px; height: 64px; object-fit: contain; filter: brightness(0) invert(1);"
               alt="Vista previa">
 
@@ -947,7 +974,7 @@
                   title="{{ icono }}">
 
                   <i [class]="'bi ' + icono" style="font-size: 1.3rem;"></i>
-                  <img *ngIf="!isBootstrapIcon(icono)" [src]="icono"
+                  <img *ngIf="!isBootstrapIcon(icono)" [src]="getIconPath(icono)"
                     style="width: 24px; height: 24px; object-fit: contain;"
                     [style.filter]="categoryForm.get('icono')?.value === icono ? 'brightness(0) invert(1)' : 'none'"
                     alt="icon">
@@ -966,7 +993,7 @@
             <i *ngIf="isBootstrapIcon(categoryForm.get('icono')?.value)"
               [class]="'bi ' + categoryForm.get('icono')?.value" style="font-size: 4rem; color: white;"></i>
 
-            <img *ngIf="!isBootstrapIcon(categoryForm.get('icono')?.value)" [src]="categoryForm.get('icono')?.value"
+            <img *ngIf="!isBootstrapIcon(categoryForm.get('icono')?.value)" [src]="getIconPath(categoryForm.get('icono')?.value)"
               style="width: 64px; height: 64px; object-fit: contain; filter: brightness(0) invert(1);"
               alt="Vista previa">
 
@@ -1087,7 +1114,7 @@
       <!-- Header -->
       <div class="modal-header border-bottom border-secondary">
         <h5 class="modal-title fw-bold" id="mesaModalLabel">
-          <img src="/mesa.png" alt=""
+          <img src="restaurant-cafeterias/mesa.png" alt=""
             style="font-size: 2.5rem;width:40px;height:40px;object-fit: cover; filter: brightness(0) invert(1);" />
           {{ selectedMesa ? 'Editar' : 'Nueva' }} Mesa
         </h5>

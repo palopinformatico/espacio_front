@@ -375,7 +375,13 @@ export class MesaDetalleComponent implements OnInit, OnDestroy {
           // Actualizar localmente para feedback inmediato
           product.cantidad = newQuantity;
           product.subtotal = product.cantidad * product.price;
-          order.total = order.products.reduce((sum: number, p: any) => sum + p.subtotal, 0);
+          const nuevoSubtotal = order.products.reduce((sum: number, p: any) => sum + p.subtotal, 0);
+          order.total = nuevoSubtotal;
+
+          // Recalcular la propina (10% del nuevo subtotal)
+          const nuevaPropina = Math.round(nuevoSubtotal * 0.1 * 100) / 100;
+          order.propina = nuevaPropina;
+          console.log('🔄 Cantidad cambiada - Nuevo subtotal:', nuevoSubtotal, 'Nueva propina:', nuevaPropina);
           this.cdr.detectChanges();
 
           // Guardar en backend
@@ -385,6 +391,16 @@ export class MesaDetalleComponent implements OnInit, OnDestroy {
           }]).subscribe({
             next: (response) => {
               console.log('✅ Cantidad actualizada en backend:', response);
+
+              // Actualizar la propina en el backend
+              this.ordersService.updateOrder(orderId, {
+                propinaTipo: '10',
+                propinaValor: undefined
+              }).subscribe({
+                next: (res) => console.log('✅ Propina actualizada en backend'),
+                error: (err) => console.error('❌ Error actualizando propina en backend:', err)
+              });
+
               // ✅ NO recargar - la actualización local ya es suficiente
               // Desactivar bandera después de un pequeño delay
               setTimeout(() => {
@@ -523,7 +539,22 @@ export class MesaDetalleComponent implements OnInit, OnDestroy {
             }
           } else {
             // Recalcular el total de la orden
-            order.total = order.products.reduce((sum: number, p: any) => sum + p.subtotal, 0);
+            const nuevoSubtotal = order.products.reduce((sum: number, p: any) => sum + p.subtotal, 0);
+            order.total = nuevoSubtotal;
+
+            // Recalcular la propina (10% del nuevo subtotal)
+            const nuevaPropina = Math.round(nuevoSubtotal * 0.1 * 100) / 100;
+            order.propina = nuevaPropina;
+            console.log('🔄 Producto eliminado - Nuevo subtotal:', nuevoSubtotal, 'Nueva propina:', nuevaPropina);
+
+            // Actualizar la propina en el backend
+            this.ordersService.updateOrder(orderId, {
+              propinaTipo: '10',
+              propinaValor: undefined
+            }).subscribe({
+              next: (res) => console.log('✅ Propina actualizada en backend'),
+              error: (err) => console.error('❌ Error actualizando propina en backend:', err)
+            });
           }
           this.cdr.detectChanges();
         }

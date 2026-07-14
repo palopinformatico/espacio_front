@@ -22,7 +22,7 @@
           <i *ngIf="isBootstrapIcon(category.icono)" [class]="getIconClass(category.icono)" class="category-icon"
             style="font-size: 2rem;"></i>
           <!-- Legacy Image -->
-          <img *ngIf="!isBootstrapIcon(category.icono)" [src]="category.icono" [alt]="category.nombre"
+          <img *ngIf="!isBootstrapIcon(category.icono)" [src]="getIconPath(category.icono)" [alt]="category.nombre"
             class="category-icon">
           <span class="category-name">{{ category.nombre }}</span>
         </div>

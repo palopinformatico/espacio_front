@@ -22,11 +22,21 @@ export class AdminVentasComponent implements OnInit {
 
   isLoading:boolean=false;
   activeTab: string = 'Pendiente';
+  fechaBusqueda: string = ''; // Fecha para búsqueda
+
   constructor(private http: HttpClient, private mesaService: MesaService) { }
 
   ngOnInit(): void {
+    this.fechaBusqueda = this.formatearFecha(new Date());
     this.cargarMesas();
     this.cargarVentasDelDia();
+  }
+
+  formatearFecha(fecha: Date): string {
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const dia = String(fecha.getDate()).padStart(2, '0');
+    return `${anio}-${mes}-${dia}`;
   }
 
   cargarMesas() {
@@ -36,10 +46,14 @@ export class AdminVentasComponent implements OnInit {
 
 cargarVentasDelDia() {
   // 1. Activar spinner de carga (opcional pero recomendado)
-  this.isLoading = true; 
+  this.isLoading = true;
 
   const params: any = {};
   if (this.mesaId) params.mesaId = this.mesaId;
+  if (this.fechaBusqueda) {
+    params.desde = this.fechaBusqueda;
+    params.hasta = this.fechaBusqueda;
+  }
 
   // NOTA: No enviamos 'estado' en los params para que el backend traiga TODO
   this.http.get<any[]>(environment.api.ventasDiarias, { params })

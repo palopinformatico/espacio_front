@@ -898,6 +898,25 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Obtiene la ruta correcta del icono
+   */
+  getIconPath(icono: string): string {
+    if (!icono) return '';
+    // Si ya tiene el prefijo, usar tal cual
+    if (icono.includes('restaurant-cafeterias/')) {
+      return icono;
+    }
+    // Si es un Bootstrap Icon, no agregar prefijo
+    if (icono.startsWith('bi-')) {
+      return icono;
+    }
+    // Remover slash inicial si existe
+    const cleanIcono = icono.startsWith('/') ? icono.substring(1) : icono;
+    // Si no tiene prefijo y no es Bootstrap Icon, agregarlo
+    return 'restaurant-cafeterias/' + cleanIcono;
+  }
+
+  /**
    * Obtiene la clase CSS completa para mostrar el icono Bootstrap
    */
   getIconClass(icono: string): string {

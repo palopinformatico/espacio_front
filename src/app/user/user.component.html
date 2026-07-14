@@ -17,6 +17,11 @@
         <span *ngIf="!deliveryEnabled" class="badge bg-secondary ms-2">Cerrado</span>
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link px-4 py-2 fw-semibold" href="https://espacioboulevardlinares.cl/" target="_blank">
+        <i class="bi bi-geo-alt me-2"></i> Ven a conocernos
+      </a>
+    </li>
   </ul>
 
   <!-- Mensaje de disponibilidad -->
@@ -52,7 +57,7 @@
             <i *ngIf="isBootstrapIcon(category.icono)" [class]="getIconClass(category.icono)"
               class="category-icon category-icon-md"></i>
             <!-- Legacy Image -->
-            <img *ngIf="!isBootstrapIcon(category.icono)" [src]="category.icono" [alt]="category.nombre"
+            <img *ngIf="!isBootstrapIcon(category.icono)" [src]="getIconPath(category.icono)" [alt]="category.nombre"
               class="category-icon">
             <span class="category-name">{{ category.nombre }}</span>
           </div>
@@ -78,7 +83,7 @@
               </label>
               <div class="input-group w-auto">
                 <span class="input-group-text bg-white border-0 text-primary py-2 start-icon">
-                  <img src="mesa.png" alt="" class="me-2" width="20px" height="20px">
+                  <img src="restaurant-cafeterias/mesa.png" alt="" class="me-2" width="20px" height="20px">
                 </span>
                 <select class="form-select border-0 fw-bold text-dark mesa-select-input py-1 form-select-lg"
                   id="mesaSelectGarzon" [(ngModel)]="mesaSeleccionada" (ngModelChange)="onMesaChange()"

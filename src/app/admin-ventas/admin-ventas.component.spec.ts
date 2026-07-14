@@ -21,4 +21,8 @@ describe('AdminVentasComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should format a date using the local calendar date', () => {
+    expect(component.formatearFecha(new Date(2024, 6, 10, 23, 30))).toBe('2024-07-10');
+  });
 });

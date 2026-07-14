@@ -15,6 +15,12 @@
         </select>
       </div>
 
+      <div class="col-md-4">
+        <label class="form-label text-white">Fecha</label>
+        <input type="date" class="form-control bg-dark text-white border-secondary"
+               [(ngModel)]="fechaBusqueda">
+      </div>
+
       <div class="col-md-4 d-flex">
         <button class="btn btn-primary w-100" (click)="cargarVentasDelDia()">
           <i class="bi bi-search me-1"></i> Actualizar / Buscar

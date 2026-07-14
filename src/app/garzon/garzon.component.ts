@@ -173,6 +173,9 @@ export class GarzonComponent implements OnInit, AfterViewInit, OnDestroy {
   // Converting old property usages to getters/setters or just finding usages is safer.
 
   ngOnInit(): void {
+    // Asegurar que el tab 'pedido' esté activado al iniciar
+    this.activeTab = 'pedido';
+
     // Verificar disponibilidad del servicio local
     this.disponibilidadService.verificarDisponibilidadLocal().subscribe(
       disponible => {
@@ -814,6 +817,28 @@ export class GarzonComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   isBootstrapIcon(icono: string): boolean {
     return !!icono && icono.startsWith('bi-');
+  }
+
+  /**
+   * Obtiene la ruta correcta del icono
+   */
+  getIconPath(icono: string): string {
+    if (!icono) return '';
+    // Si ya tiene el prefijo, usar tal cual
+    if (icono.includes('restaurant-cafeterias/')) {
+      console.log('🔍 Ya tiene prefijo, retornando:', icono);
+      return icono;
+    }
+    // Si es un Bootstrap Icon, no agregar prefijo
+    if (icono.startsWith('bi-')) {
+      console.log('🔍 Es Bootstrap Icon, retornando:', icono);
+      return icono;
+    }
+    // Remover slash inicial si existe
+    const cleanIcono = icono.startsWith('/') ? icono.substring(1) : icono;
+    // Si no tiene prefijo y no es Bootstrap Icon, agregarlo
+    const result = 'restaurant-cafeterias/' + cleanIcono;
+    return result;
   }
 
   /**

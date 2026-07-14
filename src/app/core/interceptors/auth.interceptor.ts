@@ -15,20 +15,17 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private router: Router) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    console.log('🔐 AuthInterceptor (Class): Petición a:', request.url);
 
     // 1. Clonar la request y agregar el token si existe
     const token = localStorage.getItem('token');
-    console.log('🔑 AuthInterceptor (Class): Token existe:', !!token);
-    console.log('📋 AuthInterceptor (Class): Token (primeros 20 chars):', token ? token.substring(0, 20) + '...' : 'N/A');
 
     if (token) {
       request = request.clone({
         setHeaders: { Authorization: `Bearer ${token}` }
       });
-      console.log('✅ AuthInterceptor (Class): Token agregado al header Authorization');
+      //console.log('✅ AuthInterceptor (Class): Token agregado al header Authorization');
     } else {
-      console.log('⚠️ AuthInterceptor (Class): No hay token, petición sin auth header');
+      //console.log('⚠️ AuthInterceptor (Class): No hay token, petición sin auth header');
     }
 
     return next.handle(request).pipe(

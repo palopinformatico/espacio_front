@@ -21,14 +21,22 @@
     gap: 2rem;
 }
 
+.logo-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.logo-button:hover .logo-img {
+    transform: scale(1.05);
+}
+
 .logo-img {
     width: 200px;
     height: auto;
     transition: transform 0.3s ease;
-}
-
-.logo-img:hover {
-    transform: scale(1.05);
 }
 
 /* Contact Information */
