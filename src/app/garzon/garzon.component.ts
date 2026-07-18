@@ -1,9 +1,10 @@
 import { CommonModule, DecimalPipe, NgIfContext } from '@angular/common';
 import { Component, ElementRef, Input, OnInit, TemplateRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CategoriaService } from '../services/categoria.service';
 import { UsuarioService } from '../services/usuario.service';
+import { UserStateService } from '../services/user-state.service';
 import { HeaderComponent } from '../header/header.component';
 
 import { OrdenService } from '../services/orden.service';
@@ -79,7 +80,9 @@ export class GarzonComponent implements OnInit, AfterViewInit, OnDestroy {
     private ticketBarService: TicketBarService,
     private printService: PrintService, // Added injection
     private disponibilidadService: DisponibilidadService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private userStateService: UserStateService
   ) { }
   private subs: Subscription[] = [];
   private destroy$ = new Subject<void>();
@@ -173,8 +176,18 @@ export class GarzonComponent implements OnInit, AfterViewInit, OnDestroy {
   // Converting old property usages to getters/setters or just finding usages is safer.
 
   ngOnInit(): void {
-    // Asegurar que el tab 'pedido' esté activado al iniciar
-    this.activeTab = 'pedido';
+    // Escuchar el activeTab$ del UserStateService
+    this.userStateService.getActiveTab().subscribe((tab: string | null) => {
+      if (tab) {
+        this.activeTab = tab;
+        console.log('🔍 Tab activado desde UserStateService:', this.activeTab);
+        // Limpiar después de activar para que no se quede activo
+        setTimeout(() => this.userStateService.clearActiveTab(), 100);
+      } else {
+        // Asegurar que el tab 'pedido' esté activado al iniciar
+        this.activeTab = 'pedido';
+      }
+    });
 
     // Verificar disponibilidad del servicio local
     this.disponibilidadService.verificarDisponibilidadLocal().subscribe(

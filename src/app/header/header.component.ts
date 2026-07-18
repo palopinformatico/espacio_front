@@ -128,16 +128,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   navigateToHome() {
     console.log('🔍 navigateToHome llamado');
-    const userRole = this.currentUser?.role || this.authService.getUserRole();
+    let userRole = this.currentUser?.role || this.authService.getUserRole();
     console.log('🔍 Rol del usuario para navegación:', userRole);
     console.log('🔍 currentUser:', this.currentUser);
+
+    // Fallback a localStorage si no se obtiene el rol
+    if (!userRole) {
+      userRole = localStorage.getItem('role');
+      console.log('🔍 Rol obtenido de localStorage:', userRole);
+    }
 
     let targetRoute = '/';
 
     if (userRole === 'admin') {
       targetRoute = '/admin';
+      this.userStateService.setActiveTab('pedido');
     } else if (userRole === 'garzon') {
       targetRoute = '/garzon';
+      this.userStateService.setActiveTab('pedido');
     }
 
     console.log('🔍 Navegando a:', targetRoute);

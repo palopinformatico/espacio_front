@@ -14,6 +14,9 @@ export class UserStateService {
   private userImageSubject = new BehaviorSubject<string>('/logo.png');
   public userImage$ = this.userImageSubject.asObservable();
 
+  private activeTabSubject = new BehaviorSubject<string | null>(null);
+  public activeTab$ = this.activeTabSubject.asObservable();
+
   setUser(user: any) {
     console.log('🔍 UserStateService - setUser llamado con:', user);
     this.currentUserSubject.next(user);
@@ -47,5 +50,18 @@ export class UserStateService {
 
   getUserImage(): Observable<string> {
     return this.userImage$;
+  }
+
+  setActiveTab(tab: string) {
+    console.log('🔍 UserStateService - setActiveTab llamado con:', tab);
+    this.activeTabSubject.next(tab);
+  }
+
+  getActiveTab(): Observable<string | null> {
+    return this.activeTab$;
+  }
+
+  clearActiveTab() {
+    this.activeTabSubject.next(null);
   }
 }

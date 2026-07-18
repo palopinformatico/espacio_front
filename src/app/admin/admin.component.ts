@@ -1,8 +1,10 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { NgbAlertModule, NgbDatepickerModule, NgbDateStruct, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HeaderComponent } from '../header/header.component';
+import { UserStateService } from '../services/user-state.service';
 import { environment } from '../../environments/environment';
 
 import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -295,7 +297,9 @@ export class AdminComponent implements OnInit {
   selectedMesa: Mesa | null = null;
 
   constructor(private http: HttpClient, private categoriaService: CategoriaService, private productService: ProductService, private decimalPipe: DecimalPipe, private usuarioService: UsuarioService,
-    private fb: FormBuilder, private authService: AuthService, private costoEnvioService: CostoEnvioService, private mesaService: MesaService
+    private fb: FormBuilder, private authService: AuthService, private costoEnvioService: CostoEnvioService, private mesaService: MesaService,
+    private route: ActivatedRoute,
+    private userStateService: UserStateService
 
   ) {
     this.productForm = this.fb.group({
@@ -332,8 +336,18 @@ export class AdminComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Asegurar que el tab 'pedido' esté activado al iniciar
-    this.activeTab = 'pedido';
+    // Escuchar el activeTab$ del UserStateService
+    this.userStateService.getActiveTab().subscribe((tab: string | null) => {
+      if (tab) {
+        this.activeTab = tab;
+        console.log('🔍 Tab activado desde UserStateService:', this.activeTab);
+        // Limpiar después de activar para que no se quede activo
+        setTimeout(() => this.userStateService.clearActiveTab(), 100);
+      } else {
+        // Asegurar que el tab 'pedido' esté activado al iniciar
+        this.activeTab = 'pedido';
+      }
+    });
 
     this.listarUsuario();
     const userRole = this.authService.getUserRole();
