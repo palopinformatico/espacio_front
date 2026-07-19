@@ -196,7 +196,7 @@
                   </button>
                 </div>
                 <div class="btn-row">
-                  <button class="btn-action" [class.btn-blue]="!pedidosAceptados.has(o.id)" [class.btn-green]="pedidosAceptados.has(o.id)" [disabled]="pedidosAceptados.has(o.id)" (click)="pendiente(o.id)">
+                  <button class="btn-action" [class.btn-blue]="!isPedidoAceptado(o)" [class.btn-green]="isPedidoAceptado(o)" [disabled]="isPedidoAceptado(o)" (click)="pendiente(o.id)">
                     <i class="bi bi-check-circle me-1"></i> Aceptar pedido
                   </button>
                   <button class="btn-action btn-red" (click)="cancelar(o.id)">

@@ -44,19 +44,22 @@ export class PendientesComponent implements OnInit, OnDestroy {
   productosMap = new Map<number, string>(); // Mapa ID -> Nombre
   activeTab = 'local';
   pedidosAceptados: Set<number> = new Set<number>(); // IDs de pedidos aceptados
+  private readonly STORAGE_KEY = 'pedidos_aceptados';
 
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
 
-  constructor() { }
+  constructor() { 
+    // Cargar pedidos aceptados desde localStorage
+    this.cargarPedidosAceptados();
+  }
+  
   ngOnInit() {
-    console.log('🚀 PENDIENTES COMPONENT INIT ✅');
 
     // Cargar productos para mapeo de nombres
     this.productService.getAllProducts().subscribe({
       next: (products: any[]) => {
         products.forEach((p: any) => this.productosMap.set(p.id, p.name));
-        console.log('📚 Productos cargados para mapeo:', this.productosMap.size);
       },
       error: (err: any) => console.error('Error cargando productos', err)
     });
@@ -65,10 +68,8 @@ export class PendientesComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          console.log('✅ PENDIENTES CARGADOS INICIALMENTE:', this.pendientes.length);
 
           // 🔔 Suscribirse a WebSocket para nuevos pedidos
-          console.log('📡 Suscribiéndose a WebSocket newOrder...');
           this.socketService.onNewOrder()
             .pipe(takeUntil(this.destroy$))
             .subscribe(order => {
@@ -77,7 +78,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
             });
 
           // 🔔 Suscribirse a WebSocket para pedidos actualizados
-          console.log('📡 Suscribiéndose a WebSocket orderUpdated...');
           this.socketService.onOrderUpdated()
             .pipe(takeUntil(this.destroy$))
             .subscribe(order => {
@@ -122,11 +122,9 @@ export class PendientesComponent implements OnInit, OnDestroy {
 
   /** Cargar pedidos pendientes desde backend (agrupados por mesa) */
   loadPendientes(): Observable<any[]> {
-    console.log('loadPendientes() llamado ✅');
 
     return this.orderService.getPendientes().pipe(
       tap(data => {
-        console.log('✅ DATA AGRUPADA POR MESA LLEGÓ:', data);
 
         // El backend ahora devuelve mesas agrupadas:
         // {
@@ -142,10 +140,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
         // }
 
         this.pendientesRaw = data || [];
-
-        console.log('🔍 DATA COMPLETA DEL BACKEND:', data);
-        console.log('🔍 paymentMethod en primera entrada:', data[0]?.paymentMethod);
-        console.log('🔍 Campos disponibles en primera entrada:', Object.keys(data[0] || {}));
 
         // Procesar las mesas agrupadas
         // Siempre obtener datos individuales para tener paymentMethod
@@ -166,6 +160,7 @@ export class PendientesComponent implements OnInit, OnDestroy {
           return ordenesIndividuales
             .filter((orden: any) => orden != null)
             .map((orden: any) => {
+              
               const items = (orden.items || orden.products || [])
                 .map((item: any) => ({
                   productId: item.productId || item.id,
@@ -181,20 +176,24 @@ export class PendientesComponent implements OnInit, OnDestroy {
               const costoDelivery = orden.costo_delivery || 0;
               const total = orden.totalMesa || (neto + propina + costoDelivery);
 
-              // Normalizar customer: orden.customer puede tener diferentes estructuras
+              // Normalizar customer: orden.customer ya viene con customerAddress desde el backend
               let customer = orden.customer;
-              if (customer && customer.name && !customer.customerName) {
-                // Convertir estructura de orden.customer a la estructura esperada
-                customer = {
-                  ...customer,
-                  customerName: customer.name,
-                  customerPhone: customer.phone,
-                  customerEmail: customer.email,
-                  customerAddress: customer.address
-                };
+              
+              if (customer) {
+                // Normalizar estructura antigua a nueva si es necesario
+                if (customer.name && !customer.customerName) {
+                  customer = {
+                    ...customer,
+                    customerName: customer.name,
+                    customerPhone: customer.phone,
+                    customerEmail: customer.email,
+                    customerAddress: customer.address || customer.customerAddress
+                  };
+                }
               }
-              // Fallback a mesaAgrupada.customer si no tiene customer
-              if (!customer) {
+              
+              // Fallback a mesaAgrupada.customer solo si orden.customer no existe
+              if (!customer && mesaAgrupada.customer) {
                 customer = mesaAgrupada.customer;
               }
 
@@ -217,15 +216,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
                 isNew: true
               };
 
-              console.log(`✅ Orden individual:`, {
-                numeroVenta: orden.numeroVenta,
-                customerName: customer?.customerName || 'Sin Nombre',
-                paymentMethod: orden.paymentMethod,
-                subtotal,
-                propina,
-                total
-              });
-
               return mesaProcesada;
             });
         });
@@ -234,7 +224,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
         Promise.all(procesarMesas)
           .then((resultados) => {
             this.pendientes = resultados.flat().filter((m: any) => m && m.items && m.items.length > 0);
-            console.log('📊 Órdenes procesadas:', this.pendientes.length);
             this.updatePedidosLists();
           })
           .catch((err) => {
@@ -252,13 +241,8 @@ export class PendientesComponent implements OnInit, OnDestroy {
   }
 
 
-
-
-
-
   /** Recarga pendientes cuando hay cambios por WebSocket */
   actualizarPendientes(order: any) {
-    console.log('📥 actualizarPendientes llamado con orden:', order?.id);
 
     if (!order?.id) {
       console.warn('⚠️ Pedido sin ID, ignorando:', order);
@@ -267,13 +251,11 @@ export class PendientesComponent implements OnInit, OnDestroy {
 
     // 🔄 Con la nueva estructura agrupada por mesa, es más simple recargar todo
     // para mantener la agrupación correcta, en lugar de intentar actualizar individualmente
-    console.log('🔄 Recargando pendientes para mantener agrupación correcta...');
 
     this.loadPendientes()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          console.log('✅ Pendientes recargados después de WebSocket update');
 
           // 🔔 Si es una orden nueva, reproducir sonido
           const estado = (order.estado || order.status || '').toLowerCase();
@@ -289,18 +271,10 @@ export class PendientesComponent implements OnInit, OnDestroy {
   updatePedidosLists() {
     this.pedidosLocal = this.pendientes.filter(m => m.orderType === 'local');
     this.pedidosDelivery = this.pendientes.filter(m => m.orderType === 'delivery');
-    console.log('🔄 updatePedidosLists ejecutado - Local:', this.pedidosLocal.length, 'Delivery:', this.pedidosDelivery.length);
 
     // Forzar detección de cambios
     this.cdr.detectChanges();
   }
-
-
-
-
-
-
-
 
 
   /** Actualiza las mesas y refleja cambios en mesas agrupadas */
@@ -348,8 +322,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
       const orderIds = mesaAgrupada.orderIds || [mesaAgrupadaId];
       const mesaId = mesaAgrupada.mesaId;
 
-      console.log('💰 Pagando todos los pedidos de la mesa:', orderIds);
-
       // Actualizar el estado de todas las órdenes en el backend a "Pagado"
       const actualizarOrdenesPromises = orderIds.map((orderId: number) => {
         const orden = this.pendientes.find(p => p.id === orderId || p.orderIds?.includes(orderId));
@@ -359,13 +331,11 @@ export class PendientesComponent implements OnInit, OnDestroy {
 
       Promise.all(actualizarOrdenesPromises)
         .then(() => {
-          console.log('✅ Todos los pedidos actualizados en el backend');
 
           // Eliminar la mesa agrupada de pendientes
           this.pendientes = this.pendientes.filter(p => p.id !== mesaAgrupadaId);
           this.updatePedidosLists();
           this.playAudio('/aceptar.mp3');
-          console.log('✅ Todos los pedidos de la mesa aceptados:', orderIds);
 
           Swal.fire({
             icon: 'success',
@@ -376,10 +346,8 @@ export class PendientesComponent implements OnInit, OnDestroy {
 
           // 🔹 Si la mesa tenía ID, liberarla
           if (mesaId && mesaId !== 0) {
-            console.log('🔓 Liberando mesa ID:', mesaId);
             this.mesaService.marcarPedidoPagado(mesaId).subscribe({
               next: () => {
-                console.log('✅ Mesa liberada correctamente');
                 const mesa = this.mesas.find(m => m.id === mesaId);
                 if (mesa) {
                   mesa.status = 'Libre';
@@ -422,11 +390,8 @@ export class PendientesComponent implements OnInit, OnDestroy {
 
       const orderIds = mesaAgrupada.orderIds || [mesaAgrupadaId];
 
-      console.log('✅ Aceptando pedido (estado pendiente) para todas las órdenes:', orderIds);
-
       // Actualizar estado de todas las órdenes a "aceptado" o similar
       const updatePromises = orderIds.map((orderId: number) => {
-        console.log('📤 Llamando pendienteVenta para orderId:', orderId);
         return firstValueFrom(this.orderService.pendienteVenta(orderId)).catch(err => {
           console.error(`❌ Error en pendienteVenta(${orderId}):`, err);
           throw err; // Re-lanzar error
@@ -435,12 +400,13 @@ export class PendientesComponent implements OnInit, OnDestroy {
 
       Promise.all(updatePromises)
         .then((responses) => {
-          console.log('✅ Todas las órdenes actualizadas en BD:', responses);
 
           // Marcar pedidos como aceptados
           orderIds.forEach((orderId: number) => {
             this.pedidosAceptados.add(orderId);
           });
+          // Guardar en localStorage para persistencia
+          this.guardarPedidosAceptados();
 
           this.playAudio('/aceptar.mp3');
 
@@ -452,12 +418,10 @@ export class PendientesComponent implements OnInit, OnDestroy {
           });
 
           // Recargar pendientes desde el backend para sincronizar
-          console.log('🔄 Recargando pendientes desde BD...');
           this.loadPendientes()
             .pipe(takeUntil(this.destroy$))
             .subscribe({
               next: () => {
-                console.log('✅ Pendientes recargados después de aceptar');
                 this.orderService.notificarCambioOrdenes();
               },
               error: err => console.error('❌ Error recargando pendientes:', err)
@@ -473,11 +437,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
         });
     });
   }
-
-
-
-
-
 
 
 
@@ -505,8 +464,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
       const orderIds = mesaAgrupada.orderIds || [mesaAgrupadaId];
       const mesaId = mesaAgrupada.mesaId;
 
-      console.log('🗑️ Cancelando todos los pedidos de la mesa:', orderIds);
-
       // Cancelar todas las órdenes de la mesa
       const cancelPromises = orderIds.map((orderId: number) =>
         firstValueFrom(this.orderService.cancelarVenta(orderId))
@@ -517,7 +474,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
         this.pendientes = this.pendientes.filter(p => p.id !== mesaAgrupadaId);
         this.updatePedidosLists();
         this.playAudio('/cancel.mp3');
-        console.log('✅ Todos los pedidos de la mesa cancelados:', orderIds);
 
         Swal.fire({
           icon: 'success',
@@ -528,10 +484,8 @@ export class PendientesComponent implements OnInit, OnDestroy {
 
         // 🔹 Si la mesa tenía ID, liberarla
         if (mesaId && mesaId !== 0) {
-          console.log('🔓 Liberando mesa ID:', mesaId);
           this.mesaService.actualizarEstadoMesa(mesaId, 'Libre').subscribe({
             next: () => {
-              console.log('✅ Mesa liberada correctamente');
               const mesa = this.mesas.find(m => m.id === mesaId);
               if (mesa) {
                 mesa.status = 'Libre';
@@ -595,6 +549,41 @@ export class PendientesComponent implements OnInit, OnDestroy {
   /** Track by para ngFor */
   trackById(index: number, item: any) { return item.id; }
 
+  /** Verifica si un pedido ya fue aceptado basándose en su estado */
+  isPedidoAceptado(pedido: any): boolean {
+    // Primero verificar si está en el Set local (persistido en localStorage)
+    if (this.pedidosAceptados.has(pedido.id)) {
+      return true;
+    }
+    // Fallback: verificar estado del backend
+    const estado = (pedido.estado || pedido.status || '').toLowerCase();
+    const estadosPendientes = ['pendiente', 'activo', ''];
+    return !estadosPendientes.includes(estado);
+  }
+
+  /** Carga pedidos aceptados desde localStorage */
+  private cargarPedidosAceptados(): void {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      if (stored) {
+        const ids = JSON.parse(stored);
+        this.pedidosAceptados = new Set<number>(ids);
+      }
+    } catch (e) {
+      console.error('Error cargando pedidos aceptados:', e);
+    }
+  }
+
+  /** Guarda pedidos aceptados en localStorage */
+  private guardarPedidosAceptados(): void {
+    try {
+      const ids = Array.from(this.pedidosAceptados);
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(ids));
+    } catch (e) {
+      console.error('Error guardando pedidos aceptados:', e);
+    }
+  }
+
   /** Formatea precio */
   formatPrice(value: number): string {
     if (value == null) return '';
@@ -605,21 +594,14 @@ export class PendientesComponent implements OnInit, OnDestroy {
     if (!mesaAgrupada) return;
 
     try {
-      // Mostrar loading
-      console.log('🖨️ Imprimiendo tickets para mesa agrupada:', mesaAgrupada.mesaId);
-
       // Primero imprimir ticket de caja (boleta completa)
-      console.log('📄 Imprimiendo ticket de caja...');
       await this.printService.generarTicketCaja(mesaAgrupada);
 
       // Esperar un momento antes de imprimir el siguiente
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Luego imprimir ticket de cocina (solo productos)
-      console.log('👨‍🍳 Imprimiendo ticket de cocina...');
       await this.printService.generarTicketCocina(mesaAgrupada);
-
-      console.log('✅ Tickets impresos correctamente');
     } catch (error) {
       console.error('❌ Error al imprimir tickets:', error);
     }
@@ -630,7 +612,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
     if (!mesaAgrupada) return;
 
     try {
-      console.log('🖨️ Imprimiendo ticket de CAJA para mesa agrupada:', mesaAgrupada.mesaId);
       await this.printService.generarTicketCaja(mesaAgrupada);
 
       Swal.fire({
@@ -643,7 +624,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
         timerProgressBar: true
       });
 
-      console.log('✅ Ticket de caja impreso correctamente');
     } catch (error) {
       console.error('❌ Error al imprimir ticket de caja:', error);
       Swal.fire({
@@ -663,7 +643,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
     if (!mesaAgrupada) return;
 
     try {
-      console.log('🖨️ Imprimiendo ticket de COCINA para mesa agrupada:', mesaAgrupada.mesaId);
       await this.printService.generarTicketCocina(mesaAgrupada);
 
       Swal.fire({
@@ -676,7 +655,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
         timerProgressBar: true
       });
 
-      console.log('✅ Ticket de cocina impreso correctamente');
     } catch (error) {
       console.error('❌ Error al imprimir ticket de cocina:', error);
       Swal.fire({
@@ -811,28 +789,18 @@ export class PendientesComponent implements OnInit, OnDestroy {
     const orderId = this.pedidoActual.id || this.pedidoActual.numeroVenta;
     const nuevaPropina = this.pedidoActual.propina;
 
-    console.log('💰 Guardar Propina - orderId:', orderId, { propinaTipo, propinaValor, nuevaPropina });
-
     // Actualizar propina SOLO para esta orden específica
     firstValueFrom(this.orderService.updateOrder(orderId, {
       propinaTipo,
       propinaValor
     }))
       .then((respuesta) => {
-        console.log('✅ Respuesta del backend recibida:', respuesta);
         
         // Buscar el pedido en ambas listas (local y delivery)
         let pedidoEnUI = this.pedidosLocal.find(p => p.id === orderId || p.numeroVenta === orderId) ||
                          this.pedidosDelivery.find(p => p.id === orderId || p.numeroVenta === orderId);
         
         if (pedidoEnUI) {
-          console.log('✅ Pedido encontrado en UI');
-          console.log('📊 Datos antes de actualizar:', { 
-            propina: pedidoEnUI.propina, 
-            total: pedidoEnUI.total,
-            totalMesa: pedidoEnUI.totalMesa
-          });
-          
           // Actualizar la propina sugerida
           pedidoEnUI.propina = nuevaPropina;
           
@@ -844,18 +812,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
           pedidoEnUI.total = nuevoTotal;
           pedidoEnUI.totalMesa = nuevoTotal;
           
-          console.log('📊 Datos después de actualizar:', { 
-            propina: pedidoEnUI.propina, 
-            total: pedidoEnUI.total,
-            totalMesa: pedidoEnUI.totalMesa,
-            neto,
-            costoDelivery,
-            nuevaPropina
-          });
-        } else {
-          console.warn('⚠️ Pedido no encontrado en UI. ID buscado:', orderId);
-          console.log('📋 Pedidos locales:', this.pedidosLocal.map(p => ({ id: p.id, numeroVenta: p.numeroVenta })));
-          console.log('📋 Pedidos delivery:', this.pedidosDelivery.map(p => ({ id: p.id, numeroVenta: p.numeroVenta })));
         }
 
         // Cerrar modal
@@ -945,8 +901,6 @@ export class PendientesComponent implements OnInit, OnDestroy {
 
     // Actualizar el detalle_venta para todas las órdenes de la mesa
     const orderIds = mesaAgrupada.orderIds || [mesaAgrupada.id];
-
-    console.log('📝 Actualizando detalle_venta para todas las órdenes:', orderIds);
 
     // Actualizar todas las órdenes con el mismo detalle_venta
     const updatePromises = orderIds.map((orderId: number) =>
