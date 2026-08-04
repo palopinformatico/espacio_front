@@ -12,6 +12,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { HeaderComponent } from '../header/header.component';
 import Swal from 'sweetalert2';
+import { environment } from '../../environments/environment';
 
 // Interfaces for type safety
 interface CarritoProduct {
@@ -962,6 +963,36 @@ export class MesaDetalleComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  /**
+   * Construye la URL completa de la imagen de un producto
+   */
+  getProductImageUrl(imageUrl: string): string {
+    if (!imageUrl || imageUrl === 'null' || imageUrl === 'undefined') {
+      return '/logo.png';
+    }
+
+    // Si ya es una URL completa, devolverla tal cual
+    if (imageUrl.startsWith('http')) {
+      return imageUrl;
+    }
+
+    // Usar la URL base del entorno (localhost en desarrollo, producción en prod)
+    const baseUrl = environment.apiBaseUrl || 'https://espacioboulevard.com';
+
+    // Si empieza con /uploads/, agregar el dominio base
+    if (imageUrl.startsWith('/uploads/')) {
+      return `${baseUrl}${imageUrl}`;
+    }
+
+    // Si empieza con uploads/ (sin barra inicial), agregar barra y dominio
+    if (imageUrl.startsWith('uploads/')) {
+      return `${baseUrl}/${imageUrl}`;
+    }
+
+    // Para cualquier otro caso, asumir que es solo el nombre del archivo
+    return `${baseUrl}/uploads/${imageUrl}`;
   }
 
 }

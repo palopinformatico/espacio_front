@@ -59,6 +59,14 @@ export class ProductService {
     formData.append('price', String(form.price));
     if (form.cantidad !== undefined) formData.append('cantidad', String(form.cantidad));
 
+    // 🔹 Campos de disponibilidad
+    if (form.ofreceLocal !== undefined) {
+      formData.append('ofreceLocal', form.ofreceLocal ? 'true' : 'false');
+    }
+    if (form.ofreceDelivery !== undefined) {
+      formData.append('ofreceDelivery', form.ofreceDelivery ? 'true' : 'false');
+    }
+
     // 🔹 Categorías — siempre se envían como JSON string
     if (form.categories && form.categories.length > 0) {
       formData.append('categories', JSON.stringify(form.categories));
@@ -109,5 +117,33 @@ export class ProductService {
 
   getAllProducts(): Observable<ProductDto[]> {
     return this.http.get<ProductDto[]>(`${this.apiUrl}/finds`);
+  }
+
+  // Método para construir la URL completa de la imagen de un producto
+  getProductImageUrl(imageUrl: string): string {
+    if (!imageUrl || imageUrl === 'null' || imageUrl === 'undefined') {
+      return '/logo.png';
+    }
+
+    // Si ya es una URL completa, devolverla tal cual
+    if (imageUrl.startsWith('http')) {
+      return imageUrl;
+    }
+
+    // Usar la URL base del entorno (localhost en desarrollo, producción en prod)
+    const baseUrl = environment.apiBaseUrl || 'https://espacioboulevard.com';
+
+    // Si empieza con /uploads/, agregar el dominio base
+    if (imageUrl.startsWith('/uploads/')) {
+      return `${baseUrl}${imageUrl}`;
+    }
+
+    // Si empieza con uploads/ (sin barra inicial), agregar barra y dominio
+    if (imageUrl.startsWith('uploads/')) {
+      return `${baseUrl}/${imageUrl}`;
+    }
+
+    // Para cualquier otro caso, asumir que es solo el nombre del archivo
+    return `${baseUrl}/uploads/${imageUrl}`;
   }
 }

@@ -17,6 +17,7 @@ import { DisponibilidadService } from '../services/disponibilidad.service';
 import { Subject, Subscription, takeUntil } from 'rxjs';
 import { SocketService } from '../services/socket.service';
 import Swal from 'sweetalert2';
+import { environment } from '../../environments/environment';
 
 
 export interface CreateOrderDto {
@@ -172,6 +173,13 @@ export class UserComponent implements OnInit, OnDestroy {
     // 🔹 Usar siempre la copia maestra como fuente
     let resultado = [...this.allProducts];
 
+    // Filtrar por modo (local/delivery)
+    if (this.activeTab === 'local') {
+      resultado = resultado.filter(p => p.ofreceLocal !== false);
+    } else if (this.activeTab === 'delivery') {
+      resultado = resultado.filter(p => p.ofreceDelivery !== false);
+    }
+
     // Filtrar por nombre
     if (this.filtro) {
       const filtroLower = this.filtro.toLowerCase();
@@ -235,6 +243,8 @@ export class UserComponent implements OnInit, OnDestroy {
     }
     
     this.activeTab = tab;
+    // Reaplicar filtros cuando cambia el tab para actualizar productos según modo
+    this.aplicarFiltrosYOrden();
   }
 
   /** Inserted by Angular inject() migration for backwards compatibility */
@@ -984,6 +994,36 @@ export class UserComponent implements OnInit, OnDestroy {
         htmlContainer: 'swal-text-legible'
       }
     });
+  }
+
+  /**
+   * Construye la URL completa de la imagen de un producto
+   */
+  getProductImageUrl(imageUrl: string): string {
+    if (!imageUrl || imageUrl === 'null' || imageUrl === 'undefined') {
+      return '/logo.png';
+    }
+
+    // Si ya es una URL completa, devolverla tal cual
+    if (imageUrl.startsWith('http')) {
+      return imageUrl;
+    }
+
+    // Usar la URL base del entorno (localhost en desarrollo, producción en prod)
+    const baseUrl = environment.apiBaseUrl || 'https://espacioboulevard.com';
+
+    // Si empieza con /uploads/, agregar el dominio base
+    if (imageUrl.startsWith('/uploads/')) {
+      return `${baseUrl}${imageUrl}`;
+    }
+
+    // Si empieza con uploads/ (sin barra inicial), agregar barra y dominio
+    if (imageUrl.startsWith('uploads/')) {
+      return `${baseUrl}/${imageUrl}`;
+    }
+
+    // Para cualquier otro caso, asumir que es solo el nombre del archivo
+    return `${baseUrl}/uploads/${imageUrl}`;
   }
 
   /**

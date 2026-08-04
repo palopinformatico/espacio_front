@@ -307,7 +307,9 @@ export class AdminComponent implements OnInit {
       description: ['', Validators.required],
       price: [null, [Validators.required, Validators.min(0)]],
       // categoryId no se usa aquí porque usamos selectedCategoryIds
-      image: [null]
+      image: [null],
+      ofreceLocal: [true],
+      ofreceDelivery: [true]
     });
     this.userForm = this.fb.group({
       full_name: ['', Validators.required],
@@ -322,7 +324,9 @@ export class AdminComponent implements OnInit {
       description: [''],
       price: [0, [Validators.required, Validators.min(0)]],
       imageUrl: [''],
-      categories: this.fb.array([])
+      categories: this.fb.array([]),
+      ofreceLocal: [true],
+      ofreceDelivery: [true]
     });
     this.costoEnvioForm = this.fb.group({
       precio_envio: [0, [Validators.required, Validators.min(0)]],
@@ -370,6 +374,15 @@ export class AdminComponent implements OnInit {
   setSelectedProduct(product: any) {
     this.selectedProductId = product.id;
 
+    console.log('🔍 Debug - setSelectedProduct - Producto recibido:', {
+      id: product.id,
+      name: product.name,
+      ofreceLocal: product.ofreceLocal,
+      ofreceDelivery: product.ofreceDelivery,
+      ofreceLocalType: typeof product.ofreceLocal,
+      ofreceDeliveryType: typeof product.ofreceDelivery
+    });
+
     // Previsualizar imagen actual
     this.imagePreview = product.imageUrl || null;
 
@@ -378,7 +391,14 @@ export class AdminComponent implements OnInit {
       name: [product.name],
       description: [product.description],
       price: [product.price],
-      categories: this.fb.array([]) // se llena abajo
+      categories: this.fb.array([]), // se llena abajo
+      ofreceLocal: [product.ofreceLocal === true], // Solo true si explícitamente es true
+      ofreceDelivery: [product.ofreceDelivery === true] // Solo true si explícitamente es true
+    });
+
+    console.log('🔍 Debug - setSelectedProduct - Valores en formulario:', {
+      ofreceLocalForm: this.editProductForm.value.ofreceLocal,
+      ofreceDeliveryForm: this.editProductForm.value.ofreceDelivery
     });
 
     // 🧩 Crear los checkboxes según las categorías cargadas
@@ -749,6 +769,26 @@ export class AdminComponent implements OnInit {
       return;
     }
 
+    // 🔒 Validar disponibilidad (al menos una debe estar seleccionada)
+    if (!this.productForm.value.ofreceLocal && !this.productForm.value.ofreceDelivery) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Disponibilidad requerida',
+        text: 'Por favor seleccione al menos una opción de disponibilidad (local o delivery)'
+      });
+      return;
+    }
+
+    // 🔒 Validar imagen
+    if (!this.selectedImage) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Imagen requerida',
+        text: 'Por favor seleccione una imagen para el producto'
+      });
+      return;
+    }
+
     // ✅ Todas las validaciones pasaron, proceder a crear el producto
 
     const formData = new FormData();
@@ -756,6 +796,12 @@ export class AdminComponent implements OnInit {
     formData.append('description', this.productForm.value.description);
     formData.append('price', priceInt.toString());
 
+    // ✅ Convertir booleanos a strings explícitamente
+    const ofreceLocalValue = this.productForm.value.ofreceLocal ? 'true' : 'false';
+    const ofreceDeliveryValue = this.productForm.value.ofreceDelivery ? 'true' : 'false';
+
+    formData.append('ofreceLocal', ofreceLocalValue);
+    formData.append('ofreceDelivery', ofreceDeliveryValue);
 
     // ✅ agregar todas las categorías seleccionadas
     this.selectedCategoryIds.forEach(id => formData.append('categoryIds', id.toString()));
@@ -940,15 +986,34 @@ export class AdminComponent implements OnInit {
       return;
     }
 
+    // 🔒 Validar disponibilidad (al menos una debe estar seleccionada)
+    if (!this.editProductForm.value.ofreceLocal && !this.editProductForm.value.ofreceDelivery) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Disponibilidad requerida',
+        text: 'Por favor seleccione al menos una opción de disponibilidad (local o delivery)'
+      });
+      return;
+    }
+
+    // 🔒 Validar imagen (obligatoria)
+    if (!this.selectedImage) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Imagen requerida',
+        text: 'Por favor seleccione una imagen para el producto'
+      });
+      return;
+    }
+
     const productData = {
       name: this.editProductForm.value.name,
       description: this.editProductForm.value.description,
       price: finalPrice,
-      categories: selectedCategoryIds
+      categories: selectedCategoryIds,
+      ofreceLocal: this.editProductForm.value.ofreceLocal,
+      ofreceDelivery: this.editProductForm.value.ofreceDelivery
     };
-
-    console.log('📦 Datos a enviar:', productData);
-    console.log('🖼️ Imagen seleccionada:', this.selectedImage);
 
     // 🔹 Llamar al servicio
     this.productService.updateProduct(this.selectedProductId, productData, this.selectedImage)
@@ -1249,12 +1314,12 @@ export class AdminComponent implements OnInit {
 getProfileImageUrl(profileImage: string): string {
     // 1. Si no hay imagen, devolvemos la que está en los assets locales (Angular)
     if (!profileImage) {
-        return '/assets/icono.jpeg'; 
+        return '/assets/icono.jpeg';
     }
 
     // 2. Si ya viene con http/https, es una URL externa o completa
     if (profileImage.startsWith('http')) {
-        return profileImage; 
+        return profileImage;
     }
 
     // 3. Manejo de rutas del backend
@@ -1268,6 +1333,33 @@ getProfileImageUrl(profileImage: string): string {
 
     // 4. Solo es el nombre del archivo, construimos la ruta específica
     return `${baseUrl}/uploads/profile-images/${profileImage}`;
+}
+
+getProductImageUrl(imageUrl: string): string {
+  if (!imageUrl || imageUrl === 'null' || imageUrl === 'undefined') {
+    return '/logo.png';
+  }
+
+  // Si ya es una URL completa, devolverla tal cual
+  if (imageUrl.startsWith('http')) {
+    return imageUrl;
+  }
+
+  // Usar la URL base del entorno (localhost en desarrollo, producción en prod)
+  const baseUrl = environment.apiBaseUrl || 'https://espacioboulevard.com';
+
+  // Si empieza con /uploads/, agregar el dominio base
+  if (imageUrl.startsWith('/uploads/')) {
+    return `${baseUrl}${imageUrl}`;
+  }
+
+  // Si empieza con uploads/ (sin barra inicial), agregar barra y dominio
+  if (imageUrl.startsWith('uploads/')) {
+    return `${baseUrl}/${imageUrl}`;
+  }
+
+  // Para cualquier otro caso, asumir que es solo el nombre del archivo
+  return `${baseUrl}/uploads/${imageUrl}`;
 }
   // ==========================================
   // 🔹 CRUD COSTO DE ENVÍO

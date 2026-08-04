@@ -1,8 +1,8 @@
-const apiBase = 'http://localhost:3000/api/v1';
-const apiBaseUrl = 'http://localhost:3000'; // URL base para archivos estáticos en desarrollo
+const apiBase = 'https://espacioboulevard.com/api/v1';
+const apiBaseUrl = 'https://espacioboulevard.com'; // URL base para archivos estáticos en producción
 
 export const environment = {
-  production: false, // Cambiar a true cuando se compile para producción
+  production: true,
   apiBase,
   apiBaseUrl,
   

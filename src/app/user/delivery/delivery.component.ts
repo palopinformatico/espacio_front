@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CostoEnvioService, CostoEnvio } from '../../services/costo-envio.service';
 import { DisponibilidadService } from '../../services/disponibilidad.service';
+import { environment } from '../../../environments/environment';
 export interface CreateOrderDto {
   tableNumber: number;
   orderType: string;
@@ -728,6 +729,9 @@ export class DeliveryComponent implements OnInit {
     // START filtering from the ORIGINAL list, not the current list
     let resultado = [...this.productosOriginales];
 
+    // Filter by delivery availability
+    resultado = resultado.filter(p => p.ofreceDelivery !== false);
+
     // Filter by name
     if (this.filtro) {
       const filtroLower = this.filtro.toLowerCase();
@@ -802,5 +806,35 @@ export class DeliveryComponent implements OnInit {
       background: '#ffffff',
       color: '#000000'
     });
+  }
+
+  /**
+   * Construye la URL completa de la imagen de un producto
+   */
+  getProductImageUrl(imageUrl: string): string {
+    if (!imageUrl || imageUrl === 'null' || imageUrl === 'undefined') {
+      return '/logo.png';
+    }
+
+    // Si ya es una URL completa, devolverla tal cual
+    if (imageUrl.startsWith('http')) {
+      return imageUrl;
+    }
+
+    // Usar la URL base del entorno (localhost en desarrollo, producción en prod)
+    const baseUrl = environment.apiBaseUrl || 'https://espacioboulevard.com';
+
+    // Si empieza con /uploads/, agregar el dominio base
+    if (imageUrl.startsWith('/uploads/')) {
+      return `${baseUrl}${imageUrl}`;
+    }
+
+    // Si empieza con uploads/ (sin barra inicial), agregar barra y dominio
+    if (imageUrl.startsWith('uploads/')) {
+      return `${baseUrl}/${imageUrl}`;
+    }
+
+    // Para cualquier otro caso, asumir que es solo el nombre del archivo
+    return `${baseUrl}/uploads/${imageUrl}`;
   }
 }

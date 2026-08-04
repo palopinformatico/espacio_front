@@ -382,7 +382,7 @@
 
           <div class="card shadow-sm h-100 producto-card">
 
-            <img [src]="product.imageUrl" class="card-img-top" alt="{{ product.name }}"
+            <img [src]="getProductImageUrl(product.imageUrl)" class="card-img-top" alt="{{ product.name }}"
 
               (error)="handleImageError($event)" loading="lazy" decoding="async">
 

@@ -22,7 +22,15 @@ export class UserStateService {
     this.currentUserSubject.next(user);
     if (user) {
       this.userNameSubject.next(user.username || 'Usuario');
-      this.userImageSubject.next('/logo.png');
+      // Usar la imagen de perfil del usuario si está disponible
+      const profileImage = user.profileImage || user.image || user.avatar || '/logo.png';
+      console.log('🔍 UserStateService - Imagen de perfil seleccionada:', profileImage);
+      console.log('🔍 UserStateService - Campos disponibles:', {
+        profileImage: user.profileImage,
+        image: user.image,
+        avatar: user.avatar
+      });
+      this.userImageSubject.next(profileImage);
     } else {
       this.userNameSubject.next('Usuario');
       this.userImageSubject.next('/logo.png');

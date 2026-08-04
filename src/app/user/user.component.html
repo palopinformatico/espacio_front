@@ -181,9 +181,20 @@
       <div class="row mt-4">
         <div class="col-md-3 mb-4" *ngFor="let product of productos">
           <div class="card shadow-sm h-100 producto-card">
-            <img [src]="product.imageUrl" class="card-img-top" alt="{{ product.name }}"
+            <img [src]="getProductImageUrl(product.imageUrl)" class="card-img-top" alt="{{ product.name }}"
               (error)="handleImageError($event)" loading="lazy" decoding="async">
             <div class="card-body d-flex flex-column">
+              <div class="mb-2">
+                <span *ngIf="product.ofreceLocal && product.ofreceDelivery" class="badge bg-success me-1">
+                  <i class="bi bi-check-circle me-1"></i>Local y Delivery
+                </span>
+                <span *ngIf="product.ofreceLocal && !product.ofreceDelivery" class="badge bg-primary me-1">
+                  <i class="bi bi-shop me-1"></i>Solo Local
+                </span>
+                <span *ngIf="!product.ofreceLocal && product.ofreceDelivery" class="badge bg-warning text-dark me-1">
+                  <i class="bi bi-truck me-1"></i>Solo Delivery
+                </span>
+              </div>
               <h5 class="card-title">{{ product.name }}</h5>
               <p class="card-text small flex-grow-1">{{ product.description }}</p>
               <p class="card-text fw-bold">{{ formatPrice(product.price) }}</p>

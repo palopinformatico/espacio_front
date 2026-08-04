@@ -6,6 +6,7 @@ import { UsuarioService } from '../services/usuario.service';
 import { UserStateService } from '../services/user-state.service';
 import { jwtDecode } from 'jwt-decode';
 import { Subscription } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -58,7 +59,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.userImageSubscription = this.userStateService.getUserImage().subscribe(image => {
       console.log('🔍 userImage$ emitio:', image);
-      this.userImage = image;
+      // Procesar la URL de la imagen usando getProfileImageUrl
+      this.userImage = this.getProfileImageUrl(image);
       this.cdr.detectChanges();
     });
   }
@@ -74,8 +76,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const user = this.authService.getUser();
     console.log('🔍 Usuario desde AuthService:', user);
     if (user) {
+      // Primero establecer el usuario básico del token
       this.userStateService.setUser(user);
       console.log('🔍 Usuario guardado en UserStateService');
+
+      // Luego obtener el perfil completo con la imagen
+      this.authService.getUserProfile(user.id).subscribe({
+        next: (fullProfile) => {
+          console.log('🔍 Perfil completo obtenido:', fullProfile);
+          // Actualizar el usuario con el perfil completo que incluye la imagen
+          this.userStateService.setUser({
+            ...user,
+            profileImage: fullProfile.profileImage,
+            image: fullProfile.image,
+            avatar: fullProfile.avatar
+          });
+        },
+        error: (err) => {
+          console.error('🔍 Error obteniendo perfil completo:', err);
+          // Si falla, mantener el usuario básico del token
+        }
+      });
     } else {
       console.log('🔍 No hay usuario en token');
     }
@@ -87,23 +108,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
       return '/logo.png';
     }
 
+    // Si es el logo por defecto, devolverlo tal cual
+    if (profileImage === '/logo.png' || profileImage === 'logo.png') {
+      return '/logo.png';
+    }
+
     // Si ya es una URL completa, devolverla tal cual
     if (profileImage.startsWith('http')) {
       return profileImage;
     }
 
+    // Usar la URL base del entorno (localhost en desarrollo, producción en prod)
+    const baseUrl = environment.apiBaseUrl || 'https://espacioboulevard.com';
+
     // Si empieza con /uploads/, agregar el dominio base
     if (profileImage.startsWith('/uploads/')) {
-      return `https://espacioboulevard.com${profileImage}`;
+      return `${baseUrl}${profileImage}`;
     }
 
     // Si empieza con uploads/ (sin barra inicial), agregar barra y dominio
     if (profileImage.startsWith('uploads/')) {
-      return `https://espacioboulevard.com/${profileImage}`;
+      return `${baseUrl}/${profileImage}`;
     }
 
     // Para cualquier otro caso, asumir que es solo el nombre del archivo
-    return `https://espacioboulevard.com/uploads/profile-images/${profileImage}`;
+    return `${baseUrl}/uploads/profile-images/${profileImage}`;
   }
 
   logout() {

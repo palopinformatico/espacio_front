@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 })
 export class AuthService {
   private apiUrl = environment.api.auth; // ⚡ Ajusta la URL según tu backend
+  private usersUrl = environment.api.users;
 
   constructor(private http: HttpClient) { }
 
@@ -71,6 +72,10 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+  getUserProfile(userId: number): Observable<any> {
+    return this.http.get(`${this.usersUrl}/${userId}`);
   }
 
 }
